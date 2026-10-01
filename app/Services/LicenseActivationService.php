@@ -23,6 +23,11 @@ class LicenseActivationService
 
             $activation = $this->licenses->findActivation($license, $data['device_id']);
 
+            if ($activation && $activation->device_public_key !== null
+                && ! hash_equals($activation->device_public_key, $data['device_public_key'])) {
+                return LicenseCheckResult::fail('device_key_mismatch', 403);
+            }
+
             if (! $activation && $this->licenses->countActivations($license) >= $license->max_devices) {
                 return LicenseCheckResult::fail('device_limit_reached', 409);
             }
@@ -53,6 +58,11 @@ class LicenseActivationService
                 return LicenseCheckResult::fail('device_not_activated', 403);
             }
 
+            if ($activation->device_public_key !== null
+                && ! hash_equals($activation->device_public_key, $data['device_public_key'])) {
+                return LicenseCheckResult::fail('device_key_mismatch', 403);
+            }
+
             if (! $license->allowsActivation($activation)) {
                 return LicenseCheckResult::fail('device_limit_reached', 409);
             }
@@ -80,16 +90,12 @@ class LicenseActivationService
     private function touchAndRespond(License $license, LicenseActivation $activation, array $data, ?string $ip): LicenseCheckResult
     {
         $this->licenses->saveActivation($activation, [
+            'device_public_key' => $data['device_public_key'],
             'device_name' => $data['device_name'] ?? $activation->device_name,
             'app_version' => $data['app_version'] ?? $activation->app_version,
-            'accounts_used' => $data['accounts_used'] ?? $activation->accounts_used,
             'ip' => $ip,
             'last_seen_at' => now(),
         ]);
-
-        if ($activation->accounts_used !== null && $activation->accounts_used > $license->max_accounts) {
-            return LicenseCheckResult::fail('accounts_limit_exceeded', 403, $license);
-        }
 
         return LicenseCheckResult::ok($license, $this->validUntil($license));
     }

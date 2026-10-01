@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 
 final class LicenseResponder
 {
-    public static function respond(LicenseCheckResult $result, string $deviceId, ?string $nonce): JsonResponse
+    public static function respond(LicenseCheckResult $result, string $deviceId, string $nonce, string $devicePublicKey): JsonResponse
     {
         $payload = [
             'success' => $result->isSuccess(),
@@ -22,6 +22,7 @@ final class LicenseResponder
 
         $payload += [
             'device_id' => $deviceId,
+            'device_public_key' => $devicePublicKey,
             'nonce' => $nonce,
             'server_time' => now()->toIso8601String(),
         ];

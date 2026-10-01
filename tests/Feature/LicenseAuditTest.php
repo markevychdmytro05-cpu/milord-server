@@ -124,12 +124,28 @@ class LicenseAuditTest extends TestCase
     public function test_heartbeat_does_not_fill_audit_log(): void
     {
         $license = License::factory()->create();
-        $data = ['key' => $license->key, 'device_id' => 'device-first'];
-        $this->postJson('/api/v1/license/activate', $data)->assertOk();
+        $deviceId = str_repeat('a', 64);
+        $pair = sodium_crypto_sign_keypair();
+        $publicKey = base64_encode(sodium_crypto_sign_publickey($pair));
+        $request = function (string $action) use ($license, $deviceId, $pair, $publicKey): array {
+            $nonce = bin2hex(random_bytes(24));
+            $requestTime = now()->timestamp;
+            $message = implode("\n", ['license-v2', $action, $license->key, $deviceId, $nonce, $requestTime, $publicKey, '', '']);
+
+            return [
+                'key' => $license->key,
+                'device_id' => $deviceId,
+                'nonce' => $nonce,
+                'request_time' => $requestTime,
+                'device_public_key' => $publicKey,
+                'device_signature' => base64_encode(sodium_crypto_sign_detached($message, sodium_crypto_sign_secretkey($pair))),
+            ];
+        };
+        $this->postJson('/api/v1/license/activate', $request('activate'))->assertOk();
         $count = LicenseAudit::count();
 
-        $this->postJson('/api/v1/license/check', $data)->assertOk();
-        $this->postJson('/api/v1/license/activate', $data)->assertOk();
+        $this->postJson('/api/v1/license/check', $request('check'))->assertOk();
+        $this->postJson('/api/v1/license/activate', $request('activate'))->assertOk();
 
         $this->assertSame($count, LicenseAudit::count());
     }

@@ -13,6 +13,27 @@ class LicenseSigningTest extends TestCase
 {
     use RefreshDatabase;
 
+    private const DEVICE = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+
+    /** @return array<string, string> */
+    private function signedRequest(string $action, string $key): array
+    {
+        $pair = sodium_crypto_sign_keypair();
+        $publicKey = base64_encode(sodium_crypto_sign_publickey($pair));
+        $nonce = bin2hex(random_bytes(24));
+        $requestTime = now()->timestamp;
+        $message = implode("\n", ['license-v2', $action, License::normalizeKey($key), self::DEVICE, $nonce, $requestTime, $publicKey, '', '']);
+
+        return [
+            'key' => $key,
+            'device_id' => self::DEVICE,
+            'nonce' => $nonce,
+            'request_time' => $requestTime,
+            'device_public_key' => $publicKey,
+            'device_signature' => base64_encode(sodium_crypto_sign_detached($message, sodium_crypto_sign_secretkey($pair))),
+        ];
+    }
+
     public function test_production_rejects_unsigned_activation_and_rolls_back_device_binding(): void
     {
         $license = License::factory()->create();
@@ -20,7 +41,7 @@ class LicenseSigningTest extends TestCase
         $this->app['env'] = 'production';
         Exceptions::fake();
 
-        $this->postJson('/api/v1/license/activate', ['key' => $license->key, 'device_id' => 'device-first'])
+        $this->postJson('/api/v1/license/activate', $this->signedRequest('activate', $license->key))
             ->assertInternalServerError();
 
         $this->assertDatabaseCount('license_activations', 0);
@@ -31,11 +52,11 @@ class LicenseSigningTest extends TestCase
     public function test_invalid_signing_key_rolls_back_heartbeat(): void
     {
         $license = License::factory()->create();
-        $activation = $license->activations()->create(['device_id' => 'device-first', 'last_seen_at' => '2026-01-01 00:00:00']);
+        $activation = $license->activations()->create(['device_id' => self::DEVICE, 'last_seen_at' => '2026-01-01 00:00:00']);
         config(['license.signing_secret_key' => 'invalid']);
         Exceptions::fake();
 
-        $this->postJson('/api/v1/license/check', ['key' => $license->key, 'device_id' => 'device-first'])
+        $this->postJson('/api/v1/license/check', $this->signedRequest('check', $license->key))
             ->assertInternalServerError();
 
         $this->assertSame('2026-01-01 00:00:00', $activation->fresh()->last_seen_at->toDateTimeString());
@@ -48,7 +69,7 @@ class LicenseSigningTest extends TestCase
         config(['license.signing_secret_key' => null, 'license.require_signature' => true]);
         Exceptions::fake();
 
-        $this->postJson('/api/v1/license/activate', ['key' => $license->key, 'device_id' => 'device-first'])
+        $this->postJson('/api/v1/license/activate', $this->signedRequest('activate', $license->key))
             ->assertInternalServerError();
 
         $this->assertDatabaseCount('license_activations', 0);

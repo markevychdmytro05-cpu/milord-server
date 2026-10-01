@@ -12,14 +12,50 @@ class LicenseApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    private const DEVICE = 'device-aaaa-1111';
+    private const DEVICE = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
+
+    private const DEVICE_B = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb';
+
+    private const DEVICE_C = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc';
+
+    /** @var array<string, string> */
+    private array $deviceKeys = [];
+
+    private int $requestCounter = 0;
+
+    /**
+     * @param  array<string, mixed>  $extra
+     * @return array<string, mixed>
+     */
+    private function signedRequest(string $action, string $key, string $device, array $extra = []): array
+    {
+        $pair = $this->deviceKeys[$device] ??= sodium_crypto_sign_keypair();
+        $data = [
+            'key' => $key,
+            'device_id' => $device,
+            'device_name' => null,
+            'app_version' => null,
+            'nonce' => str_pad(dechex(++$this->requestCounter), 48, '0', STR_PAD_LEFT),
+            'request_time' => now()->timestamp,
+            'device_public_key' => base64_encode(sodium_crypto_sign_publickey($pair)),
+        ];
+        $data = array_replace($data, $extra);
+        $message = implode("\n", [
+            'license-v2', $action, License::normalizeKey($data['key']), $data['device_id'],
+            $data['nonce'], (string) $data['request_time'], $data['device_public_key'],
+            $data['device_name'] ?? '', $data['app_version'] ?? '',
+        ]);
+        $data['device_signature'] = base64_encode(sodium_crypto_sign_detached($message, sodium_crypto_sign_secretkey($pair)));
+
+        return $data;
+    }
 
     /**
      * @param  array<string, mixed>  $extra
      */
     private function activate(License $license, string $device = self::DEVICE, array $extra = []): TestResponse
     {
-        return $this->postJson('/api/v1/license/activate', ['key' => $license->key, 'device_id' => $device] + $extra);
+        return $this->postJson('/api/v1/license/activate', $this->signedRequest('activate', $license->key, $device, $extra));
     }
 
     /**
@@ -27,7 +63,7 @@ class LicenseApiTest extends TestCase
      */
     private function check(License $license, string $device = self::DEVICE, array $extra = []): TestResponse
     {
-        return $this->postJson('/api/v1/license/check', ['key' => $license->key, 'device_id' => $device] + $extra);
+        return $this->postJson('/api/v1/license/check', $this->signedRequest('check', $license->key, $device, $extra));
     }
 
     /**
@@ -49,14 +85,15 @@ class LicenseApiTest extends TestCase
     {
         $license = License::factory()->create(['max_accounts' => 10]);
 
-        $response = $this->activate($license, extra: ['device_name' => 'Office PC', 'nonce' => 'n-1']);
+        $response = $this->activate($license, extra: ['device_name' => 'Office PC']);
 
         $response->assertOk();
         $data = $this->payload($response);
         $this->assertTrue($data['success']);
         $this->assertSame(10, $data['license']['max_accounts']);
-        $this->assertSame('n-1', $data['nonce']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{48}$/', $data['nonce']);
         $this->assertSame(self::DEVICE, $data['device_id']);
+        $this->assertSame(base64_encode(sodium_crypto_sign_publickey($this->deviceKeys[self::DEVICE])), $data['device_public_key']);
         $this->assertDatabaseHas('license_activations', ['license_id' => $license->id, 'device_id' => self::DEVICE, 'device_name' => 'Office PC']);
     }
 
@@ -64,10 +101,9 @@ class LicenseApiTest extends TestCase
     {
         $license = License::factory()->create();
 
-        $this->postJson('/api/v1/license/activate', [
-            'key' => strtolower(str_replace('-', '', $license->key)),
-            'device_id' => self::DEVICE,
-        ])->assertOk();
+        $this->postJson('/api/v1/license/activate', $this->signedRequest(
+            'activate', strtolower(str_replace('-', '', $license->key)), self::DEVICE,
+        ))->assertOk();
     }
 
     public function test_reactivating_same_device_does_not_take_another_slot(): void
@@ -85,7 +121,7 @@ class LicenseApiTest extends TestCase
         $license = License::factory()->create(['max_devices' => 1]);
         $this->activate($license)->assertOk();
 
-        $response = $this->activate($license, 'device-bbbb-2222');
+        $response = $this->activate($license, self::DEVICE_B);
 
         $response->assertStatus(409);
         $this->assertSame('device_limit_reached', $this->payload($response)['error']);
@@ -93,7 +129,7 @@ class LicenseApiTest extends TestCase
 
     public function test_unknown_key_is_rejected(): void
     {
-        $response = $this->postJson('/api/v1/license/check', ['key' => 'AAAA-BBBB-CCCC-DDDD', 'device_id' => self::DEVICE]);
+        $response = $this->postJson('/api/v1/license/check', $this->signedRequest('check', 'AAAA-BBBB-CCCC-DDDD', self::DEVICE));
 
         $response->assertNotFound();
         $this->assertSame('license_not_found', $this->payload($response)['error']);
@@ -131,17 +167,16 @@ class LicenseApiTest extends TestCase
         $this->assertSame('device_not_activated', $this->payload($response)['error']);
     }
 
-    public function test_check_records_usage_and_rejects_exceeding_accounts(): void
+    public function test_client_reported_account_count_is_rejected(): void
     {
         $license = License::factory()->create(['max_accounts' => 5]);
         $this->activate($license)->assertOk();
 
-        $this->check($license, extra: ['accounts_used' => 5, 'app_version' => '1.2.0'])->assertOk();
-        $response = $this->check($license, extra: ['accounts_used' => 6]);
+        $this->check($license, extra: ['accounts_used' => 6])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['accounts_used']);
 
-        $response->assertForbidden();
-        $this->assertSame('accounts_limit_exceeded', $this->payload($response)['error']);
-        $this->assertDatabaseHas('license_activations', ['device_id' => self::DEVICE, 'accounts_used' => 6, 'app_version' => '1.2.0']);
+        $this->assertDatabaseHas('license_activations', ['device_id' => self::DEVICE, 'accounts_used' => null]);
     }
 
     public function test_valid_until_never_exceeds_license_expiry(): void
@@ -196,45 +231,117 @@ class LicenseApiTest extends TestCase
             ->assertJsonValidationErrors(['device_id']);
     }
 
+    public function test_legacy_request_without_device_proof_is_rejected(): void
+    {
+        $license = License::factory()->create();
+
+        $this->postJson('/api/v1/license/activate', ['key' => $license->key, 'device_id' => self::DEVICE])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors(['nonce', 'request_time', 'device_public_key', 'device_signature']);
+
+        $this->assertDatabaseCount('license_activations', 0);
+    }
+
     public function test_downgrade_rejects_excess_devices_on_check_and_reactivation_with_409(): void
     {
         $license = License::factory()->create(['max_devices' => 2]);
         $this->activate($license)->assertOk();
-        $this->activate($license, 'device-bbbb-2222')->assertOk();
+        $this->activate($license, self::DEVICE_B)->assertOk();
         $license->update(['max_devices' => 1]);
 
         $this->check($license)->assertOk();
-        $response = $this->check($license, 'device-bbbb-2222');
+        $response = $this->check($license, self::DEVICE_B);
         $response->assertStatus(409);
         $this->assertSame('device_limit_reached', $this->payload($response)['error']);
-        $this->activate($license, 'device-bbbb-2222')->assertStatus(409);
+        $this->activate($license, self::DEVICE_B)->assertStatus(409);
         $this->assertSame(2, $license->activations()->count());
 
         $license->update(['max_devices' => 2]);
-        $this->check($license, 'device-bbbb-2222')->assertOk();
+        $this->check($license, self::DEVICE_B)->assertOk();
     }
 
     public function test_unbinding_allowed_device_releases_slot_for_next_existing_device(): void
     {
         $license = License::factory()->create(['max_devices' => 2]);
         $this->activate($license)->assertOk();
-        $this->activate($license, 'device-bbbb-2222')->assertOk();
+        $this->activate($license, self::DEVICE_B)->assertOk();
         $license->update(['max_devices' => 1]);
         $license->activations()->where('device_id', self::DEVICE)->firstOrFail()->delete();
 
-        $this->check($license, 'device-bbbb-2222')->assertOk();
-        $this->activate($license, 'device-cccc-3333')->assertStatus(409);
+        $this->check($license, self::DEVICE_B)->assertOk();
+        $this->activate($license, self::DEVICE_C)->assertStatus(409);
     }
 
-    public function test_omitting_usage_does_not_bypass_previously_reported_overage(): void
+    public function test_a_new_key_cannot_reuse_an_existing_device_slot(): void
     {
-        $license = License::factory()->create(['max_accounts' => 5]);
-        $this->activate($license, extra: ['accounts_used' => 6])->assertForbidden();
+        $license = License::factory()->create(['max_devices' => 1]);
+        $this->activate($license)->assertOk();
+        $originalPublicKey = $license->activations()->sole()->device_public_key;
+        unset($this->deviceKeys[self::DEVICE]);
 
-        $response = $this->check($license);
-        $response->assertForbidden();
-        $this->assertSame('accounts_limit_exceeded', $this->payload($response)['error']);
-        $this->activate($license)->assertForbidden();
-        $this->check($license, extra: ['accounts_used' => 5])->assertOk();
+        $this->assertSame('device_key_mismatch', $this->payload($this->check($license)->assertForbidden())['error']);
+        $this->assertSame('device_key_mismatch', $this->payload($this->activate($license)->assertForbidden())['error']);
+        $this->assertSame($originalPublicKey, $license->activations()->sole()->device_public_key);
+        $this->assertSame(1, $license->activations()->count());
+    }
+
+    public function test_tampered_device_proof_is_rejected_before_activation(): void
+    {
+        $license = License::factory()->create();
+        $data = $this->signedRequest('activate', $license->key, self::DEVICE);
+        $data['device_name'] = 'Changed after signing';
+
+        $response = $this->postJson('/api/v1/license/activate', $data)->assertForbidden();
+
+        $this->assertSame('invalid_device_proof', $this->payload($response)['error']);
+        $this->assertDatabaseCount('license_activations', 0);
+    }
+
+    public function test_device_proof_cannot_be_used_for_a_different_action(): void
+    {
+        $license = License::factory()->create();
+        $data = $this->signedRequest('check', $license->key, self::DEVICE);
+
+        $response = $this->postJson('/api/v1/license/activate', $data)->assertForbidden();
+
+        $this->assertSame('invalid_device_proof', $this->payload($response)['error']);
+        $this->assertDatabaseCount('license_activations', 0);
+    }
+
+    public function test_replayed_device_proof_is_rejected(): void
+    {
+        $license = License::factory()->create();
+        $data = $this->signedRequest('activate', $license->key, self::DEVICE);
+
+        $this->postJson('/api/v1/license/activate', $data)->assertOk();
+        $response = $this->postJson('/api/v1/license/activate', $data)->assertForbidden();
+
+        $this->assertSame('invalid_device_proof', $this->payload($response)['error']);
+        $this->assertSame(1, $license->activations()->count());
+    }
+
+    public function test_stale_device_proof_is_rejected(): void
+    {
+        $license = License::factory()->create();
+        $data = $this->signedRequest('activate', $license->key, self::DEVICE, [
+            'request_time' => now()->subMinutes(6)->timestamp,
+        ]);
+
+        $response = $this->postJson('/api/v1/license/activate', $data)->assertForbidden();
+
+        $this->assertSame('invalid_device_proof', $this->payload($response)['error']);
+        $this->assertDatabaseCount('license_activations', 0);
+    }
+
+    public function test_existing_activation_can_bind_a_device_key_once(): void
+    {
+        $license = License::factory()->create();
+        $license->activations()->create(['device_id' => self::DEVICE]);
+
+        $this->check($license)->assertOk();
+
+        $this->assertSame(base64_encode(sodium_crypto_sign_publickey($this->deviceKeys[self::DEVICE])),
+            $license->activations()->sole()->device_public_key);
+        $this->activate($license)->assertOk();
     }
 }

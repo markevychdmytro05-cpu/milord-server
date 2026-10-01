@@ -18,11 +18,14 @@ class LicenseClientRequest extends FormRequest
     {
         return [
             'key' => ['required', 'string', 'max:64'],
-            'device_id' => ['required', 'string', 'min:8', 'max:128'],
-            'device_name' => ['nullable', 'string', 'max:255'],
-            'app_version' => ['nullable', 'string', 'max:32'],
-            'accounts_used' => ['nullable', 'integer', 'min:0', 'max:1000000'],
-            'nonce' => ['nullable', 'string', 'max:64'],
+            'device_id' => ['required', 'string', 'regex:/^[a-f0-9]{64}$/'],
+            'device_name' => ['nullable', 'string', 'max:255', 'not_regex:/[\r\n]/'],
+            'app_version' => ['nullable', 'string', 'max:32', 'not_regex:/[\r\n]/'],
+            'accounts_used' => ['prohibited'],
+            'nonce' => ['required', 'string', 'regex:/^[a-f0-9]{48}$/'],
+            'request_time' => ['required', 'integer', 'min:1'],
+            'device_public_key' => ['required', 'string', 'size:44'],
+            'device_signature' => ['required', 'string', 'size:88'],
         ];
     }
 }

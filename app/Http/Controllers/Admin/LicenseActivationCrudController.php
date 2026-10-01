@@ -36,8 +36,6 @@ class LicenseActivationCrudController extends CrudController
             ->wrapper(['href' => fn ($crud, $column, $entry) => backpack_url('license/'.$entry->license_id.'/show')]);
         CRUD::column('device_name')->label('Пристрій');
         CRUD::column('device_id')->label('Device ID')->limit(24);
-        CRUD::column('accounts_used')->type('closure')->label('Акаунтів')
-            ->function(fn ($a) => ($a->accounts_used ?? '–').' / '.$a->license->max_accounts);
         CRUD::column('app_version')->label('Версія');
         CRUD::column('ip')->label('IP');
         CRUD::column('last_seen_at')->type('datetime')->label('Остання перевірка');

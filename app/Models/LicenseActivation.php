@@ -10,7 +10,7 @@ class LicenseActivation extends Model
 {
     use CrudTrait;
 
-    protected $fillable = ['license_id', 'device_id', 'device_name', 'app_version', 'accounts_used', 'ip', 'last_seen_at'];
+    protected $fillable = ['license_id', 'device_id', 'device_public_key', 'device_name', 'app_version', 'ip', 'last_seen_at'];
 
     protected static function booted(): void
     {
