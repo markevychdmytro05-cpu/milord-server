@@ -1,0 +1,50 @@
+<?php
+
+use App\Models\ModuleTemplate;
+use Illuminate\Database\Migrations\Migration;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        ModuleTemplate::firstOrCreate([
+            'code' => '{code-code}', // Код модуля: за ним знаходиться клас App\Modules\{code-dummy}Module
+        ], [
+            'name' => '<Назва>', // Показується в адмінці
+            'template' => [
+                'fields' => [
+                    'active' => [ // Ім'я поля
+                        'label' => 'Видимість', // Підпис
+                        'input' => 'checkbox', // Тип поля (див. ModuleTemplate::buildField)
+                        /*
+                         * Доступні типи:
+                         * - text (за замовчуванням)
+                         * - checkbox
+                         * - select (потрібен 'provider': масив [значення => підпис] або клас моделі)
+                         * - radio (потрібен 'options')
+                         * - textarea
+                         * - ckeditor (візуальний редактор)
+                         * - image / upload (завантаження файлу)
+                         * - repeatable (список записів; потрібен 'fields' з описом підполів)
+                         */
+                    ],
+                ],
+                'rules' => [
+                    'active' => 'integer|between:0,1',
+                    // Правила валідації полів, як у FormRequest
+                ],
+                'lang_fields' => [
+                    // Поля, що зберігаються окремо для кожної мови
+                ],
+                'lang_rules' => [
+                    // Правила для мовних полів
+                ],
+            ],
+        ]);
+    }
+
+    public function down(): void
+    {
+        ModuleTemplate::where('code', '{code-code}')->delete();
+    }
+};

@@ -1,0 +1,30 @@
+/* Форми створення/редагування стоять по центру (contentClass mx-auto) — заголовок над ними теж. */
+body:has([bp-section="crud-operation-create"], [bp-section="crud-operation-update"]) .header-operation {
+    justify-content: center;
+}
+
+/* Великий перемикач у таблицях (колонка type=toggle): у маленький важко влучити. */
+.toggle-lg {
+    padding-left: 3.25rem;
+    min-height: 1.75rem;
+}
+.toggle-lg .custom-control-label {
+    cursor: pointer;
+}
+.toggle-lg .custom-control-label::before {
+    left: -3.25rem;
+    top: 0;
+    width: 3rem;
+    height: 1.6rem;
+    border-radius: 1rem;
+}
+.toggle-lg .custom-control-label::after {
+    left: calc(-3.25rem + 4px);
+    top: 4px;
+    width: calc(1.6rem - 8px);
+    height: calc(1.6rem - 8px);
+    border-radius: 1rem;
+}
+.toggle-lg .custom-control-input:checked ~ .custom-control-label::after {
+    transform: translateX(1.4rem);
+}
