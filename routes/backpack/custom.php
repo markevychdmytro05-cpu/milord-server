@@ -25,6 +25,7 @@ Route::group([
     Route::post('license/{id}/devices/{activationId}/unbind', 'LicenseCrudController@unbindDevice')->whereNumber(['id', 'activationId']);
     Route::crud('license-activation', 'LicenseActivationCrudController');
     Route::crud('user', 'UserCrudController');
+    Route::post('user/{id}/toggle', 'UserCrudController@toggleActive')->whereNumber('id');
     Route::crud('role', 'RoleCrudController');
     Route::crud('package', 'PackageCrudController');
     Route::crud('page', 'PageCrudController');

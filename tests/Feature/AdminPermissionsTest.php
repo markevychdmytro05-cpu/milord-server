@@ -91,6 +91,7 @@ class AdminPermissionsTest extends TestCase
             'user store' => ['access_manage', 'POST', '/admin/user', null],
             'user update' => ['access_manage', 'PUT', '/admin/user/{id}', 'user'],
             'user delete' => ['access_manage', 'DELETE', '/admin/user/{id}', 'user'],
+            'user toggle' => ['access_manage', 'POST', '/admin/user/{id}/toggle', 'user'],
             'role list' => ['access_manage', 'GET', '/admin/role', null],
             'role store' => ['access_manage', 'POST', '/admin/role', null],
             'role update' => ['access_manage', 'PUT', '/admin/role/{id}', 'role'],
@@ -189,6 +190,44 @@ class AdminPermissionsTest extends TestCase
         $this->assertFalse($other->fresh()->is_active);
         $this->assertTrue($admin->fresh()->isAdmin());
         $this->assertTrue($admin->fresh()->is_active);
+    }
+
+    public function test_user_active_switch_updates_another_user(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $other = User::factory()->create();
+
+        $this->actingAs($admin, 'backpack')->postJson('/admin/user/'.$other->id.'/toggle')
+            ->assertOk()->assertExactJson(['value' => false]);
+        $this->assertFalse($other->fresh()->is_active);
+
+        $this->postJson('/admin/user/'.$other->id.'/toggle')
+            ->assertOk()->assertExactJson(['value' => true]);
+        $this->assertTrue($other->fresh()->is_active);
+    }
+
+    public function test_user_active_switch_cannot_disable_the_current_user(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin, 'backpack')->postJson('/admin/user/'.$admin->id.'/toggle')->assertForbidden();
+
+        $this->assertTrue($admin->fresh()->is_active);
+    }
+
+    public function test_user_list_renders_active_switches_and_disables_the_current_user_switch(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $other = User::factory()->create();
+
+        $rows = $this->actingAs($admin, 'backpack')->postJson('/admin/user/search')->assertOk()->json('data');
+        $adminRow = collect($rows)->first(fn (array $row): bool => str_contains(json_encode($row), $admin->email));
+        $otherRow = collect($rows)->first(fn (array $row): bool => str_contains(json_encode($row), $other->email));
+
+        $this->assertStringContainsString('toggle-is_active-'.$admin->id, $adminRow[4]);
+        $this->assertMatchesRegularExpression('/\bdisabled\s+data-url=/', $adminRow[4]);
+        $this->assertStringContainsString('toggle-is_active-'.$other->id, $otherRow[4]);
+        $this->assertDoesNotMatchRegularExpression('/\bdisabled\s+data-url=/', $otherRow[4]);
     }
 
     public function test_current_user_cannot_change_their_own_role(): void

@@ -14,6 +14,7 @@ use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
+use Illuminate\Http\JsonResponse;
 
 /** @property-read CrudPanel $crud */
 class UserCrudController extends CrudController
@@ -42,7 +43,8 @@ class UserCrudController extends CrudController
         CRUD::column('role_name')->type('closure')->label('Роль')->function(fn (User $user): string => $user->roles->first()?->title ?? '–');
         CRUD::column('permission_names')->type('closure')->label('Додаткові права')
             ->function(fn (User $user): int => $user->permissions->count());
-        CRUD::column('is_active')->type('boolean')->label('Активний');
+        CRUD::column('is_active')->type('toggle')->label('Активний')->toggle_route($this->crud->route)
+            ->toggle_disabled_for(backpack_user()->id);
         CRUD::column('created_at')->type('datetime')->label('Створено');
     }
 
@@ -103,6 +105,20 @@ class UserCrudController extends CrudController
         abort_if((int) $id === backpack_user()->id, 403, 'Не можна видалити власний акаунт.');
 
         return AccessManagement::run(fn () => $this->traitDestroy($id));
+    }
+
+    public function toggleActive(int $id): JsonResponse
+    {
+        CRUD::hasAccessOrFail('update');
+
+        return AccessManagement::run(function (User $actor) use ($id): JsonResponse {
+            $user = User::whereKey($id)->lockForUpdate()->firstOrFail();
+            abort_if($user->is($actor), 403, 'Не можна вимкнути власний акаунт.');
+
+            $user->update(['is_active' => ! $user->is_active]);
+
+            return response()->json(['value' => $user->is_active]);
+        });
     }
 
     private function addFields(bool $passwordRequired): void

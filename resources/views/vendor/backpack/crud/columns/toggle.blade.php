@@ -5,9 +5,10 @@
 @php
     $checked = (bool) data_get($entry, $column['name']);
     $switchId = 'toggle-'.$column['name'].'-'.$entry->getKey();
+    $disabled = ! $crud->hasAccess('update') || (isset($column['toggle_disabled_for']) && (int) $column['toggle_disabled_for'] === (int) $entry->getKey());
 @endphp
 <span class="custom-control custom-switch form-check form-switch d-inline-block mb-0 toggle-lg">
-    <input type="checkbox" class="custom-control-input form-check-input" id="{{ $switchId }}" @checked($checked) @disabled(! $crud->hasAccess('update'))
+    <input type="checkbox" class="custom-control-input form-check-input" id="{{ $switchId }}" @checked($checked) @disabled($disabled)
            data-url="{{ url($column['toggle_route'].'/'.$entry->getKey().'/'.($column['toggle_action'] ?? 'toggle')) }}"
            onchange="(function (el) {
                el.disabled = true;
