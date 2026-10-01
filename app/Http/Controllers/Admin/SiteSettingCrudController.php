@@ -48,11 +48,11 @@ class SiteSettingCrudController extends CrudController
         CRUD::field('contact_email2_label')->label('Підпис')->tab('Контакти')->wrapper(['class' => 'form-group col-md-4']);
         CRUD::field('contact_phone')->label('Телефон')->tab('Контакти');
         CRUD::field('contact_address')->label('Адреса')->tab('Контакти');
-        CRUD::field('instagram')->label('Instagram (посилання)')->tab('Контакти');
-        CRUD::field('facebook')->label('Facebook (посилання)')->tab('Контакти');
+        CRUD::field('instagram')->label('Instagram (посилання)')->tab('Контакти')->wrapper(['class' => 'form-group col-md-6']);
+        CRUD::field('facebook')->label('Facebook (посилання)')->tab('Контакти')->wrapper(['class' => 'form-group col-md-6']);
         CRUD::field('telegram')->label('Telegram (@нік або посилання)')->tab('Контакти');
-        CRUD::field('whatsapp')->label('WhatsApp (номер телефону)')->tab('Контакти');
-        CRUD::field('viber')->label('Viber (номер телефону)')->tab('Контакти');
+        CRUD::field('whatsapp')->label('WhatsApp (номер телефону)')->tab('Контакти')->wrapper(['class' => 'form-group col-md-6']);
+        CRUD::field('viber')->label('Viber (номер телефону)')->tab('Контакти')->wrapper(['class' => 'form-group col-md-6']);
 
         CRUD::field('footer_modules')->type('select_and_order')->label('Модулі підвалу')->tab('Підвал')
             ->options(Module::getModulesList());
