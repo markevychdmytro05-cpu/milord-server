@@ -14,6 +14,9 @@
     if ($page->type === \App\Models\Page::TYPE_SERVICE) {
         $crumbs[] = ['name' => __('site.breadcrumbs.features'), 'url' => route('home').'#features'];
     }
+    if ($page->isArticle()) {
+        $crumbs[] = ['name' => __('site.breadcrumbs.knowledge_base'), 'url' => route('pages.show', 'baza-znan')];
+    }
     $crumbs[] = ['name' => $page->title, 'url' => $page->url()];
     $faqItems = [];
     if (preg_match('~<h2[^>]*>\s*'.preg_quote(__('site.faq_heading'), '~').'\s*</h2>(.*?)(?=<h2|$)~su', (string) $page->content, $faqSection)) {

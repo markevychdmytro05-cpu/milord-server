@@ -7,7 +7,7 @@
         'mainEntity' => array_map(fn (array $item): array => [
             '@type' => 'Question',
             'name' => $item['question'] ?? '',
-            'acceptedAnswer' => ['@type' => 'Answer', 'text' => $item['description'] ?? ''],
+            'acceptedAnswer' => ['@type' => 'Answer', 'text' => strip_tags($item['description'] ?? '')],
         ], $items),
     ];
 @endphp
@@ -23,7 +23,7 @@
                         <span class="accordion__toggler-name" itemprop="name">{{ $item['question'] ?? '' }}</span><span class="accordion__toggler-icon"></span>
                     </button>
                     <div class="accordion__list" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div itemprop="text">{!! nl2br(e($item['description'] ?? '')) !!}</div>
+                        <div itemprop="text">{!! nl2br(strip_tags($item['description'] ?? '', '<a>')) !!}</div>
                     </div>
                 </div>
             @endforeach

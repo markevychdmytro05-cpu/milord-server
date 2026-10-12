@@ -52,6 +52,7 @@ class CoinRequest extends FormRequest
             'og_image' => ['nullable', 'string', 'max:2048', 'regex:~^(https?://|/)~i'],
             'robots' => ['sometimes', Rule::enum(PageRobotsType::class)],
             'is_published' => ['boolean'],
+            'show_on_home' => ['boolean'],
         ];
     }
 

@@ -12,7 +12,7 @@ class SitemapController extends Controller
     {
         $pages = Page::published()->where('slug', '!=', Page::ROOT_SLUG)->indexable()->orderBy('id')->get();
 
-        $coins = Coin::published()->indexable()->orderBy('id')->get();
+        $coins = Coin::published()->withImage()->indexable()->orderBy('id')->get();
 
         $home = Page::published()->where('slug', Page::ROOT_SLUG)->first();
 

@@ -41,7 +41,7 @@ class AdminPermissionsTest extends TestCase
     public function test_permissions_live_in_a_separate_table_with_name_and_title(): void
     {
         $this->assertDatabaseHas('permissions', ['name' => 'licenses_view', 'title' => 'Перегляд ліцензій', 'group' => 'Ліцензії']);
-        $this->assertSame(38, Permission::count());
+        $this->assertSame(43, Permission::count());
     }
 
     public function test_default_roles_preserve_existing_access(): void

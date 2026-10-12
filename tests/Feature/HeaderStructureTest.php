@@ -32,18 +32,18 @@ class HeaderStructureTest extends TestCase
         $this->withoutVite();
         SiteSetting::current()->update(['header_button_text' => 'Замовити дзвінок', 'header_button_url' => '/#contact']);
 
-        $this->get('/')->assertSee('class="nav-cta" href="/#contact"', false)->assertSee('Замовити дзвінок');
+        $this->get('/')->assertSee('class="nav-cta" href="/#contact"', false)->assertSee('Замовити')->assertSee('дзвінок');
 
         SiteSetting::current()->update(['header_button_text' => null, 'header_button_url' => null]);
         $this->get('/')->assertDontSee('nav-cta', false);
     }
 
-    public function test_floating_messenger_bar_lists_configured_messengers(): void
+    public function test_footer_lists_configured_messengers_without_floating_bar(): void
     {
         $this->withoutVite();
         SiteSetting::current()->update(['telegram' => '@nbu_desktop', 'viber' => '+380501112233']);
 
-        $this->get('/')->assertSee('class="float-messengers"', false)
+        $this->get('/')->assertDontSee('float-messengers', false)->assertSee('class="foot-social"', false)
             ->assertSee('aria-label="Telegram"', false)->assertSee('aria-label="Viber"', false)->assertDontSee('aria-label="WhatsApp"', false);
     }
 

@@ -37,12 +37,17 @@ class CoinCrudController extends CrudController
     {
         CRUD::orderBy('id', 'desc');
 
-        CRUD::column('title')->label('Назва');
-        CRUD::column('denomination')->label('Номінал');
-        CRUD::column('sale_starts_at')->type('datetime')->label('Початок продажу');
-        CRUD::column('slug')->label('Адреса')->type('closure')->function(fn (Coin $coin) => parse_url($coin->url(), PHP_URL_PATH));
-        CRUD::column('is_published')->type('toggle')->label('Опублікована')->toggle_route($this->crud->route);
-        CRUD::column('updated_at')->type('datetime')->label('Змінено');
+        CRUD::column('image')->label('Фото')->type('closure')->escaped(false)->orderable(false)->searchable(false)->priority(1)
+            ->function(fn (Coin $coin) => $coin->image
+                ? '<img src="'.e($coin->image).'" alt="" style="height:48px;width:48px;object-fit:contain;border-radius:8px;background:#f3f4fb">'
+                : '<span class="text-muted">—</span>');
+        CRUD::column('title')->label('Назва')->priority(1);
+        CRUD::column('denomination')->label('Номінал')->priority(3);
+        CRUD::column('sale_starts_at')->type('datetime')->label('Початок продажу')->priority(4);
+        CRUD::column('slug')->label('Адреса')->type('closure')->function(fn (Coin $coin) => parse_url($coin->url(), PHP_URL_PATH))->priority(5);
+        CRUD::column('is_published')->type('toggle')->label('Активний')->toggle_route($this->crud->route)->priority(1);
+        CRUD::column('show_on_home')->type('toggle')->label('Показувати на головній')->toggle_route($this->crud->route)->toggle_action('toggle-home')->priority(2);
+        CRUD::column('updated_at')->type('datetime')->label('Змінено')->priority(6);
     }
 
     protected function setupCreateOperation()
@@ -62,10 +67,12 @@ class CoinCrudController extends CrudController
         CRUD::field('price')->type('number')->label('Ціна, грн')->attributes(['step' => '0.01'])->tab('Основне')->wrapper(['class' => 'form-group col-md-4']);
         CRUD::field('sale_starts_at')->type('datetime')->label('Початок продажу (за Києвом)')->tab('Основне')->wrapper(['class' => 'form-group col-md-4']);
         CRUD::field('nbu_url')->type('url')->label('Посилання на сторінку монети в магазині НБУ')->tab('Основне');
+        CRUD::field('image_preview')->type('image_preview')->label('Попередній перегляд')->source('image')->tab('Основне');
         CRUD::field('image')->type('browse')->label('Зображення монети')->tab('Основне')->mime_types(['image']);
         CRUD::field('excerpt')->type('textarea')->label('Короткий опис')->tab('Основне');
         CRUD::field('content')->type('summernote')->label('Опис')->tab('Основне')->options(['height' => 400]);
-        CRUD::field('is_published')->type('switch')->label('Опублікована')->tab('Основне');
+        CRUD::field('is_published')->type('switch')->label('Активний')->tab('Основне');
+        CRUD::field('show_on_home')->type('switch')->label('Показувати на головній')->tab('Основне')->default(true);
 
         CRUD::field('meta_title')->label('SEO-заголовок (title)')->tab('SEO');
         CRUD::field('meta_description')->type('textarea')->label('SEO-опис (description)')->tab('SEO');
@@ -89,11 +96,21 @@ class CoinCrudController extends CrudController
 
     public function togglePublished(int $id)
     {
+        return $this->toggleField($id, 'is_published');
+    }
+
+    public function toggleShowOnHome(int $id)
+    {
+        return $this->toggleField($id, 'show_on_home');
+    }
+
+    private function toggleField(int $id, string $field)
+    {
         CRUD::hasAccessOrFail('update');
 
         $coin = Coin::findOrFail($id);
-        $coin->update(['is_published' => ! $coin->is_published]);
+        $coin->update([$field => ! $coin->{$field}]);
 
-        return response()->json(['value' => $coin->is_published]);
+        return response()->json(['value' => $coin->{$field}]);
     }
 }

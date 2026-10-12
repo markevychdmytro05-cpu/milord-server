@@ -10,7 +10,25 @@ class PageController extends Controller
 {
     public function page(string $slug): View|RedirectResponse
     {
-        return $this->lowercaseRedirect($slug, 'pages.show') ?? $this->render(Page::TYPE_PAGE, $slug);
+        $redirect = $this->lowercaseRedirect($slug, 'pages.show');
+        if ($redirect) {
+            return $redirect;
+        }
+
+        $article = Page::published()->where('type', Page::TYPE_PAGE)->where('slug', $slug)->first();
+
+        return $article?->isArticle() ? redirect()->route('articles.show', $article->slug, 301) : $this->render(Page::TYPE_PAGE, $slug);
+    }
+
+    public function article(string $slug): View|RedirectResponse
+    {
+        if ($redirect = $this->lowercaseRedirect($slug, 'articles.show')) {
+            return $redirect;
+        }
+
+        $page = Page::published()->where('type', Page::TYPE_PAGE)->where('slug', $slug)->whereNotNull('category')->where('category', '!=', '')->firstOrFail();
+
+        return $this->view($page);
     }
 
     public function service(string $slug): View|RedirectResponse
@@ -26,8 +44,11 @@ class PageController extends Controller
 
     private function render(string $type, string $slug): View
     {
-        $page = Page::published()->where('type', $type)->where('slug', $slug)->firstOrFail();
+        return $this->view(Page::published()->where('type', $type)->where('slug', $slug)->firstOrFail());
+    }
 
+    private function view(Page $page): View
+    {
         return view('public.page', [
             'page' => $page,
             'related' => $page->category ? $page->relatedArticles(4) : collect(),

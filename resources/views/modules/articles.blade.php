@@ -1,5 +1,6 @@
 @php($locale = \App\Support\SiteLocale::current())
 @php($text = $settings[$locale] ?? [])
+@php($cardTag = ($settings['heading_tag'] ?? 'h2') === 'h1' ? 'h2' : 'h3')
 @inject('moduleFiles', 'App\Services\ModuleService')
 <section class="section kb" @if (! empty($settings['anchor'])) id="{{ $settings['anchor'] }}" @endif>
     <div class="wrap">
@@ -29,16 +30,12 @@
             <div class="kb-grid">
                 @foreach ($articles as $article)
                     <a class="kb-card" href="{{ $article->url() }}">
-                        <span class="kb-cover">
-                            @if ($article->og_image)
-                                <img src="{{ $moduleFiles->url($article->og_image) }}" alt="{{ $article->title }}" loading="lazy">
-                            @else
-                                @include('partials.kb-cover-fallback')
-                            @endif
-                        </span>
+                        @if ($article->og_image)
+                            <span class="kb-cover"><img src="{{ $moduleFiles->url($article->og_image) }}" alt="{{ $article->title }}" @if ($loop->index < 3) fetchpriority="high" @else loading="lazy" @endif></span>
+                        @endif
                         <span class="kb-date"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ __('site.date_with_year', ['date' => $article->articleDate()->locale(app()->getLocale())->translatedFormat('j F Y')]) }}</span>
                         @if ($article->category)<span class="kb-tags"><span class="kb-tag kb-c-{{ \App\Models\Page::categoryColor($article->category) }}">{{ $article->category }}</span></span>@endif
-                        <h3>{{ $article->title }}</h3>
+                        <{{ $cardTag }}>{{ $article->title }}</{{ $cardTag }}>
                         @if ($article->excerpt)<p>{{ $article->excerpt }}</p>@endif
                     </a>
                 @endforeach

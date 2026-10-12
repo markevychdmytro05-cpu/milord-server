@@ -18,7 +18,7 @@ class Coin extends Model
 
     protected $fillable = [
         'title', 'slug', 'denomination', 'series', 'metal', 'release_year', 'release_month', 'mintage', 'price', 'sale_starts_at', 'nbu_url',
-        'image', 'image_source', 'image_credit', 'excerpt', 'content', 'meta_title', 'meta_description', 'og_image', 'robots', 'is_published',
+        'image', 'image_source', 'image_credit', 'excerpt', 'content', 'meta_title', 'meta_description', 'og_image', 'robots', 'is_published', 'show_on_home',
     ];
 
     /** Точна дата продажу визначає рік і місяць випуску, щоб сортування й блок «Найближчі випуски» не розходились. */
@@ -42,6 +42,7 @@ class Coin extends Model
             'sale_starts_at' => 'datetime',
             'robots' => PageRobotsType::class,
             'is_published' => 'boolean',
+            'show_on_home' => 'boolean',
         ];
     }
 
@@ -49,6 +50,16 @@ class Coin extends Model
     public function scopePublished(Builder $query): void
     {
         $query->where('is_published', true);
+    }
+
+    /**
+     * Монети з фото: у списках і блоках показуються лише вони.
+     *
+     * @param  Builder<Coin>  $query
+     */
+    public function scopeWithImage(Builder $query): void
+    {
+        $query->whereNotNull('image')->where('image', '!=', '');
     }
 
     /**

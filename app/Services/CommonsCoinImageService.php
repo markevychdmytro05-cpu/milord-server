@@ -29,6 +29,10 @@ class CommonsCoinImageService
         'Великодня радість' => ['queries' => ['Pysanka-26 coin reverse'], 'contains' => 'pysanka-26'],
         'проголошення незалежності Сполучених Штатів' => ['queries' => ['250 років США монета'], 'contains' => '250 років сша'],
         'Мешканці морських глибин' => ['queries' => ['Inhabitants of the deep sea 2026'], 'contains' => 'deep sea 2026'],
+        'Ракета-дрон' => ['queries' => ['Монета Паляниця аверс у блістері'], 'contains' => 'паляниця аверс'],
+        'Зубр' => ['queries' => ['Chornobyl, Renaissance, Wisent А'], 'contains' => 'wisent'],
+        'імені Тараса Шевченка' => ['queries' => ['Shevchenko Prize (coin) obverse'], 'contains' => 'shevchenko prize'],
+        'Червона рута' => ['queries' => ['Червона рута A'], 'contains' => 'червона рута a'],
     ];
 
     /**

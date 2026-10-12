@@ -3,12 +3,13 @@
 namespace App\Support;
 
 use App\Models\License;
+use App\Models\Release;
 use App\Services\LicenseCheckResult;
 use Illuminate\Http\JsonResponse;
 
 final class LicenseResponder
 {
-    public static function respond(LicenseCheckResult $result, string $deviceId, string $nonce, string $devicePublicKey): JsonResponse
+    public static function respond(LicenseCheckResult $result, string $deviceId, string $nonce, string $devicePublicKey, ?Release $update = null): JsonResponse
     {
         $payload = [
             'success' => $result->isSuccess(),
@@ -18,6 +19,7 @@ final class LicenseResponder
 
         if ($result->isSuccess()) {
             $payload['valid_until'] = $result->validUntil->toIso8601String();
+            $payload['update'] = $update ? self::updatePayload($update) : null;
         }
 
         $payload += [
@@ -45,6 +47,20 @@ final class LicenseResponder
             'max_accounts' => $license->max_accounts,
             'max_devices' => $license->max_devices,
             'expires_at' => $license->expires_at?->toIso8601String(),
+        ];
+    }
+
+    /**
+     * @return array{version: string, notes: ?string, size: int, sha256: string, url: string}
+     */
+    private static function updatePayload(Release $release): array
+    {
+        return [
+            'version' => $release->version,
+            'notes' => $release->notes,
+            'size' => $release->size,
+            'sha256' => $release->sha256,
+            'url' => $release->temporaryUrl(360),
         ];
     }
 }

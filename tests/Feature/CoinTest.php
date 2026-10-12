@@ -340,4 +340,41 @@ class CoinTest extends TestCase
     {
         $this->artisan('coins:import', ['file' => '/nonexistent.json'])->assertFailed();
     }
+
+    public function test_coins_without_image_are_not_listed(): void
+    {
+        $this->withoutVite();
+        Coin::factory()->create(['title' => 'Монета з фото', 'slug' => 'with-photo']);
+        Coin::factory()->withoutImage()->create(['title' => 'Монета без фото', 'slug' => 'no-photo']);
+
+        $this->get('/monety-nbu')->assertSee('Монета з фото')->assertDontSee('Монета без фото');
+    }
+
+    public function test_home_block_respects_show_on_home_flag(): void
+    {
+        $this->withoutVite();
+        Coin::factory()->upcoming()->create(['title' => 'Показана на головній', 'slug' => 'shown']);
+        Coin::factory()->upcoming()->create(['title' => 'Прихована з головної', 'slug' => 'hidden', 'show_on_home' => false]);
+
+        $this->get('/')->assertSee('Показана на головній')->assertDontSee('Прихована з головної');
+    }
+
+    public function test_month_filter_narrows_the_list_and_ignores_unknown_values(): void
+    {
+        $this->withoutVite();
+        Coin::factory()->create(['title' => 'Монета січня', 'slug' => 'jan-c', 'release_year' => 2031, 'release_month' => 1, 'sale_starts_at' => null]);
+        Coin::factory()->create(['title' => 'Монета березня', 'slug' => 'mar-c', 'release_year' => 2031, 'release_month' => 3, 'sale_starts_at' => null]);
+
+        $this->get('/monety-nbu?month=2031-03')->assertOk()->assertSee('Монета березня')->assertDontSee('Монета січня')
+            ->assertSee('noindex, follow', false)->assertSee('kb-filters--months', false);
+        $this->get('/monety-nbu?month=abc')->assertOk()->assertSee('Монета березня')->assertSee('Монета січня');
+    }
+
+    public function test_sitemap_lists_only_coins_that_have_a_photo(): void
+    {
+        Coin::factory()->create(['slug' => 'with-photo-c', 'content' => '<p>Опис</p>']);
+        Coin::factory()->withoutImage()->create(['slug' => 'no-photo-c', 'content' => '<p>Опис</p>']);
+
+        $this->get('/sitemap.xml')->assertSee('/monety-nbu/with-photo-c', false)->assertDontSee('/monety-nbu/no-photo-c', false);
+    }
 }

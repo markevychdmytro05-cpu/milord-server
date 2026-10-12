@@ -18,7 +18,7 @@ class HomePageModulesTest extends TestCase
         $home = Page::where('slug', Page::ROOT_SLUG)->firstOrFail();
 
         $this->assertTrue($home->is_published);
-        $this->assertCount(6, $home->page_modules);
+        $this->assertCount(8, $home->page_modules);
     }
 
     public function test_home_shows_upcoming_coins_block_and_hides_it_without_coins(): void
@@ -91,7 +91,7 @@ class HomePageModulesTest extends TestCase
         ])->assertRedirect();
 
         $this->assertSame('Новий SEO заголовок', $home->fresh()->meta_title);
-        $this->assertCount(6, $home->fresh()->page_modules);
+        $this->assertCount(8, $home->fresh()->page_modules);
     }
 
     public function test_feature_points_keep_cyrillic_text_intact(): void

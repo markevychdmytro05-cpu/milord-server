@@ -32,6 +32,9 @@ Route::group([
     Route::post('page/{id}/toggle', 'PageCrudController@togglePublished')->whereNumber('id');
     Route::crud('coin', 'CoinCrudController');
     Route::post('coin/{id}/toggle', 'CoinCrudController@togglePublished')->whereNumber('id');
+    Route::post('coin/{id}/toggle-home', 'CoinCrudController@toggleShowOnHome')->whereNumber('id');
+    Route::crud('release', 'ReleaseCrudController');
+    Route::post('release/{id}/toggle', 'ReleaseCrudController@toggleActive')->whereNumber('id');
     Route::crud('translation', 'TranslationCrudController');
     Route::post('translation/sync', 'TranslationCrudController@sync');
     Route::post('translation/export', 'TranslationCrudController@export');
@@ -44,6 +47,15 @@ Route::group([
     Route::get('module/{module}/preview', 'ModuleCrudController@preview')->whereNumber('module')->name('module.preview');
     Route::post('module/{module}/copy', 'ModuleCrudController@copy')->whereNumber('module')->name('module.copy');
     Route::crud('category', 'CategoryCrudController');
+    // Спільнота тимчасово вимкнена: щоб увімкнути, розкоментуйте.
+    /*
+    Route::crud('community-topic', 'CommunityTopicCrudController');
+    Route::post('community-topic/{id}/toggle', 'CommunityTopicCrudController@togglePublished')->whereNumber('id');
+    Route::crud('community-comment', 'CommunityCommentCrudController');
+    Route::post('community-comment/{id}/toggle', 'CommunityCommentCrudController@togglePublished')->whereNumber('id');
+    Route::crud('community-report', 'CommunityReportCrudController');
+    Route::post('community-report/{id}/toggle', 'CommunityReportCrudController@toggleProcessed')->whereNumber('id');
+    */
     Route::crud('lead', 'LeadCrudController');
     Route::post('lead/{id}/toggle', 'LeadCrudController@toggleProcessed')->whereNumber('id');
     Route::crud('site-setting', 'SiteSettingCrudController');

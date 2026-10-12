@@ -16,7 +16,7 @@ class KnowledgeBaseTest extends TestCase
     {
         $this->withoutVite();
 
-        $this->get('/baza-znan-numis')->assertOk()
+        $this->get('/baza-znan')->assertOk()
             ->assertSee('class="kb-grid"', false)->assertSee('class="kb-card"', false)
             ->assertSee('class="kb-tag kb-c-', false)->assertSee('kb-date', false)->assertSee('року');
     }
@@ -27,9 +27,9 @@ class KnowledgeBaseTest extends TestCase
         Page::factory()->create(['title' => 'Стаття про ліцензію Х', 'slug' => 'lic-x', 'category' => 'Ліцензія']);
         Page::factory()->create(['title' => 'Стаття про запуск Ю', 'slug' => 'run-y', 'category' => 'Запуск']);
 
-        $this->get('/baza-znan-numis')->assertSee('class="kb-filters"', false)->assertSee('Стаття про ліцензію Х')->assertSee('Стаття про запуск Ю');
-        $this->get('/baza-znan-numis?category='.urlencode('Запуск'))->assertSee('Стаття про запуск Ю')->assertDontSee('Стаття про ліцензію Х');
-        $this->get('/baza-znan-numis?category=не-існує')->assertSee('Стаття про ліцензію Х');
+        $this->get('/baza-znan')->assertSee('class="kb-filters"', false)->assertSee('Стаття про ліцензію Х')->assertSee('Стаття про запуск Ю');
+        $this->get('/baza-znan?category='.urlencode('Запуск'))->assertSee('Стаття про запуск Ю')->assertDontSee('Стаття про ліцензію Х');
+        $this->get('/baza-znan?category=не-існує')->assertSee('Стаття про ліцензію Х');
     }
 
     public function test_first_page_and_out_of_range_params_are_redirected_and_category_is_kept(): void
@@ -38,13 +38,13 @@ class KnowledgeBaseTest extends TestCase
         Page::query()->whereNotNull('category')->delete();
         Page::factory()->count(40)->create(['category' => 'Тест']);
 
-        $this->get('/baza-znan-numis?page=1')->assertRedirect('/baza-znan-numis')->assertStatus(301);
-        $this->get('/baza-znan-numis?page=abc')->assertRedirect('/baza-znan-numis')->assertStatus(301);
-        $this->get('/baza-znan-numis?category='.urlencode('Тест').'&page=1')->assertRedirect('/baza-znan-numis?category=%D0%A2%D0%B5%D1%81%D1%82');
+        $this->get('/baza-znan?page=1')->assertRedirect('/baza-znan')->assertStatus(301);
+        $this->get('/baza-znan?page=abc')->assertRedirect('/baza-znan')->assertStatus(301);
+        $this->get('/baza-znan?category='.urlencode('Тест').'&page=1')->assertRedirect('/baza-znan?category=%D0%A2%D0%B5%D1%81%D1%82');
 
-        $response = $this->get('/baza-znan-numis?page=99')->assertStatus(301);
-        $this->assertMatchesRegularExpression('~/baza-znan-numis\?page=\d+$~', $response->headers->get('Location'));
-        $this->followingRedirects()->get('/baza-znan-numis?page=99')->assertOk();
+        $response = $this->get('/baza-znan?page=99')->assertStatus(301);
+        $this->assertMatchesRegularExpression('~/baza-znan\?page=\d+$~', $response->headers->get('Location'));
+        $this->followingRedirects()->get('/baza-znan?page=99')->assertOk();
     }
 
     public function test_drafts_and_pages_without_category_are_not_listed(): void
@@ -53,7 +53,7 @@ class KnowledgeBaseTest extends TestCase
         Page::factory()->draft()->create(['title' => 'Чернетка статті', 'slug' => 'draft-a', 'category' => 'Ліцензія']);
         Page::factory()->create(['title' => 'Звичайна сторінка без категорії', 'slug' => 'plain-p']);
 
-        $this->get('/baza-znan-numis')->assertDontSee('Чернетка статті')->assertDontSee('Звичайна сторінка без категорії');
+        $this->get('/baza-znan')->assertDontSee('Чернетка статті')->assertDontSee('Звичайна сторінка без категорії');
     }
 
     public function test_newest_article_comes_first_and_cover_image_is_used(): void
@@ -63,7 +63,7 @@ class KnowledgeBaseTest extends TestCase
         Page::factory()->create(['title' => 'Стара стаття АА', 'slug' => 'old-a', 'category' => 'Тест', 'published_at' => now()->subYear()]);
         Page::factory()->create(['title' => 'Нова стаття ББ', 'slug' => 'new-b', 'category' => 'Тест', 'published_at' => now()->addDay(), 'og_image' => '/uploads/cover.png']);
 
-        $html = $this->get('/baza-znan-numis')->getContent();
+        $html = $this->get('/baza-znan')->getContent();
 
         $this->assertLessThan(strpos($html, 'Стара стаття АА'), strpos($html, 'Нова стаття ББ'));
         $this->assertStringContainsString('src="/uploads/cover.png"', $html);
@@ -87,7 +87,7 @@ class KnowledgeBaseTest extends TestCase
     {
         $this->withoutVite();
 
-        $html = $this->get('/baza-znan-numis')->assertOk()->getContent();
+        $html = $this->get('/baza-znan')->assertOk()->getContent();
 
         $this->assertSame(1, substr_count($html, '<h1'));
         $this->assertStringContainsString('<h1 class="display">База знань</h1>', $html);
@@ -101,7 +101,7 @@ class KnowledgeBaseTest extends TestCase
         $html = $this->get('/')->assertOk()->getContent();
         $footer = substr($html, strpos($html, '<footer'));
 
-        $this->assertStringContainsString('href="'.url('/baza-znan-numis').'"', $footer);
+        $this->assertStringContainsString('href="'.url('/baza-znan').'"', $footer);
         $this->assertStringContainsString('href="'.url('/polityka-konfidentsiynosti').'"', $footer);
         $this->assertStringNotContainsString('iak-pidkliuchyty-adspower-do-numis-pokrokova-instruktsiia', $footer);
         $this->assertStringNotContainsString('/services/', $footer);
@@ -117,7 +117,7 @@ class KnowledgeBaseTest extends TestCase
         $this->assertSame(3, $colors->unique()->count());
 
         $this->withoutVite();
-        $html = $this->get('/baza-znan-numis')->assertOk()->getContent();
+        $html = $this->get('/baza-znan')->assertOk()->getContent();
         $this->assertStringContainsString('kb-c-'.Page::categoryColor('Ліцензія'), $html);
     }
 
@@ -129,7 +129,7 @@ class KnowledgeBaseTest extends TestCase
         Page::factory()->create(['title' => 'Свіжа інша категорія', 'slug' => 'other-c', 'category' => 'Ліцензія', 'published_at' => now()]);
         Page::factory()->create(['title' => 'Стара з тієї ж категорії', 'slug' => 'same-c', 'category' => 'Купівля', 'published_at' => now()->subDays(60)]);
 
-        $html = $this->get('/main-a')->assertOk()->assertSee('Читають також')->assertSee('class="read-also"', false)->getContent();
+        $html = $this->get('/baza-znan/main-a')->assertOk()->assertSee('Читають також')->assertSee('class="read-also"', false)->getContent();
 
         $aside = substr($html, strpos($html, 'class="read-also"'));
         $this->assertLessThan(strpos($aside, 'Свіжа інша категорія'), strpos($aside, 'Стара з тієї ж категорії'));
@@ -153,7 +153,7 @@ class KnowledgeBaseTest extends TestCase
             $this->assertFileExists(public_path(ltrim($article->og_image, '/')));
         }
 
-        $this->get('/baza-znan-numis')->assertOk()->assertSee('src="/images/kb/', false);
+        $this->get('/baza-znan')->assertOk()->assertSee('src="/images/kb/', false);
     }
 
     public function test_knowledge_base_is_paginated_and_keeps_the_category_filter(): void
@@ -164,11 +164,11 @@ class KnowledgeBaseTest extends TestCase
             Page::factory()->create(['title' => "Стаття №{$number}", 'slug' => "pg-{$number}", 'category' => 'Гайди', 'published_at' => now()->subDays($number)]);
         }
 
-        $this->get('/baza-znan-numis')->assertOk()->assertSee('Стаття №1')->assertDontSee('Стаття №11')
+        $this->get('/baza-znan')->assertOk()->assertSee('Стаття №1')->assertDontSee('Стаття №11')
             ->assertSee('kb-pagination', false)->assertSee('rel="next"', false);
-        $this->get('/baza-znan-numis?page=2')->assertOk()->assertSee('Стаття №11')->assertDontSee('Стаття №1<', false)
-            ->assertSee('<link rel="canonical" href="'.url('/baza-znan-numis').'?page=2">', false);
-        $this->get('/baza-znan-numis?category='.urlencode('Гайди').'&page=2')->assertSee('category=%D0%93%D0%B0%D0%B9%D0%B4%D0%B8', false);
+        $this->get('/baza-znan?page=2')->assertOk()->assertSee('Стаття №11')->assertDontSee('Стаття №1<', false)
+            ->assertSee('<link rel="canonical" href="'.url('/baza-znan').'?page=2">', false);
+        $this->get('/baza-znan?category='.urlencode('Гайди').'&page=2')->assertSee('category=%D0%93%D0%B0%D0%B9%D0%B4%D0%B8', false);
     }
 
     public function test_pagination_is_hidden_when_everything_fits_on_one_page(): void
@@ -177,6 +177,25 @@ class KnowledgeBaseTest extends TestCase
         Page::query()->whereNotNull('category')->delete();
         Page::factory()->create(['slug' => 'only-one', 'category' => 'Гайди']);
 
-        $this->get('/baza-znan-numis')->assertOk()->assertDontSee('kb-pagination', false);
+        $this->get('/baza-znan')->assertOk()->assertDontSee('kb-pagination', false);
+    }
+
+    public function test_old_hub_url_redirects_to_the_new_one(): void
+    {
+        $this->get('/baza-znan-numis')->assertRedirect('/baza-znan')->assertStatus(301);
+    }
+
+    public function test_articles_live_under_the_prefix_and_old_urls_redirect(): void
+    {
+        $this->withoutVite();
+        $article = Page::factory()->create(['title' => 'Стаття з префіксом', 'slug' => 'prefixed-a', 'category' => 'Ліцензія']);
+        $plain = Page::factory()->create(['slug' => 'plain-q']);
+
+        $this->assertSame(url('/baza-znan/prefixed-a'), $article->url());
+        $this->assertSame(url('/plain-q'), $plain->url());
+        $this->get('/baza-znan/prefixed-a')->assertOk()->assertSee('Стаття з префіксом');
+        $this->get('/prefixed-a')->assertRedirect('/baza-znan/prefixed-a')->assertStatus(301);
+        $this->get('/baza-znan/plain-q')->assertNotFound();
+        $this->get('/plain-q')->assertOk();
     }
 }

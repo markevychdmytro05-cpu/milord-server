@@ -33,6 +33,7 @@
                     </label>
                 @endif
                 <button class="btn" type="submit">{{ $text['button_text'] ?? '' }} <svg class="arrow" viewBox="0 0 16 16"><path d="M2 8h12M9 3l5 5-5 5"/></svg></button>
+                <p class="contact-consent">{!! __('site.contact.consent', ['link' => '<a href="'.e(route('pages.show', 'polityka-konfidentsiynosti')).'">'.e(__('site.contact.privacy')).'</a>']) !!}</p>
             </form>
         </div>
     </div>

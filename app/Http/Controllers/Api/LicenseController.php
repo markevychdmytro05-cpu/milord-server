@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LicenseClientRequest;
+use App\Models\Release;
 use App\Services\LicenseActivationService;
 use App\Services\LicenseCheckResult;
 use App\Support\LicenseRequestProof;
@@ -38,13 +39,18 @@ class LicenseController extends Controller
             );
         }
 
-        return DB::transaction(fn (): JsonResponse => LicenseResponder::respond(
-            $action === 'activate'
+        return DB::transaction(function () use ($action, $data, $request): JsonResponse {
+            $result = $action === 'activate'
                 ? $this->service->activate($data, $request->ip())
-                : $this->service->check($data, $request->ip()),
-            $data['device_id'],
-            $data['nonce'],
-            $data['device_public_key'],
-        ), attempts: 3);
+                : $this->service->check($data, $request->ip());
+
+            return LicenseResponder::respond(
+                $result,
+                $data['device_id'],
+                $data['nonce'],
+                $data['device_public_key'],
+                $result->isSuccess() ? Release::offerFor($data['platform'] ?? null, $data['arch'] ?? null, $data['app_version'] ?? null) : null,
+            );
+        }, attempts: 3);
     }
 }

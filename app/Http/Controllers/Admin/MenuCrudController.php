@@ -51,7 +51,7 @@ abstract class MenuCrudController extends CrudController
 
         CRUD::column('label')->label('Пункт');
         CRUD::column('target')->type('closure')->label('Куди веде')
-            ->function(fn (MenuItem $item) => $item->page ? '/'.ltrim($item->page->slug === Page::ROOT_SLUG ? '' : $item->page->slug, '/') : $item->url);
+            ->function(fn (MenuItem $item) => $item->page ? (parse_url($item->page->url(), PHP_URL_PATH) ?: '/') : $item->url);
         CRUD::column('is_active')->type('toggle')->label('Активний')->toggle_route($this->crud->route);
     }
 

@@ -24,13 +24,20 @@ class CoinFactory extends Factory
             'price' => 450,
             'excerpt' => fake()->sentence(),
             'content' => '<p>'.fake()->paragraph().'</p>',
+            'image' => '/uploads/coins/test.jpg',
             'is_published' => true,
+            'show_on_home' => true,
         ];
     }
 
     public function upcoming(): static
     {
         return $this->state(fn () => ['sale_starts_at' => now()->addWeek()]);
+    }
+
+    public function withoutImage(): static
+    {
+        return $this->state(fn () => ['image' => null]);
     }
 
     public function draft(): static

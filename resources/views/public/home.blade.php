@@ -40,7 +40,5 @@
 @endpush
 
 @section('content')
-<main>
     {!! $page->drawModules() !!}
-</main>
 @endsection

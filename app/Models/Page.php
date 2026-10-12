@@ -165,15 +165,23 @@ class Page extends Model
         return $this->slug === self::ROOT_SLUG;
     }
 
+    /** Стаття бази знань: звичайна сторінка з категорією, відкривається за адресою /baza-znan/{slug}. */
+    public function isArticle(): bool
+    {
+        return $this->type === self::TYPE_PAGE && filled($this->category) && ! $this->isHome();
+    }
+
     public function url(): string
     {
         if ($this->isHome()) {
             return route('home');
         }
 
-        return $this->type === self::TYPE_SERVICE
-            ? route('services.show', $this->slug)
-            : route('pages.show', $this->slug);
+        if ($this->type === self::TYPE_SERVICE) {
+            return route('services.show', $this->slug);
+        }
+
+        return $this->isArticle() ? route('articles.show', $this->slug) : route('pages.show', $this->slug);
     }
 
     /** Довжина заголовка, до якої пошуковики зазвичай не обрізають його у видачі. */

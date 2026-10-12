@@ -4,10 +4,10 @@
 @section('title', $pageNumber > 1 ? __('coins.list.title_page', ['page' => $pageNumber, 'last' => $coins->lastPage(), 'brand' => \App\Models\SiteSetting::current()->header_logo]) : __('coins.list.title', ['brand' => \App\Models\SiteSetting::current()->header_logo]))
 @section('description', $pageNumber > 1 ? __('coins.list.description_page', ['page' => $pageNumber]) : __('coins.list.description'))
 @section('canonical', route('coins.index').(request()->integer('page') > 1 ? '?page='.request()->integer('page') : ''))
-@section('robots', $sort === 'desc' ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1')
+@section('robots', $sort === 'desc' || $month ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1')
 
 @section('content')
-    <section class="section kb">
+    <section class="section kb kb--page">
         <div class="wrap">
             <nav class="crumbs" aria-label="{{ __('site.breadcrumbs.label') }}">
                 <a href="{{ route('home') }}">{{ __('site.breadcrumbs.home') }}</a>
@@ -19,10 +19,18 @@
                     <p class="kb-lead">{{ __('coins.list.lead') }}</p>
                 </div>
                 <nav class="kb-filters" aria-label="{{ __('coins.list.sort_label') }}">
-                    <a href="{{ route('coins.index') }}" class="{{ $sort === 'asc' ? 'is-active' : '' }}">{{ __('coins.list.sort_asc') }}</a>
-                    <a href="{{ route('coins.index', ['sort' => 'desc']) }}" class="{{ $sort === 'desc' ? 'is-active' : '' }}" rel="nofollow">{{ __('coins.list.sort_desc') }}</a>
+                    <a href="{{ route('coins.index', array_filter(['month' => $month])) }}" class="{{ $sort === 'asc' ? 'is-active' : '' }}">{{ __('coins.list.sort_asc') }}</a>
+                    <a href="{{ route('coins.index', array_filter(['sort' => 'desc', 'month' => $month])) }}" class="{{ $sort === 'desc' ? 'is-active' : '' }}" rel="nofollow">{{ __('coins.list.sort_desc') }}</a>
                 </nav>
             </div>
+            @if ($months->count() > 1)
+                <nav class="kb-filters kb-filters--months" aria-label="{{ __('coins.list.month_label') }}">
+                    <a href="{{ route('coins.index', array_filter(['sort' => $sort === 'desc' ? 'desc' : null])) }}" class="{{ $month ? '' : 'is-active' }}">{{ __('coins.list.month_all') }}</a>
+                    @foreach ($months as $key => $label)
+                        <a href="{{ route('coins.index', array_filter(['month' => $key, 'sort' => $sort === 'desc' ? 'desc' : null])) }}" class="{{ $month === $key ? 'is-active' : '' }}" rel="nofollow">{{ $label }}</a>
+                    @endforeach
+                </nav>
+            @endif
 
             @if ($coins->isEmpty())
                 <p class="empty">{{ __('coins.list.empty') }}</p>
@@ -30,18 +38,14 @@
                 <div class="kb-grid">
                     @foreach ($coins as $coin)
                         <a class="kb-card" href="{{ $coin->url() }}">
-                            <span class="kb-cover">
-                                @if ($coin->image)
-                                    <img src="{{ $coin->image }}" alt="{{ __('coins.card.alt', ['name' => $coin->shortTitle()]) }}" loading="lazy">
-                                @else
-                                    @include('partials.kb-cover-fallback', ['icon' => 'coin'])
-                                @endif
-                            </span>
+                            @if ($coin->image)
+                                <span class="kb-cover kb-cover--coin"><img src="{{ $coin->image }}" alt="{{ __('coins.card.alt', ['name' => $coin->shortTitle()]) }}" @if ($loop->index < 3) fetchpriority="high" @else loading="lazy" @endif></span>
+                            @endif
                             <span class="kb-date"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ $coin->releaseLabel() ?? __('coins.card.date_pending') }}</span>
                             @if ($coin->series)
                                 <span class="kb-tags"><span class="kb-tag kb-c-{{ crc32($coin->series) % \App\Models\Page::CATEGORY_COLORS }}">{{ $coin->series }}</span></span>
                             @endif
-                            <h3>{{ $coin->shortTitle() }}</h3>
+                            <h2>{{ $coin->shortTitle() }}</h2>
                             <p>
                                 {{ collect([$coin->denomination, $coin->mintage ? __('coins.card.pcs', ['count' => number_format($coin->mintage, 0, ',', ' ')]) : null, $coin->price ? __('coins.card.price', ['price' => number_format((float) $coin->price, 0, ',', ' ')]) : null])->filter()->implode(' · ') }}
                             </p>

@@ -131,10 +131,38 @@ class PublicHomeTest extends TestCase
         $this->withoutVite();
         $page = Page::factory()->create(['slug' => 'seo-article', 'category' => 'Купівля']);
 
-        $this->get('/seo-article')->assertOk()->assertSee('<meta property="og:type" content="article">', false)
+        $this->get('/baza-znan/seo-article')->assertOk()->assertSee('<meta property="og:type" content="article">', false)
             ->assertSee('article:published_time', false)->assertSee('"@type":"Article"', false);
         $this->assertSame('Article', collect(json_decode(
-            preg_match('~ld\+json">(.*?)</script>~s', $this->get('/'.$page->slug)->getContent(), $m) ? $m[1] : '{}', true
+            preg_match('~ld\+json">(.*?)</script>~s', $this->get($page->url())->getContent(), $m) ? $m[1] : '{}', true
         )['@graph'])->firstWhere('@type', 'Article')['@type']);
+    }
+
+    public function test_unknown_url_shows_branded_ukrainian_404_that_is_not_indexed(): void
+    {
+        $this->withoutVite();
+
+        $this->get('/nema-takoi-storinky')->assertNotFound()
+            ->assertSee('сторінку не знайдено', false)->assertSee('noindex, follow', false)->assertSee('href="'.route('home').'"', false);
+    }
+
+    public function test_every_public_page_has_skip_link_and_a_single_main_landmark(): void
+    {
+        $this->withoutVite();
+
+        foreach (['/', '/pro-nas', '/baza-znan', '/monety-nbu'] as $url) {
+            $html = $this->get($url)->assertOk()->assertSee('href="#main"', false)->getContent();
+            $this->assertSame(1, substr_count($html, '<main id="main">'), $url);
+        }
+    }
+
+    public function test_home_shows_measured_numbers_strip_and_footer_links_to_changelog(): void
+    {
+        $this->withoutVite();
+
+        $html = $this->get('/')->assertOk()->assertSee('class="stats"', false)->assertSee('Цифри, які ми виміряли')->getContent();
+        $this->assertStringContainsString('href="'.url('/shcho-novoho').'"', substr($html, strpos($html, '<footer')));
+
+        $this->get('/shcho-novoho')->assertOk()->assertSee('Що нового в Numis')->assertSee('29 вересня 2026');
     }
 }

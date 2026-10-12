@@ -37,6 +37,9 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('license-api', fn (Request $request) => Limit::perMinute(config('license.rate_limit'))->by($request->ip()));
 
         RateLimiter::for('contact', fn (Request $request) => Limit::perMinute(5)->by($request->ip()));
+        RateLimiter::for('downloads', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
+        RateLimiter::for('community-key', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
+        RateLimiter::for('community-post', fn (Request $request) => Limit::perHour(10)->by($request->session()->get('community_license_id') ?: $request->ip()));
 
         Event::listen(DiagnosingHealth::class, function (): void {
             DB::connection()->getPdo();

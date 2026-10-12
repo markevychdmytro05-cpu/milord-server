@@ -32,6 +32,7 @@
     @vite('resources/css/public.css')
 </head>
 <body class="{{ $site->hasTopbar() ? 'has-topbar' : '' }}">
+    <a class="skip-link" href="#main">{{ __('site.skip_to_content') }}</a>
     <div class="site-head">
         @if ($site->hasTopbar())
             <div class="topbar">
@@ -72,7 +73,8 @@
                 </div>
                 <div class="nav-right">
                     @if ($site->header_button_text && $site->header_button_url)
-                        <a class="nav-cta" href="{{ $site->header_button_url }}">{{ $site->header_button_text }}</a>
+                        @php([$ctaFirst, $ctaRest] = array_pad(explode(' ', $site->header_button_text, 2), 2, ''))
+                        <a class="nav-cta" href="{{ $site->header_button_url }}">{{ $ctaFirst }}@if ($ctaRest !== '') <span class="nav-cta__rest">{{ $ctaRest }}</span>@endif</a>
                     @endif
                     <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="{{ __('site.nav.open') }}">
                         <svg class="nav-toggle__open" aria-hidden="true" width="22" height="14" viewBox="0 0 22 14" fill="none"><path d="M1 14h20a1 1 0 100-2H1a1 1 0 100 2zm0-6h20a1 1 0 100-2H1a1 1 0 000 2zM0 1a1 1 0 001 1h20a1 1 0 100-2H1a1 1 0 00-1 1z" fill="currentColor"/></svg>
@@ -83,15 +85,9 @@
         </nav>
     </div>
 
-    @if ($messengers)
-        <aside class="float-messengers" aria-label="{{ __('site.messengers') }}">
-            @foreach ($messengers as $name => $url)
-                <a href="{{ $url }}" target="_blank" rel="noopener" aria-label="{{ $name }}" title="{{ $name }}">@include('partials.messenger-icon', ['name' => $name])</a>
-            @endforeach
-        </aside>
-    @endif
-
-    @yield('content')
+    <main id="main">
+        @yield('content')
+    </main>
 
     <footer class="site-foot">
         @if ($footerModules !== '')
@@ -156,7 +152,7 @@
         </div>
     </footer>
 
-    <div class="toast" id="toast" role="status" aria-live="polite" data-flash="{{ session('contact_sent') }}" hidden>
+    <div class="toast" id="toast" role="status" aria-live="polite" data-flash="{{ session('contact_sent') ?? session('community_status') }}" data-flash-error="{{ session('community_error') }}" hidden>
         <span class="toast-text"></span>
         <button class="toast-close" type="button" aria-label="{{ __('site.toast.close') }}">&times;</button>
     </div>
@@ -185,6 +181,7 @@
             if (toast) {
                 toast.querySelector('.toast-close').addEventListener('click', hideToast);
                 if (toast.dataset.flash) { showToast(toast.dataset.flash); }
+                if (toast.dataset.flashError) { showToast(toast.dataset.flashError, 'error'); }
             }
 
             function clearErrors(form) {
@@ -303,14 +300,14 @@
 
             if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
 
-            var selector = '.head, .card, .step, .plan, .accordion__item, .hero-visual, .contact-form-wrap, .foot-col, .page-article .prose, .benefit-section__block-col, .answers__block, .main-banner__block, .cta-row__wrap, .our-clients__col, .notice, .note, .empty';
+            var selector = '.head, .card, .step, .plan, .accordion__item, .contact-form-wrap, .foot-col, .page-article .prose, .benefit-section__block-col, .answers__block, .main-banner__block, .cta-row__wrap, .our-clients__col, .notice, .note, .empty';
             var items = [].slice.call(document.querySelectorAll(selector));
             if (!items.length) { return; }
 
             root.classList.add('js');
             items.forEach(function (el) {
                 var siblings = [].slice.call(el.parentNode.children).filter(function (s) { return s.matches(selector); });
-                el.style.setProperty('--reveal-delay', Math.min(Math.max(0, siblings.indexOf(el)), 6) * 70 + 'ms');
+                el.style.setProperty('--reveal-delay', Math.min(Math.max(0, siblings.indexOf(el)), 4) * 40 + 'ms');
                 el.classList.add('reveal');
             });
 
@@ -321,10 +318,10 @@
                         target.classList.add('is-visible');
                         observer.unobserve(target);
                         // Після появи повертаємо власні (повільніші) переходи наведення: reveal-перехід їх перекриває.
-                        setTimeout(function () { target.classList.add('reveal-done'); }, 700 + parseInt(target.style.getPropertyValue('--reveal-delay') || '0', 10) + 50);
+                        setTimeout(function () { target.classList.add('reveal-done'); }, 450 + parseInt(target.style.getPropertyValue('--reveal-delay') || '0', 10) + 50);
                     }
                 });
-            }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+            }, { threshold: 0.01, rootMargin: '0px 0px 12% 0px' });
             items.forEach(function (el) { observer.observe(el); });
         })();
     </script>

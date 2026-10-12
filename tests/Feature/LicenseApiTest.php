@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\License;
+use App\Models\Release;
 use App\Support\ResponseSigner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
@@ -343,5 +344,43 @@ class LicenseApiTest extends TestCase
         $this->assertSame(base64_encode(sodium_crypto_sign_publickey($this->deviceKeys[self::DEVICE])),
             $license->activations()->sole()->device_public_key);
         $this->activate($license)->assertOk();
+    }
+
+    public function test_response_offers_a_newer_release_for_the_clients_platform(): void
+    {
+        $license = License::factory()->create();
+        Release::factory()->create(['version' => '1.2.0', 'platform' => 'mac', 'arch' => 'arm64', 'notes' => 'Нове']);
+        Release::factory()->create(['version' => '1.10.0', 'platform' => 'mac', 'arch' => 'arm64']);
+        Release::factory()->inactive()->create(['version' => '2.0.0', 'platform' => 'mac', 'arch' => 'arm64']);
+        Release::factory()->create(['version' => '3.0.0', 'platform' => 'win', 'arch' => 'x64']);
+
+        $data = $this->payload($this->activate($license, extra: ['app_version' => '1.2.0', 'platform' => 'mac', 'arch' => 'arm64']));
+
+        $this->assertSame('1.10.0', $data['update']['version']);
+        $this->assertStringContainsString('/zavantazhyty/', $data['update']['url']);
+        $this->assertStringContainsString('signature=', $data['update']['url']);
+        $this->assertSame(64, strlen($data['update']['sha256']));
+    }
+
+    public function test_no_update_is_offered_when_client_is_current_or_platform_is_unknown(): void
+    {
+        $license = License::factory()->create();
+        Release::factory()->create(['version' => '1.2.0', 'platform' => 'linux', 'arch' => 'x64']);
+
+        $current = $this->payload($this->activate($license, extra: ['app_version' => '1.2.0', 'platform' => 'linux', 'arch' => 'x64']));
+        $unknown = $this->payload($this->check($license, extra: ['app_version' => '1.0.0']));
+
+        $this->assertNull($current['update']);
+        $this->assertNull($unknown['update']);
+    }
+
+    public function test_rejected_license_never_receives_an_update(): void
+    {
+        $license = License::factory()->create(['status' => License::STATUS_REVOKED]);
+        Release::factory()->create(['version' => '2.0.0', 'platform' => 'win', 'arch' => 'x64']);
+
+        $data = $this->payload($this->activate($license, extra: ['app_version' => '1.0.0', 'platform' => 'win', 'arch' => 'x64']));
+
+        $this->assertArrayNotHasKey('update', $data);
     }
 }

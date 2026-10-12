@@ -27,10 +27,19 @@
 @if (backpack_user()->can('access_manage'))
     <x-backpack::menu-item title="Ролі та права" icon="la la-user-shield" :link="backpack_url('role')" />
 @endif
+{{-- Спільнота тимчасово вимкнена:
+@if (backpack_user()->can('community_view'))
+    <x-backpack::menu-dropdown title="Спільнота" icon="la la-comments">
+        <x-backpack::menu-dropdown-item title="Теми" icon="la la-comment-dots" :link="backpack_url('community-topic')" />
+        <x-backpack::menu-dropdown-item title="Коментарі" icon="la la-comment" :link="backpack_url('community-comment')" />
+        <x-backpack::menu-dropdown-item title="Скарги" icon="la la-flag" :link="backpack_url('community-report')" />
+    </x-backpack::menu-dropdown>
+@endif
+--}}
 @if (backpack_user()->can('leads_view'))
     <x-backpack::menu-item title="Заявки" icon="la la-inbox" :link="backpack_url('lead')" />
 @endif
-@if (backpack_user()->canany(['site_manage', 'pages_view', 'pages_create', 'coins_view', 'coins_create', 'translations_view', 'modules_view', 'modules_create']))
+@if (backpack_user()->canany(['site_manage', 'pages_view', 'pages_create', 'coins_view', 'coins_create', 'translations_view', 'releases_view', 'modules_view', 'modules_create']))
     <x-backpack::menu-dropdown title="Вміст сайту" icon="la la-globe">
         @if (backpack_user()->can('pages_view'))
             <x-backpack::menu-dropdown-item title="Сторінки" icon="la la-file-alt" :link="backpack_url('page')" />
@@ -44,6 +53,9 @@
             <x-backpack::menu-dropdown-item title="Монети" icon="la la-coins" :link="backpack_url('coin')" />
         @elseif (backpack_user()->can('coins_create'))
             <x-backpack::menu-dropdown-item title="Створити монету" icon="la la-coins" :link="backpack_url('coin/create')" />
+        @endif
+        @if (backpack_user()->can('releases_view'))
+            <x-backpack::menu-dropdown-item title="Релізи програми" icon="la la-cloud-download-alt" :link="backpack_url('release')" />
         @endif
         @if (backpack_user()->can('translations_view'))
             <x-backpack::menu-dropdown-item title="Переклади" icon="la la-language" :link="backpack_url('translation')" />

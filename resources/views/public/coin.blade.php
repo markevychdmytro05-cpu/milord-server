@@ -103,8 +103,8 @@
                     <p class="page-lead">{{ $coin->excerpt }}</p>
                 @endif
                 @if ($coin->image)
-                    <figure>
-                        <img src="{{ $coin->image }}" alt="{{ __('coins.card.alt', ['name' => $coin->shortTitle()]) }}" loading="eager" style="max-width:100%;height:auto">
+                    <figure class="coin-figure">
+                        <img src="{{ $coin->image }}" alt="{{ __('coins.card.alt', ['name' => $coin->shortTitle()]) }}" loading="eager">
                         @if ($coin->image_source)
                             <figcaption>{{ __('coins.photo.credit') }}: <a href="{{ $coin->image_source }}" rel="nofollow noopener" target="_blank">{{ $coin->image_credit ?: __('coins.photo.default_source') }}</a></figcaption>
                         @endif
