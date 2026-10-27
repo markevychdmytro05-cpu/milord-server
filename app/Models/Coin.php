@@ -131,7 +131,7 @@ class Coin extends Model
             return $matches[1].($matches[2] ?? '');
         }
 
-        return preg_replace('/^[«\s]+|[»\s]+$/u', '', $title);
+        return preg_replace('/^«([^«»]*)»$/u', '$1', trim($title));
     }
 
     /**

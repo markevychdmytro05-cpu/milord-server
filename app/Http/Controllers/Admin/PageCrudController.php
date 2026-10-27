@@ -54,7 +54,7 @@ class PageCrudController extends CrudController
         CRUD::field('slug')->type('slug_input')->label('Адреса (slug)')->tab('Основне')->source('title');
         CRUD::field('excerpt')->type('textarea')->label('Короткий опис')->tab('Основне');
         CRUD::field('show_title')->type('switch')->label('Показувати заголовок і короткий опис на сторінці')->tab('Основне')->default(true);
-        CRUD::field('category')->type('select_from_array')->label('Категорія (для бази знань)')->tab('Основне')
+        CRUD::field('category')->type('select_from_array')->label('Категорія (для блогу)')->tab('Основне')
             ->options(Category::asSelectArray())->allows_null(true)->hint('Категорії створюються в меню «Вміст сайту → Категорії».')->wrapper(['class' => 'form-group col-md-6']);
         CRUD::field('published_at')->type('datetime')->label('Дата статті')->tab('Основне')->wrapper(['class' => 'form-group col-md-6']);
         CRUD::field('content')->type('summernote')->label('Зміст')->tab('Основне')->options(['height' => 450]);

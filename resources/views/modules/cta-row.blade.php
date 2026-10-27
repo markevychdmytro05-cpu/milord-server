@@ -3,11 +3,11 @@
     <div class="container">
         <div class="cta-row__wrap">
             <div class="cta-row__content">
-                <h3 class="cta-row__title">{{ $settings[$locale]['title'] ?? '' }}</h3>
+                <h2 class="cta-row__title">{{ $settings[$locale]['title'] ?? '' }}</h2>
                 <p class="cta-row__text">{{ $settings[$locale]['text'] ?? '' }}</p>
             </div>
             <div class="cta-row__btn">
-                <a class="btn btn_pimary btn_request" href="{{ $settings['url'] ?? '#' }}">
+                <a class="btn btn-lg" href="{{ $settings['url'] ?? '#' }}">
                     {{ $settings[$locale]['button_text'] ?? '' }}
                 </a>
             </div>

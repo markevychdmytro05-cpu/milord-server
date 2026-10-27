@@ -1,6 +1,6 @@
 @php($locale = \App\Support\SiteLocale::current())
 @php($text = $settings[$locale] ?? [])
-<section class="section grid-bg {{ $packages->count() <= 4 ? 'plans-fit' : '' }}" @if (! empty($settings['anchor'])) id="{{ $settings['anchor'] }}" @endif>
+<section class="section {{ $packages->count() <= 4 ? 'plans-fit' : '' }}" @if (! empty($settings['anchor'])) id="{{ $settings['anchor'] }}" @endif>
     <div class="wrap">
         <div class="head">
                 <div>
@@ -9,8 +9,8 @@
                 @if (! empty($text['description']))<p>{{ $text['description'] }}</p>@endif
                 @unless ($packages->isEmpty())
                     <div class="plans-controls">
-                    <button type="button" class="plans-arrow" data-dir="-1" aria-label="{{ __('site.pricing.prev') }}"><svg viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button>
-                    <button type="button" class="plans-arrow" data-dir="1" aria-label="{{ __('site.pricing.next') }}"><svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5"/></svg></button>
+                    <button type="button" class="plans-arrow" data-dir="-1" aria-label="{{ __('site.pricing.prev') }}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg></button>
+                    <button type="button" class="plans-arrow" data-dir="1" aria-label="{{ __('site.pricing.next') }}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>
                 </div>
                 @endunless
             </div>
@@ -37,7 +37,8 @@
                         </ul>
                         @php($buttonText = $package->isTrial() ? ($text['trial_text'] ?? __('site.pricing.trial_button')) : ($text['order_text'] ?? ''))
                         @if ($buttonText !== '')
-                            <a class="btn outline" href="{{ $package->isTrial() || ! $contactUrl ? '#contact' : $contactUrl }}" @if (! $package->isTrial() && $contactUrl) target="_blank" rel="noopener" @endif>{{ $buttonText }} <svg class="arrow" viewBox="0 0 16 16"><path d="M2 8h12M9 3l5 5-5 5"/></svg></a>
+                            @php($external = ! $package->isTrial() && $contactUrl)
+                            <a class="btn outline" href="{{ $external ? $contactUrl : '#contact' }}" @if ($external) target="_blank" rel="noopener" @else data-plan="{{ $package->name }}" @endif @unless ($package->isTrial()) aria-label="{{ __('site.pricing.order_label', ['plan' => $package->name]).($external ? ' '.__('site.pricing.new_tab') : '') }}" @endunless>{{ $buttonText }} <svg class="arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h12M9 3l5 5-5 5"/></svg></a>
                         @endif
                     </div>
                 @endforeach
@@ -50,13 +51,18 @@
                         if (!root) { return; }
                         var track = root.querySelector('.plans--track');
                         var buttons = root.closest('section').querySelectorAll('.plans-arrow');
-                        function step() { var card = track.querySelector('.plan'); return card ? card.offsetWidth + 20 : 300; }
+                        var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+                        function step() { var card = track.querySelector('.plan'); return card ? card.offsetWidth + parseFloat(getComputedStyle(track).columnGap || 0) : 300; }
+                        // aria-disabled замість disabled: інакше на краю слайдера фокус клавіатури падає на <body>.
                         function update() {
-                            buttons[0].disabled = track.scrollLeft <= 2;
-                            buttons[1].disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+                            buttons[0].setAttribute('aria-disabled', track.scrollLeft <= 2 ? 'true' : 'false');
+                            buttons[1].setAttribute('aria-disabled', track.scrollLeft + track.clientWidth >= track.scrollWidth - 2 ? 'true' : 'false');
                         }
                         buttons.forEach(function (button) {
-                            button.addEventListener('click', function () { track.scrollBy({ left: step() * Number(button.dataset.dir), behavior: 'smooth' }); });
+                            button.addEventListener('click', function () {
+                                if (button.getAttribute('aria-disabled') === 'true') { return; }
+                                track.scrollBy({ left: step() * Number(button.dataset.dir), behavior: reduce.matches ? 'auto' : 'smooth' });
+                            });
                         });
                         track.addEventListener('scroll', update, { passive: true });
                         window.addEventListener('resize', update);
@@ -64,6 +70,14 @@
                     })();
                 </script>
             @endif
+            <script>
+                // «Замовити» веде на форму заявки: підставляємо назву тарифу, якщо повідомлення ще порожнє.
+                document.addEventListener('click', function (event) {
+                    var link = event.target.closest('[data-plan]');
+                    var message = link && document.querySelector('.contact-form [name="message"]');
+                    if (message && !message.value) { message.value = @json(__('site.pricing.prefill')).replace(':plan', link.dataset.plan); }
+                });
+            </script>
         @endif
         @if (! empty($text['note']))
             <p class="note">{{ $text['note'] }}</p>

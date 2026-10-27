@@ -1,6 +1,7 @@
 @php
     $locale = \App\Support\SiteLocale::current();
     $items = $settings['items'] ?? [];
+    $faqId = 'faq-'.substr(md5(json_encode($items)), 0, 6);
     $structuredData = [
         '@context' => 'https://schema.org',
         '@type' => 'FAQPage',
@@ -14,16 +15,16 @@
 <div class="faq">
     <div class="container">
         @if (! empty($settings[$locale]['title']))
-            <h2 class="section-title" data-aos="zoom-in">{{ $settings[$locale]['title'] }}</h2>
+            <h2 class="section-title">{{ $settings[$locale]['title'] }}</h2>
         @endif
         <div class="accordion">
             @foreach ($items as $item)
-                <div class="accordion__item td-{{ $loop->index * 100 }}" data-aos="zoom-in" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                    <button class="accordion__toggler" type="button" aria-expanded="false">
-                        <span class="accordion__toggler-name" itemprop="name">{{ $item['question'] ?? '' }}</span><span class="accordion__toggler-icon"></span>
+                <div class="accordion__item">
+                    <button class="accordion__toggler" type="button" aria-expanded="false" aria-controls="{{ $faqId.'-'.$loop->index }}">
+                        <span class="accordion__toggler-name">{{ $item['question'] ?? '' }}</span><span class="accordion__toggler-icon" aria-hidden="true"></span>
                     </button>
-                    <div class="accordion__list" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                        <div itemprop="text">{!! nl2br(strip_tags($item['description'] ?? '', '<a>')) !!}</div>
+                    <div class="accordion__list" id="{{ $faqId.'-'.$loop->index }}">
+                        <div>{!! nl2br(strip_tags($item['description'] ?? '', '<a>')) !!}</div>
                     </div>
                 </div>
             @endforeach

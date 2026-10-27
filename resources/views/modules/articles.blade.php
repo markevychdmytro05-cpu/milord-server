@@ -15,9 +15,9 @@
                 @endif
                 @if (! empty($settings['show_filters']) && $categories->count() > 1)
                     <nav class="kb-filters" aria-label="{{ __('site.categories') }}">
-                        <a href="{{ url()->current() }}" class="kb-all {{ $active === null ? 'is-active' : '' }}">{{ ($text['all_label'] ?? '') ?: __('site.all') }}</a>
+                        <a href="{{ url()->current() }}" class="kb-all {{ $active === null ? 'is-active' : '' }}" @if ($active === null) aria-current="true" @endif>{{ ($text['all_label'] ?? '') ?: __('site.all') }}</a>
                         @foreach ($categories as $category)
-                            <a href="{{ url()->current().'?category='.urlencode($category) }}" class="kb-c-{{ \App\Models\Page::categoryColor($category) }} {{ $active === $category ? 'is-active' : '' }}">{{ $category }}</a>
+                            <a href="{{ url()->current().'?category='.urlencode($category) }}" class="kb-c-{{ \App\Models\Page::categoryColor($category) }} {{ $active === $category ? 'is-active' : '' }}" @if ($active === $category) aria-current="true" @endif>{{ $category }}</a>
                         @endforeach
                     </nav>
                 @endif
@@ -31,7 +31,15 @@
                 @foreach ($articles as $article)
                     <a class="kb-card" href="{{ $article->url() }}">
                         @if ($article->og_image)
-                            <span class="kb-cover"><img src="{{ $moduleFiles->url($article->og_image) }}" alt="{{ $article->title }}" @if ($loop->index < 3) fetchpriority="high" @else loading="lazy" @endif></span>
+                            {{-- Обкладинка 1200×750 показується в слоті ~370px: WebP 640/960 поряд із JPG легші в 5–8 разів. --}}
+                            @php($cover = $moduleFiles->url($article->og_image))
+                            @php($coverBase = preg_replace('/\.(jpe?g|png)$/i', '', $cover))
+                            @php($coverWebp = str_starts_with($cover, '/') && $coverBase !== $cover && is_file(public_path(ltrim($coverBase, '/').'-640.webp')))
+                            <span class="kb-cover">
+                                @if ($coverWebp)<picture><source type="image/webp" srcset="{{ $coverBase }}-640.webp 640w, {{ $coverBase }}-960.webp 960w" sizes="(min-width: 1280px) 371px, (min-width: 1024px) calc((100vw - 112px) / 3 - 18px), (min-width: 640px) calc((100vw - 80px) / 2 - 18px), calc(100vw - 50px)">@endif
+                                <img src="{{ $cover }}" alt="" width="1200" height="750" @if ($loop->first) fetchpriority="high" @elseif ($loop->index > 2) loading="lazy" @endif decoding="async">
+                                @if ($coverWebp)</picture>@endif
+                            </span>
                         @endif
                         <span class="kb-date"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ __('site.date_with_year', ['date' => $article->articleDate()->locale(app()->getLocale())->translatedFormat('j F Y')]) }}</span>
                         @if ($article->category)<span class="kb-tags"><span class="kb-tag kb-c-{{ \App\Models\Page::categoryColor($article->category) }}">{{ $article->category }}</span></span>@endif

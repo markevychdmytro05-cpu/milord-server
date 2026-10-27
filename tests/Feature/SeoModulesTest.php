@@ -14,7 +14,7 @@ class SeoModulesTest extends TestCase
     {
         $this->withoutVite();
 
-        foreach (['auto-buy' => '/services/avtomatychna-kupivlia-monet-nbu', 'pro-nas' => '/pro-nas', 'cherha-y-pomylka-429-na-sayti-nbu-shcho-robyty' => '/baza-znan/cherha-y-pomylka-429-na-sayti-nbu-shcho-robyty'] as $slug => $url) {
+        foreach (['auto-buy' => '/services/avtomatychna-kupivlia-monet-nbu', 'pro-nas' => '/pro-nas', 'cherha-y-pomylka-429-na-sayti-nbu-shcho-robyty' => '/blog/cherha-y-pomylka-429-na-sayti-nbu-shcho-robyty'] as $slug => $url) {
             $response = $this->get($url)->assertOk();
 
             $this->assertSame(1, substr_count($response->getContent(), '"@type":"FAQPage"'), $slug);

@@ -133,8 +133,6 @@ class ImportCoinImages extends Command
      */
     private function describe(array $article, string $lead): string
     {
-        $monitor = route('services.show', 'rezym-sposterezennia', false);
-        $calendar = route('pages.show', 'kalendar-vypusku-monet-nbu-2026', false);
         $source = '<a href="'.e($article['url']).'" rel="nofollow noopener" target="_blank">Джерело: bank.gov.ua</a>';
 
         $wanted = ['Дата введення в обіг', 'Діаметр, мм', 'Товщина монети, мм', 'Вага, г', 'Гурт', 'Художник', 'Скульптор'];
@@ -148,8 +146,7 @@ class ImportCoinImages extends Command
                 $facts,
             )).'</ul>';
 
-        return $intro
-            .'<h2>Як не пропустити появу монети в магазині НБУ</h2>'
-            .'<p>Точну дату й час початку продажу, а також ціну НБУ оголошує окремо. Щоб не пропустити появу кнопки «Купити», скористайтеся <a href="'.$monitor.'">режимом спостереження</a> в Numis. Усі випуски року – у <a href="'.$calendar.'">календарі монет НБУ 2026</a>.</p>';
+        // Розділ «Як не пропустити появу монети» з посиланнями показує шаблон сторінки монети, тут лише дані НБУ.
+        return $intro;
     }
 }

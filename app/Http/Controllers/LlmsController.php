@@ -51,7 +51,7 @@ class LlmsController extends Controller
             $sections[__('site.llms.knowledge_base', ['category' => $category])] = $group;
         }
 
-        $coins = Coin::published()->indexable()->orderBy('id')->get();
+        $coins = Coin::published()->withImage()->indexable()->orderBy('id')->get();
         if ($coins->isNotEmpty()) {
             $lines[] = '## '.__('site.llms.coins');
             $lines[] = '';

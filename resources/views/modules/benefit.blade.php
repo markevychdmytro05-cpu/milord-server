@@ -3,7 +3,7 @@
 <div class="benefit-section _bg-{{ $settings['type'] ?? 'gray' }} {{ ! empty($settings['add_padding']) ? 'pt-md' : 'pb-lg' }}">
     <div class="container">
         <div class="benefit-section__block-row {{ ($settings['align'] ?? 'left') === 'left' ? 'flex-row' : 'flex-row-reverse' }}">
-            <div class="benefit-section__block-col _col-content" data-aos="fade-{{ ($settings['align'] ?? 'left') === 'left' ? 'right' : 'left' }}">
+            <div class="benefit-section__block-col _col-content">
                 @if (! empty($settings[$locale]['title']))
                     <h2 class="section-title benefit-section__title">
                         <b>{{ $settings[$locale]['title'] }}</b>
@@ -15,11 +15,11 @@
                     </div>
                 </div>
                 @if (! empty($settings['show_button']) && ! empty($settings['button_url']))
-                    <a class="btn btn-primary" href="{{ $settings['button_url'] }}">{{ ($settings[$locale]['button_text'] ?? '') ?: __('site.more') }}</a>
+                    <a class="btn" href="{{ $settings['button_url'] }}">{{ ($settings[$locale]['button_text'] ?? '') ?: __('site.more') }}</a>
                 @endif
             </div>
             @if (! empty($settings['image']))
-                <div class="benefit-section__block-col _col-picture" data-aos="fade-{{ ($settings['align'] ?? 'left') === 'left' ? 'left' : 'right' }}">
+                <div class="benefit-section__block-col _col-picture">
                     <div class="benefit-section__picture">
                         <picture class="benefit-section__picture__image">
                             <img class="benefit-section__picture__img" src="{{ $moduleFiles->url($settings['image']) }}" alt="{{ $settings[$locale]['title'] ?? '' }}" loading="lazy">

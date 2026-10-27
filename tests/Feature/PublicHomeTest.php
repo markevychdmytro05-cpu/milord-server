@@ -66,7 +66,9 @@ class PublicHomeTest extends TestCase
 
     public function test_sitemap_and_robots_are_served(): void
     {
-        $this->get('/sitemap.xml')->assertOk()->assertSee(route('home'), false);
+        $xml = $this->get('/sitemap.xml')->assertOk()->assertSee(route('home'), false)->getContent();
+        $this->assertStringStartsWith('<?xml version="1.0" encoding="UTF-8"?>', $xml);
+        $this->assertNotFalse(simplexml_load_string($xml));
         $this->get('/robots.txt')->assertOk()->assertSee('Sitemap: '.route('sitemap'), false);
     }
 
@@ -131,7 +133,7 @@ class PublicHomeTest extends TestCase
         $this->withoutVite();
         $page = Page::factory()->create(['slug' => 'seo-article', 'category' => 'Купівля']);
 
-        $this->get('/baza-znan/seo-article')->assertOk()->assertSee('<meta property="og:type" content="article">', false)
+        $this->get('/blog/seo-article')->assertOk()->assertSee('<meta property="og:type" content="article">', false)
             ->assertSee('article:published_time', false)->assertSee('"@type":"Article"', false);
         $this->assertSame('Article', collect(json_decode(
             preg_match('~ld\+json">(.*?)</script>~s', $this->get($page->url())->getContent(), $m) ? $m[1] : '{}', true
@@ -150,9 +152,9 @@ class PublicHomeTest extends TestCase
     {
         $this->withoutVite();
 
-        foreach (['/', '/pro-nas', '/baza-znan', '/monety-nbu'] as $url) {
+        foreach (['/', '/pro-nas', '/blog', '/monety-nbu'] as $url) {
             $html = $this->get($url)->assertOk()->assertSee('href="#main"', false)->getContent();
-            $this->assertSame(1, substr_count($html, '<main id="main">'), $url);
+            $this->assertSame(1, substr_count($html, '<main id="main"'), $url);
         }
     }
 
@@ -160,7 +162,7 @@ class PublicHomeTest extends TestCase
     {
         $this->withoutVite();
 
-        $html = $this->get('/')->assertOk()->assertSee('class="stats"', false)->assertSee('Цифри, які ми виміряли')->getContent();
+        $html = $this->get('/')->assertOk()->assertSee('class="stats"', false)->assertSee('Numis у цифрах')->getContent();
         $this->assertStringContainsString('href="'.url('/shcho-novoho').'"', substr($html, strpos($html, '<footer')));
 
         $this->get('/shcho-novoho')->assertOk()->assertSee('Що нового в Numis')->assertSee('29 вересня 2026');

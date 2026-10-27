@@ -20,7 +20,7 @@ class ContactRequest extends FormRequest
             'name' => ['required', 'string', 'max:100'],
             'contact' => ['required', 'string', 'min:5', 'max:150'],
             'message' => ['nullable', 'string', 'max:2000'],
-            'website' => ['nullable', 'string', 'max:2048'],
+            'nb_hp' => ['nullable', 'string', 'max:2048'],
         ];
     }
 

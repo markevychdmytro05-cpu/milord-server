@@ -1,6 +1,7 @@
 @extends('layouts.public')
 
 @section('title', $page->seoTitle())
+@section('canonical', route('home'))
 @section('description', $page->seoDescription() ?? __('site.seo.default_description'))
 @section('robots', $page->robotsDirective())
 @section('og_image', $page->ogImageUrl())
