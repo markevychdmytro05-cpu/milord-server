@@ -15,7 +15,7 @@
         $crumbs[] = ['name' => __('site.breadcrumbs.features'), 'url' => route('home').'#features'];
     }
     if ($page->isArticle()) {
-        $crumbs[] = ['name' => __('site.breadcrumbs.knowledge_base'), 'url' => route('pages.show', 'baza-znan')];
+        $crumbs[] = ['name' => __('site.breadcrumbs.knowledge_base'), 'url' => route('pages.show', \App\Models\Page::BLOG_SLUG)];
     }
     $crumbs[] = ['name' => $page->title, 'url' => $page->url()];
     $faqItems = [];
@@ -43,7 +43,7 @@
             'author' => ['@type' => 'Organization', 'name' => \App\Models\SiteSetting::current()->header_logo, 'url' => url('/')],
         ]
         : [
-            '@type' => $page->slug === 'baza-znan' ? 'CollectionPage' : 'WebPage',
+            '@type' => $page->slug === \App\Models\Page::BLOG_SLUG ? 'CollectionPage' : 'WebPage',
             'name' => $page->title,
             'url' => $page->url(),
             'description' => $page->seoDescription(),

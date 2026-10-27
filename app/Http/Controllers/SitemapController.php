@@ -30,7 +30,7 @@ class SitemapController extends Controller
         ]);
         $articlesUpdatedAt = $pages->filter(fn (Page $page): bool => $page->isArticle())->max('updated_at');
         $lastmod = $pages->mapWithKeys(fn (Page $page): array => [
-            $page->id => $page->slug === 'baza-znan' ? $this->latest([$page->updated_at, $articlesUpdatedAt]) : $page->updated_at,
+            $page->id => $page->slug === Page::BLOG_SLUG ? $this->latest([$page->updated_at, $articlesUpdatedAt]) : $page->updated_at,
         ]);
 
         return response()->view('public.sitemap', [

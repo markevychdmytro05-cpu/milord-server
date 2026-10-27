@@ -34,8 +34,11 @@ class Page extends Model
     /** Slug головної сторінки: відкривається на «/». */
     public const ROOT_SLUG = '/';
 
-    /** Slug-и звичайних сторінок, які збігаються з наявними адресами. */
-    public const RESERVED_SLUGS = ['admin', 'api', 'services', 'monety-nbu', 'sitemap', 'up', 'build', 'storage', 'login', 'contact'];
+    /** Slug хаба блогу: статті відкриваються під ним, /blog/{slug}. */
+    public const BLOG_SLUG = 'blog';
+
+    /** Slug-и звичайних сторінок, які збігаються з наявними адресами (baza-znan – старий префікс блогу з редиректом). */
+    public const RESERVED_SLUGS = ['admin', 'api', 'services', 'monety-nbu', 'baza-znan', 'sitemap', 'up', 'build', 'storage', 'login', 'contact'];
 
     /** Slug-и юридичних сторінок (політика конфіденційності, оферта). */
     public const LEGAL_SLUGS = ['polityka-konfidentsiynosti', 'publichna-oferta'];
@@ -165,7 +168,7 @@ class Page extends Model
         return $this->slug === self::ROOT_SLUG;
     }
 
-    /** Стаття бази знань: звичайна сторінка з категорією, відкривається за адресою /baza-znan/{slug}. */
+    /** Стаття блогу: звичайна сторінка з категорією, відкривається за адресою /blog/{slug}. */
     public function isArticle(): bool
     {
         return $this->type === self::TYPE_PAGE && filled($this->category) && ! $this->isHome();
