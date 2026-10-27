@@ -91,7 +91,7 @@ class KnowledgeBaseTest extends TestCase
 
         $this->assertSame(1, substr_count($html, '<h1'));
         $this->assertStringContainsString('<h1 class="display">База знань</h1>', $html);
-        $this->assertStringContainsString('page-article grid-bg is-compact', $html);
+        $this->assertStringContainsString('page-article is-compact', $html);
     }
 
     public function test_footer_links_only_general_pages_and_documents(): void

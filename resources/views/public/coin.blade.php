@@ -7,6 +7,7 @@
 @section('og_image', $coin->ogImageUrl())
 
 @php
+    $planArticle = \App\Models\Page::published()->where('slug', 'plan-vypusku-monet-nbu-na-2026-rik-shcho-vyyde-do-kintsia-roku')->first();
     $crumbs = [
         ['name' => __('site.breadcrumbs.home'), 'url' => route('home')],
         ['name' => __('coins.breadcrumb'), 'url' => route('coins.index')],
@@ -35,12 +36,12 @@
             $coin->metal ? ['@type' => 'PropertyValue', 'name' => __('coins.schema.metal'), 'value' => $coin->metal] : null,
             $coin->mintage !== null ? ['@type' => 'PropertyValue', 'name' => __('coins.schema.mintage'), 'value' => $coin->mintage, 'unitText' => __('coins.schema.unit')] : null,
         ])),
+        // Наявність на складі НБУ ми не знаємо, тож вказуємо лише відомі факти: ціну й початок продажу.
         'offers' => array_filter([
             '@type' => 'Offer',
             'url' => $coin->nbu_url ?: $coin->url(),
             'price' => number_format((float) $coin->price, 2, '.', ''),
             'priceCurrency' => 'UAH',
-            'availability' => $coin->isUpcoming() ? 'https://schema.org/PreOrder' : 'https://schema.org/InStock',
             'availabilityStarts' => $coin->sale_starts_at?->toAtomString(),
             'seller' => $nbu,
         ]),
@@ -54,19 +55,17 @@
                     '@type' => 'ListItem', 'position' => $i + 1, 'name' => $c['name'], 'item' => $c['url'],
                 ])->all(),
             ],
-            [
-                '@type' => 'Article',
-                'headline' => $coin->title,
+            array_filter([
+                '@type' => 'WebPage',
+                'name' => $coin->title,
+                'url' => $coin->url(),
                 'description' => $coin->seoDescription(),
                 'inLanguage' => 'uk-UA',
-                'mainEntityOfPage' => $coin->url(),
-                'dateModified' => $coin->updated_at->toAtomString(),
-                'datePublished' => $coin->created_at->toAtomString(),
-                'image' => $coin->ogImageUrl(),
-                'author' => ['@id' => url('/').'#org'],
-                'publisher' => \App\Models\SiteSetting::current()->organizationSchema(),
-            ],
-            ...($coin->image ? [array_filter([
+                'isPartOf' => ['@id' => url('/').'#site'],
+                'primaryImageOfPage' => $coin->imageUrl(),
+            ]),
+            // ImageObject лише з указаним джерелом фото: Google вимагає creditText/creator для метаданих зображення.
+            ...($coin->image && $coin->image_source ? [array_filter([
                 '@type' => 'ImageObject',
                 'contentUrl' => $coin->imageUrl(),
                 'url' => $coin->imageUrl(),
@@ -86,25 +85,29 @@
 @endpush
 
 @section('content')
-    <article class="page-article grid-bg">
+    <article class="page-article">
         <div class="wrap">
             <div class="article-main">
                 <nav class="crumbs" aria-label="{{ __('site.breadcrumbs.label') }}">
-                    @foreach ($crumbs as $crumb)
-                        @if ($loop->last)
-                            <span>{{ $crumb['name'] }}</span>
-                        @else
-                            <a href="{{ $crumb['url'] }}">{{ $crumb['name'] }}</a>
-                        @endif
-                    @endforeach
+                    <ol>
+                        @foreach ($crumbs as $crumb)
+                            @if ($loop->last)
+                                <li aria-current="page">{{ $crumb['name'] }}</li>
+                            @else
+                                <li><a href="{{ $crumb['url'] }}">{{ $crumb['name'] }}</a></li>
+                            @endif
+                        @endforeach
+                    </ol>
                 </nav>
                 <h1 class="display">{{ $coin->title }}</h1>
                 @if ($coin->excerpt)
                     <p class="page-lead">{{ $coin->excerpt }}</p>
                 @endif
                 @if ($coin->image)
+                    @php($coinImageFile = str_starts_with((string) $coin->image, '/') ? public_path(ltrim($coin->image, '/')) : null)
+                    @php($coinImageSize = $coinImageFile && is_file($coinImageFile) ? @getimagesize($coinImageFile) : false)
                     <figure class="coin-figure">
-                        <img src="{{ $coin->image }}" alt="{{ __('coins.card.alt', ['name' => $coin->shortTitle()]) }}" loading="eager">
+                        <img src="{{ $coin->image }}" @if ($coinImageSize) width="{{ $coinImageSize[0] }}" height="{{ $coinImageSize[1] }}" @endif alt="{{ __('coins.card.alt', ['name' => $coin->shortTitle()]) }}" fetchpriority="high" decoding="async">
                         @if ($coin->image_source)
                             <figcaption>{{ __('coins.photo.credit') }}: <a href="{{ $coin->image_source }}" rel="nofollow noopener" target="_blank">{{ $coin->image_credit ?: __('coins.photo.default_source') }}</a></figcaption>
                         @endif
@@ -129,6 +132,11 @@
                     <h2>{{ __('coins.buy.heading') }}</h2>
                     <p>{{ $coin->isUpcoming() ? __('coins.buy.upcoming', ['date' => $coin->sale_starts_at->locale(app()->getLocale())->translatedFormat('j F Y, H:i')]) : __('coins.buy.default') }}
                         {!! __('coins.buy.body', ['brand' => '<a href="'.e(route('home')).'">'.e(\App\Models\SiteSetting::current()->header_logo).'</a>']) !!}</p>
+                    <p>{!! __('coins.buy.monitor', ['link' => '<a href="'.e(route('services.show', 'rezym-sposterezennia')).'">'.e(__('coins.buy.monitor_link')).'</a>']) !!}
+                        @if ($planArticle)
+                            {!! __('coins.buy.plan', ['link' => '<a href="'.e($planArticle->url()).'">'.e(__('coins.buy.plan_link')).'</a>']) !!}
+                        @endif
+                    </p>
                     <p><a href="{{ route('home') }}#pricing">{{ __('coins.buy.tariffs') }}</a>@if ($coin->nbu_url) · <a href="{{ $coin->nbu_url }}" rel="nofollow noopener" target="_blank">{{ __('coins.buy.nbu_link') }}</a>@endif</p>
                 </div>
             </div>

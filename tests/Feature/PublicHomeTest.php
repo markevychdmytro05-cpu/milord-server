@@ -66,7 +66,9 @@ class PublicHomeTest extends TestCase
 
     public function test_sitemap_and_robots_are_served(): void
     {
-        $this->get('/sitemap.xml')->assertOk()->assertSee(route('home'), false);
+        $xml = $this->get('/sitemap.xml')->assertOk()->assertSee(route('home'), false)->getContent();
+        $this->assertStringStartsWith('<?xml version="1.0" encoding="UTF-8"?>', $xml);
+        $this->assertNotFalse(simplexml_load_string($xml));
         $this->get('/robots.txt')->assertOk()->assertSee('Sitemap: '.route('sitemap'), false);
     }
 
@@ -152,7 +154,7 @@ class PublicHomeTest extends TestCase
 
         foreach (['/', '/pro-nas', '/baza-znan', '/monety-nbu'] as $url) {
             $html = $this->get($url)->assertOk()->assertSee('href="#main"', false)->getContent();
-            $this->assertSame(1, substr_count($html, '<main id="main">'), $url);
+            $this->assertSame(1, substr_count($html, '<main id="main"'), $url);
         }
     }
 
@@ -160,7 +162,7 @@ class PublicHomeTest extends TestCase
     {
         $this->withoutVite();
 
-        $html = $this->get('/')->assertOk()->assertSee('class="stats"', false)->assertSee('Цифри, які ми виміряли')->getContent();
+        $html = $this->get('/')->assertOk()->assertSee('class="stats"', false)->assertSee('Numis у цифрах')->getContent();
         $this->assertStringContainsString('href="'.url('/shcho-novoho').'"', substr($html, strpos($html, '<footer')));
 
         $this->get('/shcho-novoho')->assertOk()->assertSee('Що нового в Numis')->assertSee('29 вересня 2026');

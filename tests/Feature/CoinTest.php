@@ -92,6 +92,8 @@ class CoinTest extends TestCase
         $this->assertSame('Архістратиг Михаїл', Coin::factory()->make(['title' => 'Інвестиційна монета НБУ «Архістратиг Михаїл»'])->shortTitle());
         $this->assertSame('Паляниця', Coin::factory()->make(['title' => 'Монета НБУ «Паляниця»'])->shortTitle());
         $this->assertSame('Архістратиг Михаїл (до 35-річчя НБУ)', Coin::factory()->make(['title' => 'Монета НБУ «Архістратиг Михаїл» (до 35-річчя НБУ)'])->shortTitle());
+        $this->assertSame('Пам’ятна монета «Мавка»', Coin::factory()->make(['title' => 'Пам’ятна монета «Мавка»'])->shortTitle());
+        $this->assertSame('Мавка', Coin::factory()->make(['title' => '«Мавка»'])->shortTitle());
     }
 
     public function test_coins_are_sorted_by_release_date_with_undated_last_and_direction_toggle(): void
@@ -152,8 +154,8 @@ class CoinTest extends TestCase
         $this->get('/monety-nbu/no-price')->assertOk()->assertDontSee('"@type":"Product"', false);
         $this->get('/monety-nbu/with-price')->assertOk()
             ->assertSee('"@type":"Product"', false)->assertSee('"price":"450.00"', false)
-            ->assertSee('"priceCurrency":"UAH"', false)->assertSee('https://schema.org/PreOrder', false)
-            ->assertSee('"availabilityStarts"', false);
+            ->assertSee('"priceCurrency":"UAH"', false)->assertSee('"availabilityStarts"', false)
+            ->assertDontSee('https://schema.org/PreOrder', false)->assertDontSee('https://schema.org/InStock', false);
     }
 
     public function test_coin_page_shows_photo_credit_and_image_object_schema(): void

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
@@ -34,6 +35,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Канонічні адреси, sitemap і JSON-LD будуються з запиту; у продакшні вони завжди мають вказувати на APP_URL (https).
+        if ($this->app->isProduction() && str_starts_with((string) config('app.url'), 'https://')) {
+            URL::forceRootUrl(config('app.url'));
+            URL::forceScheme('https');
+        }
+
         RateLimiter::for('license-api', fn (Request $request) => Limit::perMinute(config('license.rate_limit'))->by($request->ip()));
 
         RateLimiter::for('contact', fn (Request $request) => Limit::perMinute(5)->by($request->ip()));

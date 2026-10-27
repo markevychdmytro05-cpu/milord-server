@@ -9,8 +9,10 @@
     <section class="section kb cm-page">
         <div class="wrap">
             <nav class="crumbs cm-crumbs" aria-label="{{ __('site.breadcrumbs.label') }}">
-                <a href="{{ route('home') }}">{{ __('site.breadcrumbs.home') }}</a>
-                <span>{{ __('community.breadcrumb') }}</span>
+                <ol>
+                    <li><a href="{{ route('home') }}">{{ __('site.breadcrumbs.home') }}</a></li>
+                    <li aria-current="page">{{ __('community.breadcrumb') }}</li>
+                </ol>
             </nav>
 
             <div class="cm-head">

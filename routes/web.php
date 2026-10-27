@@ -13,9 +13,9 @@ Route::get('/', HomeController::class)->name('home');
 Route::post('contact', [ContactController::class, 'store'])->middleware('throttle:contact')->name('contact.store');
 Route::get('robots.txt', function () {
     $aiCrawlers = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'CCBot'];
-    $lines = ['User-agent: *', 'Disallow: /admin', 'Disallow: /api', ''];
+    $lines = ['User-agent: *', 'Disallow: /admin', 'Disallow: /api', 'Disallow: /zavantazhyty/', ''];
     foreach ($aiCrawlers as $crawler) {
-        array_push($lines, 'User-agent: '.$crawler, 'Allow: /', 'Disallow: /admin', 'Disallow: /api', '');
+        array_push($lines, 'User-agent: '.$crawler, 'Allow: /', 'Disallow: /admin', 'Disallow: /api', 'Disallow: /zavantazhyty/', '');
     }
     $lines[] = 'Sitemap: '.route('sitemap');
 
@@ -45,5 +45,6 @@ Route::get('monety-nbu', [CoinController::class, 'index'])->name('coins.index');
 Route::get('monety-nbu/{slug}', [CoinController::class, 'show'])->where('slug', '[A-Za-z0-9-]+')->name('coins.show');
 Route::get('services/{slug}', [PageController::class, 'service'])->where('slug', '[A-Za-z0-9-]+')->name('services.show');
 Route::permanentRedirect('baza-znan-numis', '/baza-znan');
+Route::permanentRedirect('kalendar-vypusku-monet-nbu-2026', '/baza-znan/plan-vypusku-monet-nbu-na-2026-rik-shcho-vyyde-do-kintsia-roku');
 Route::get('baza-znan/{slug}', [PageController::class, 'article'])->where('slug', '[A-Za-z0-9-]+')->name('articles.show');
 Route::get('{slug}', [PageController::class, 'page'])->where('slug', '[A-Za-z0-9-]+')->name('pages.show');

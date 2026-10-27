@@ -22,7 +22,7 @@ class DownloadController extends Controller
 
         abort_unless($release && $release->fileExists(), 404);
 
-        return redirect()->to($release->temporaryUrl(10));
+        return redirect()->to($release->temporaryUrl(10))->header('X-Robots-Tag', 'noindex, nofollow');
     }
 
     public function file(Release $release): BinaryFileResponse
@@ -34,6 +34,7 @@ class DownloadController extends Controller
         return response()->download(Storage::disk(Release::DISK)->path($release->file_path), $release->file_name, [
             'Content-Type' => 'application/octet-stream',
             'Cache-Control' => 'private, no-store',
+            'X-Robots-Tag' => 'noindex, nofollow',
         ]);
     }
 }

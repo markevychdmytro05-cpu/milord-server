@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+{!! '<?xml version="1.0" encoding="UTF-8"?>' !!}
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>{{ route('home') }}</loc>
@@ -9,9 +9,15 @@
 @foreach ($pages as $page)
     <url>
         <loc>{{ $page->url() }}</loc>
-        <lastmod>{{ $page->updated_at->toAtomString() }}</lastmod>
+        <lastmod>{{ $lastmod[$page->id]->toAtomString() }}</lastmod>
     </url>
 @endforeach
+@if ($downloadsUpdatedAt)
+    <url>
+        <loc>{{ route('downloads.index') }}</loc>
+        <lastmod>{{ $downloadsUpdatedAt->toAtomString() }}</lastmod>
+    </url>
+@endif
 @if ($coins->isNotEmpty())
     <url>
         <loc>{{ route('coins.index') }}</loc>

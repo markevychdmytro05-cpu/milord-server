@@ -30,7 +30,7 @@ class ContactFormTest extends TestCase
     {
         $this->withoutVite();
 
-        $this->get('/')->assertOk()->assertSee('id="contact-form"', false)->assertSee('name="website"', false)->assertSee('Надіслати');
+        $this->get('/')->assertOk()->assertSee('id="contact-form"', false)->assertSee('name="nb_hp"', false)->assertSee('Отримати пробний ключ');
     }
 
     public function test_contact_form_lives_in_the_footer_of_every_page(): void
@@ -42,12 +42,12 @@ class ContactFormTest extends TestCase
             Module::where('name', 'like', '%Форма зв%')->value('id'),
             Page::where('slug', Page::ROOT_SLUG)->firstOrFail()->page_modules
         );
-        $this->get('/about-test')->assertOk()->assertSee('id="contact-form"', false)->assertSee('Надіслати');
+        $this->get('/about-test')->assertOk()->assertSee('id="contact-form"', false)->assertSee('Отримати пробний ключ');
     }
 
     public function test_ajax_submission_creates_a_lead_and_returns_the_success_message(): void
     {
-        $this->postJson('/contact', $this->payload())->assertOk()->assertJson(['message' => 'Дякуємо! Ми зв’яжемося з вами найближчим часом.']);
+        $this->postJson('/contact', $this->payload())->assertOk()->assertJson(['message' => 'Дякуємо! Напишемо вам із ключем найближчим часом.']);
 
         $this->assertDatabaseHas('leads', ['name' => 'Іван', 'contact' => '+380501112233', 'source_url' => url('/'), 'is_processed' => false]);
     }
@@ -70,7 +70,7 @@ class ContactFormTest extends TestCase
 
         $this->post('/contact', $this->payload())->assertRedirect(url('/'));
 
-        $this->get('/')->assertSee('data-flash="Дякуємо! Ми зв’яжемося з вами найближчим часом."', false);
+        $this->get('/')->assertSee('data-flash="Дякуємо! Напишемо вам із ключем найближчим часом."', false);
     }
 
     public function test_invalid_ajax_submission_returns_field_errors(): void
@@ -87,7 +87,7 @@ class ContactFormTest extends TestCase
 
     public function test_bots_filling_the_honeypot_get_no_lead(): void
     {
-        $this->post('/contact', $this->payload(['website' => 'http://spam.example']))
+        $this->post('/contact', $this->payload(['nb_hp' => 'http://spam.example']))
             ->assertRedirect(url('/'))->assertSessionHasNoErrors();
 
         $this->assertDatabaseCount('leads', 0);

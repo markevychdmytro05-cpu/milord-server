@@ -66,7 +66,7 @@ class HeaderStructureTest extends TestCase
     {
         $this->withoutVite();
 
-        $this->get('/')->assertSee('class="toast"', false)->assertSee('data-success=', false)->assertSee('name="website"', false);
+        $this->get('/')->assertSee('class="toast"', false)->assertSee('data-success=', false)->assertSee('name="nb_hp"', false);
     }
 
     public function test_local_urls_are_stored_as_paths(): void

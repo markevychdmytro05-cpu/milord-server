@@ -10,10 +10,12 @@
     <section class="section kb cm-page">
         <div class="wrap cm-wrap">
             <nav class="crumbs cm-crumbs" aria-label="{{ __('site.breadcrumbs.label') }}">
-                <a href="{{ route('home') }}">{{ __('site.breadcrumbs.home') }}</a>
-                <a href="{{ route('community.index') }}">{{ __('community.breadcrumb') }}</a>
-                <a href="{{ route('community.index', ['type' => $topic->type]) }}">{{ __('community.types.'.$topic->type) }}</a>
-                <span>{{ $topic->title }}</span>
+                <ol>
+                    <li><a href="{{ route('home') }}">{{ __('site.breadcrumbs.home') }}</a></li>
+                    <li><a href="{{ route('community.index') }}">{{ __('community.breadcrumb') }}</a></li>
+                    <li><a href="{{ route('community.index', ['type' => $topic->type]) }}">{{ __('community.types.'.$topic->type) }}</a></li>
+                    <li aria-current="page">{{ $topic->title }}</li>
+                </ol>
             </nav>
 
             @include('community._badges')

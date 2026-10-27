@@ -6,7 +6,7 @@
             <div>
                 @if (! empty($text['title']))<h2 class="display">{{ $text['title'] }}</h2>@endif
             </div>
-            <a class="changelog-all" href="{{ $url }}">{{ __('site.changelog.all') }} &rarr;</a>
+            <a class="changelog-all" href="{{ $url }}">{{ __('site.changelog.all') }} <svg class="arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h12M9 3l5 5-5 5"/></svg></a>
         </div>
         <ol class="changelog">
             @foreach ($entries as $entry)

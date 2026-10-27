@@ -5,12 +5,21 @@
 @section('canonical', route('downloads.index'))
 @section('robots', 'index, follow')
 
+@push('head')
+    <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => __('site.breadcrumbs.home'), 'item' => route('home')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => __('downloads.breadcrumb'), 'item' => route('downloads.index')],
+    ]], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
+@endpush
+
 @section('content')
     <section class="section kb kb--page dl-page">
         <div class="wrap">
             <nav class="crumbs" aria-label="{{ __('site.breadcrumbs.label') }}">
-                <a href="{{ route('home') }}">{{ __('site.breadcrumbs.home') }}</a>
-                <span>{{ __('downloads.breadcrumb') }}</span>
+                <ol>
+                    <li><a href="{{ route('home') }}">{{ __('site.breadcrumbs.home') }}</a></li>
+                    <li aria-current="page">{{ __('downloads.breadcrumb') }}</li>
+                </ol>
             </nav>
             <header class="dl-intro">
                 <h1 class="display">{{ __('downloads.heading') }}</h1>
@@ -61,7 +70,7 @@
                         <strong>{{ __('downloads.license_title') }}</strong>
                         <p>{{ __('downloads.license_hint') }}</p>
                     </div>
-                    <a href="{{ route('home').'#contact' }}">{{ __('downloads.license_button') }} <span aria-hidden="true">→</span></a>
+                    <a class="btn ghost" href="{{ route('home').'#contact' }}">{{ __('downloads.license_button') }} <svg class="arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h12M9 3l5 5-5 5"/></svg></a>
                 </div>
                 <p class="dl-footnote">{{ __('downloads.unsigned_hint') }}</p>
             @endif
