@@ -90,7 +90,7 @@ class KnowledgeBaseTest extends TestCase
         $html = $this->get('/baza-znan')->assertOk()->getContent();
 
         $this->assertSame(1, substr_count($html, '<h1'));
-        $this->assertStringContainsString('<h1 class="display">База знань</h1>', $html);
+        $this->assertStringContainsString('<h1 class="display">Блог</h1>', $html);
         $this->assertStringContainsString('page-article is-compact', $html);
     }
 

@@ -55,7 +55,7 @@ return [
         'label' => 'Хлібні крихти',
         'home' => 'Головна',
         'features' => 'Можливості',
-        'knowledge_base' => 'База знань',
+        'knowledge_base' => 'Блог',
     ],
 
     'changelog' => [
@@ -105,7 +105,7 @@ return [
         'features' => 'Можливості',
         'about' => 'Про продукт',
         'legal' => 'Правові документи',
-        'knowledge_base' => 'База знань: :category',
+        'knowledge_base' => 'Блог: :category',
         'coins' => 'Монети НБУ',
     ],
 ];

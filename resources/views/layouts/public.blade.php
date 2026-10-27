@@ -66,7 +66,7 @@
                             @php($sectionActive = $item->isCurrent($currentPath) || $item->hasCurrentChild($currentPath))
                             @php($submenuId = 'submenu-'.$loop->index)
                             {{-- Розділ без власної адреси – кнопка-розкривачка (APG Disclosure), а не посилання на «#». --}}
-                            <div class="dropdown">
+                            <div @class(['dropdown', 'is-active' => $sectionActive])>
                                 @if ($item->href())
                                     <a href="{{ $item->href() }}" class="has-children {{ $sectionActive ? 'is-active' : '' }}" @if ($item->isCurrent($currentPath)) aria-current="page" @endif @if ($item->open_in_new_tab) target="_blank" rel="noopener" @endif>{{ $item->label }}</a>
                                     <button class="dropdown-toggle" type="button" data-submenu-toggle aria-expanded="false" aria-controls="{{ $submenuId }}" aria-label="{{ __('site.nav.expand_section', ['name' => $item->label]) }}"><svg aria-hidden="true" viewBox="0 0 7 5" width="12" height="9"><path d="M.5.5l3 3.5 3-3.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>

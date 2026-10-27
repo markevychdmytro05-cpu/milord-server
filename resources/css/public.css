@@ -166,8 +166,8 @@ button, input, textarea, select { font: inherit; letter-spacing: inherit; color:
 .logo { display: inline-flex; flex: none; align-items: center; gap: 10px; color: var(--ink); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1; }
 .logo-mark { flex: none; width: 28px; height: 28px; object-fit: contain; }
 
-.links { display: flex; align-items: center; gap: 4px; margin-right: auto; }
-.links a, .links .dropdown-parent { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border: 0; border-radius: var(--r-pill); background: none; color: var(--body-strong); font: inherit; font-size: 15px; font-weight: 500; line-height: 1.4; white-space: nowrap; cursor: pointer; transition: background-color .2s ease, color .2s ease; }
+.links { --link-px: 12px; display: flex; align-items: center; gap: 4px; margin-right: auto; }
+.links a, .links .dropdown-parent { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 var(--link-px); border: 0; border-radius: var(--r-pill); background: none; color: var(--body-strong); font: inherit; font-size: 15px; font-weight: 500; line-height: 1.4; white-space: nowrap; cursor: pointer; transition: background-color .2s ease, color .2s ease; }
 .links a:hover, .links .dropdown-parent:hover { background: var(--surface-strong); color: var(--ink); }
 .links a.is-active, .links a[aria-current], .links .dropdown-parent.is-active { color: var(--ink); background: var(--surface-card); box-shadow: inset 0 0 0 1px var(--hairline-strong); }
 
@@ -175,7 +175,6 @@ button, input, textarea, select { font: inherit; letter-spacing: inherit; color:
 .dropdown { position: relative; display: flex; align-items: center; }
 .dropdown-parent svg, .dropdown-toggle svg { flex: none; width: 10px; height: 7px; transition: transform .25s ease; }
 .dropdown.is-open .dropdown-parent svg, .dropdown.is-open .dropdown-toggle svg { transform: rotate(180deg); }
-.links .dropdown > a.has-children { padding-right: 4px; }
 .dropdown-toggle { display: grid; place-items: center; width: 24px; height: 36px; margin-left: 0; padding: 0; border: 0; border-radius: var(--r-pill); background: none; color: inherit; cursor: pointer; }
 .dropdown-list { position: absolute; top: calc(100% + 10px); left: -8px; z-index: 60; display: grid; min-width: 260px; padding: 6px; border: 1px solid var(--hairline); border-radius: var(--r-lg); background: var(--surface-card); box-shadow: var(--shadow-float); opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .2s ease, transform .2s ease, visibility .2s; }
 .dropdown.is-open .dropdown-list { opacity: 1; visibility: visible; transform: none; }
@@ -194,9 +193,22 @@ button, input, textarea, select { font: inherit; letter-spacing: inherit; color:
 .nav.is-open .nav-toggle__close { opacity: 1; rotate: 0deg; }
 .topbar :focus-visible { outline-color: var(--on-dark); }
 
+@media (min-width: 1121px) {
+  /* Розділ із підменю – одна пігулка: фон і рамка на обгортці, тож назва з шевроном центровані разом, хоч посилання й кнопка-шеврон окремі. */
+  .links .dropdown { border-radius: var(--r-pill); color: var(--body-strong); transition: background-color .2s ease, color .2s ease; }
+  .links .dropdown:hover { background: var(--surface-strong); color: var(--ink); }
+  .links .dropdown.is-active { background: var(--surface-card); color: var(--ink); box-shadow: inset 0 0 0 1px var(--hairline-strong); }
+  .links .dropdown > .has-children { background: none; box-shadow: none; color: inherit; }
+  .links .dropdown > a.has-children { padding-right: 3px; }
+  .dropdown-toggle { width: auto; padding: 0 var(--link-px) 0 5px; }
+  /* Фокус посилання обводить усю пігулку, фокус шеврона – лише його частину зсередини, щоб рамка не лягала на текст. */
+  .links .dropdown > a.has-children:focus-visible { outline: 0; }
+  .links .dropdown > a.has-children:focus-visible::before { content: ''; position: absolute; inset: -4px; border: 2px solid var(--ink); border-radius: var(--r-pill); pointer-events: none; }
+  .dropdown-toggle:focus-visible { outline-offset: -2px; }
+}
 @media (min-width: 1121px) and (max-width: 1279px) {
   .nav-in { gap: var(--s-lg); }
-  .links a, .links .dropdown-parent { padding-inline: 9px; }
+  .links { --link-px: 9px; }
 }
 @media (min-width: 1121px) and (max-width: 1199px) {
   .nav-cta__rest { display: none; }
