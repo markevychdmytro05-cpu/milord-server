@@ -158,8 +158,9 @@ button, input, textarea, select { font: inherit; letter-spacing: inherit; color:
 .topbar a:hover { color: var(--on-dark); }
 .topbar svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
-.nav { position: relative; height: var(--nav-h); background: var(--canvas); background: color-mix(in srgb, var(--canvas) 88%, transparent); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid transparent; transition: border-color .25s ease, background-color .25s ease; }
-.nav.is-scrolled { border-bottom-color: var(--hairline); background: var(--canvas); background: color-mix(in srgb, var(--canvas) 94%, transparent); }
+/* Угорі сторінки шапка прозора: атмосфера героя проходить крізь неї без шва. Фон, розмиття й лінія з'являються після прокрутки. */
+.nav { position: relative; height: var(--nav-h); background: transparent; border-bottom: 1px solid transparent; transition: border-color .25s ease, background-color .25s ease; }
+.nav.is-scrolled { border-bottom-color: var(--hairline); background: var(--canvas); background: color-mix(in srgb, var(--canvas) 88%, transparent); -webkit-backdrop-filter: saturate(1.4) blur(14px); backdrop-filter: saturate(1.4) blur(14px); }
 .nav-in { display: flex; align-items: center; gap: var(--s-xl); height: 100%; max-width: calc(var(--container) + var(--gutter) * 2); margin-inline: auto; padding-inline: var(--gutter); }
 
 .logo { display: inline-flex; flex: none; align-items: center; gap: 10px; color: var(--ink); font-size: 19px; font-weight: 600; letter-spacing: -.02em; line-height: 1; }
@@ -852,17 +853,19 @@ a:hover > img.our-clients__card { filter: none; opacity: 1; }
 }
 
 /* ---------- hairline frame (сигнатура ElevenLabs: тонкі вертикалі по краях контенту, лінії між смугами з крапками) ---------- */
+/* Перша смуга (герой чи шапка сторінки) лишається вільною, як на elevenlabs.io: рамка починається з другої. */
 @media (min-width: 900px) {
   :root { --frame-x: max(calc(var(--gutter) / 2), calc(50% - var(--container) / 2 - 24px)); }
-  main { position: relative; }
-  main::before, main::after { content: ''; position: absolute; z-index: 0; top: 0; bottom: 0; width: 1px; background: var(--hairline); pointer-events: none; }
-  main::before { left: var(--frame-x); }
-  main::after { right: var(--frame-x); }
-  main > * + * { position: relative; border-top: 1px solid var(--hairline); }
+  main > * + * {
+    position: relative; border-top: 1px solid var(--hairline);
+    background-image: linear-gradient(var(--hairline), var(--hairline)), linear-gradient(var(--hairline), var(--hairline));
+    background-repeat: no-repeat; background-size: 1px 100%;
+    background-position: left var(--frame-x) top 0, right var(--frame-x) top 0;
+  }
   main > * + *::before, main > * + *::after { content: ''; position: absolute; top: -3px; z-index: 1; width: 5px; height: 5px; border-radius: 50%; background: var(--hairline-strong); pointer-events: none; }
   main > * + *::before { left: calc(var(--frame-x) - 2px); }
   main > * + *::after { right: calc(var(--frame-x) - 2px); }
   /* Хлібні крихти хаба й сітка під ними – одна смуга. */
-  main > .page-article.is-compact + * { border-top: 0; }
+  main > .page-article.is-compact + * { border-top: 0; background-image: none; }
   main > .page-article.is-compact + *::before, main > .page-article.is-compact + *::after { display: none; }
 }
