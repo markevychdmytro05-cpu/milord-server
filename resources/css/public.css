@@ -178,14 +178,14 @@ button, input, textarea, select { font: inherit; letter-spacing: inherit; color:
 /* Активний пункт без пігулки: чорний текст і тонке підкреслення, що плавно виростає, коли пункт стає активним (зокрема при скролі). */
 .links a.is-active, .links a[aria-current], .links .dropdown-parent.is-active { color: var(--ink); }
 @media (min-width: 1121px) {
-  .links > a, .links .dropdown > .has-children { position: relative; }
-  .links > a::after, .links .dropdown > .has-children::after { content: ''; position: absolute; left: var(--link-px); right: var(--link-px); bottom: 3px; height: 1.5px; border-radius: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center; opacity: 0; transition: transform .35s cubic-bezier(.4, 0, .2, 1), opacity .25s ease; }
-  .links > a.is-active::after, .links > a[aria-current]::after, .links .dropdown > .has-children.is-active::after { transform: scaleX(1); opacity: 1; }
+  .links > a { position: relative; }
+  .links > a::after, .links .dropdown::after { content: ''; pointer-events: none; position: absolute; left: var(--link-px); right: var(--link-px); bottom: 3px; height: 1.5px; border-radius: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center; opacity: 0; transition: transform .35s cubic-bezier(.4, 0, .2, 1), opacity .25s ease; }
+  .links > a.is-active::after, .links > a[aria-current]::after, .links .dropdown.is-active::after { transform: scaleX(1); opacity: 1; }
   /* При наведенні фону немає: лише та сама лінія плавно малюється знизу. */
   .links > a:hover { background: none; }
-  .links > a:hover::after, .links > a:focus-visible::after, .links .dropdown:hover > .has-children::after, .links .dropdown:focus-within > .has-children::after { transform: scaleX(1); opacity: 1; }
+  .links > a:hover::after, .links > a:focus-visible::after, .links .dropdown:hover::after, .links .dropdown:focus-within::after, .links .dropdown.is-open::after { transform: scaleX(1); opacity: 1; }
 }
-@media (prefers-reduced-motion: reduce) { .links > a::after, .links .dropdown > .has-children::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .links > a::after, .links .dropdown::after { transition: none; } }
 
 /* Підменю: відкривається кнопкою з aria-expanded, закривається Esc, кліком поза ним або коли фокус виходить. */
 .dropdown { position: relative; display: flex; align-items: center; }
@@ -194,6 +194,13 @@ button, input, textarea, select { font: inherit; letter-spacing: inherit; color:
 .dropdown-toggle { display: grid; place-items: center; width: 24px; height: 36px; margin-left: 0; padding: 0; border: 0; border-radius: var(--r-pill); background: none; color: inherit; cursor: pointer; }
 .dropdown-list { position: absolute; top: calc(100% + 10px); left: -8px; z-index: 60; display: grid; min-width: 240px; padding: 8px; border: 1px solid var(--hairline); border-radius: var(--r-lg); background: var(--surface-card); box-shadow: var(--shadow-soft); opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .2s ease, transform .2s ease, visibility .2s; }
 .dropdown.is-open .dropdown-list { opacity: 1; visibility: visible; transform: none; }
+/* Меню відкривається й при наведенні (лише десктоп із мишею); невидимий «місток» не дає йому закритись, поки курсор іде до списку. */
+.dropdown-list::before { content: ''; position: absolute; top: -12px; left: 0; right: 0; height: 12px; }
+@media (hover: hover) and (min-width: 1121px) {
+  .dropdown:hover .dropdown-list, .dropdown:focus-within .dropdown-list { opacity: 1; visibility: visible; transform: none; }
+  .dropdown:hover .dropdown-parent svg, .dropdown:hover .dropdown-toggle svg { transform: rotate(180deg); }
+  .dropdown-list { transition: opacity .2s ease .08s, transform .2s ease .08s, visibility .2s linear .08s; }
+}
 /* Пункти підменю ведуть себе як решта меню: без сірої пігулки, лише підкреслення, що плавно проявляється. */
 .links .dropdown-list a { display: flex; min-height: 40px; padding: 0 14px; border-radius: var(--r-md); box-shadow: none; white-space: nowrap; text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: 6px; transition: color .25s ease, text-decoration-color .3s ease, text-underline-offset .3s ease; }
 .links .dropdown-list a:hover, .links .dropdown-list a:focus-visible { background: none; color: var(--ink); text-decoration-color: currentColor; text-underline-offset: 8px; }
@@ -447,7 +454,7 @@ button, input, textarea, select { font: inherit; letter-spacing: inherit; color:
 .changelog-all { display: inline-flex; align-items: center; justify-self: end; gap: 6px; color: var(--ink); font-size: 15px; font-weight: 500; white-space: nowrap; }
 .changelog-all { text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: 3px; transition: color .25s ease, text-decoration-color .3s ease, text-underline-offset .3s ease; }
 .changelog-all:hover, .changelog-all:focus-visible { text-decoration-color: currentColor; text-underline-offset: 5px; }
-.changelog-section .head { grid-template-columns: minmax(0, 1fr) auto; }
+.changelog-section .head { grid-template-columns: minmax(0, 1fr) auto; align-items: center; } /* Заголовок і «Усі зміни» на одній лінії по центру. */
 .changelog { display: grid; border-top: 1px solid var(--hairline); }
 .changelog-entry { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--s-xl); padding: var(--s-lg) 0; border-bottom: 1px solid var(--hairline); }
 .changelog-entry:last-child { padding-bottom: 0; border-bottom: 0; } /* Нижню межу дає роздільник секції, власна лінія й відступ були б зайвими. */
@@ -461,11 +468,11 @@ button, input, textarea, select { font: inherit; letter-spacing: inherit; color:
 @media (max-width: 767px) { .changelog-entry { grid-template-columns: minmax(0, 1fr); gap: var(--s-sm); } }
 
 /* ---------- faq / accordion ---------- */
-.faq { padding-block: var(--band); }
+.faq { padding-block: calc(var(--band) * .65); }
 .faq > .container { display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--s-xl) var(--s-xxl); align-items: start; }
 .faq .section-title { position: sticky; top: calc(var(--nav-h) + 32px); margin: 0; }
-.accordion { border-top: 1px solid var(--hairline); }
-.accordion__item { border-bottom: 1px solid var(--hairline); }
+/* Лінії лише між питаннями: без межі над першим і під останнім. */
+.accordion__item + .accordion__item { border-top: 1px solid var(--hairline); }
 .accordion__toggler { display: flex; align-items: center; justify-content: space-between; gap: var(--s-lg); width: 100%; min-height: 64px; padding: var(--s-md) 0; border: 0; background: none; color: var(--ink); font-size: 18px; font-weight: 500; line-height: 1.44; letter-spacing: .01em; text-align: left; cursor: pointer; }
 .accordion__toggler-icon { position: relative; flex: none; width: 32px; height: 32px; border: 1px solid var(--hairline-strong); border-radius: 50%; transition: background-color .2s ease, transform .3s ease; }
 .accordion__toggler-icon::before, .accordion__toggler-icon::after { content: ''; position: absolute; top: 50%; left: 50%; width: 12px; height: 1.5px; background: currentColor; translate: -50% -50%; }
@@ -930,6 +937,11 @@ a:hover > img.our-clients__card { filter: none; opacity: 1; }
   main > * + *::before, main > * + *::after { content: ''; position: absolute; top: -3px; z-index: 1; width: 5px; height: 5px; border-radius: 50%; background: var(--hairline-strong); pointer-events: none; }
   main > * + *::before { left: calc(var(--frame-x) - 2px); }
   main > * + *::after { right: calc(var(--frame-x) - 2px); }
+  /* Нижня межа останньої смуги: лінія над підвалом із формою (з крапками на стику з вертикальними лініями). */
+  .site-foot:has(.foot-form) { position: relative; border-top: 1px solid var(--hairline); }
+  .site-foot:has(.foot-form)::before, .site-foot:has(.foot-form)::after { content: ''; position: absolute; top: -3px; z-index: 1; width: 5px; height: 5px; border-radius: 50%; background: var(--hairline-strong); pointer-events: none; }
+  .site-foot:has(.foot-form)::before { left: calc(var(--frame-x) - 2px); }
+  .site-foot:has(.foot-form)::after { right: calc(var(--frame-x) - 2px); }
   /* Хлібні крихти хаба й сітка під ними – одна смуга. */
   main > .page-article.is-compact + * { border-top: 0; background-image: none; }
   main > .page-article.is-compact + *::before, main > .page-article.is-compact + *::after { display: none; }
