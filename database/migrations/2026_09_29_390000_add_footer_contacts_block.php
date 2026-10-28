@@ -33,9 +33,7 @@ return new class extends Migration
             'contact_email2_label' => 'Співпраця',
         ]);
 
-        DB::table('site_settings')->whereNull('contact_email')->update(['contact_email' => 'help@numis.example']);
-        DB::table('site_settings')->whereNull('contact_email2')->update(['contact_email2' => 'partners@numis.example']);
-        DB::table('site_settings')->whereNull('contact_phone')->update(['contact_phone' => '+380 44 000 00 00']);
+        DB::table('site_settings')->whereNull('contact_email')->update(['contact_email' => 'help@numis.in.ua']);
     }
 
     public function down(): void

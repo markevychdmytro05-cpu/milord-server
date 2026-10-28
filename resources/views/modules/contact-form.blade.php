@@ -12,13 +12,10 @@
             {{-- Повідомлення для JS-відправки: помилки показуються біля полів, підсумок і успіх – у .contact-status. --}}
             <form class="contact-form" method="post" action="{{ route('contact.store') }}" novalidate
                 data-success="{{ $text['success_text'] ?? '' }}" data-invalid="{{ __('site.contact.invalid') }}" data-expired="{{ __('site.contact.expired') }}"
-                data-too-many="{{ __('site.toast.too_many') }}" data-failed="{{ __('site.toast.failed') }}" data-network="{{ __('site.toast.network') }}"
-                data-next-url="{{ route('downloads.index') }}" data-next-text="{{ __('site.contact.next') }}">
-                @csrf
+                data-too-many="{{ __('site.toast.too_many') }}" data-failed="{{ __('site.toast.failed') }}" data-network="{{ __('site.toast.network') }}">
                 <input type="hidden" name="source" value="{{ url()->current() }}">
                 <div class="contact-hp" aria-hidden="true" inert><input type="text" name="nb_hp" tabindex="-1" autocomplete="off"></div>
 
-                <p class="contact-note" aria-hidden="true">{!! __('site.contact.required_note', ['mark' => '<span class="req" aria-hidden="true">*</span>']) !!}</p>
                 <div class="contact-field">
                     <label for="contact-name">{{ $text['name_label'] ?? '' }} <span class="req" aria-hidden="true">*</span></label>
                     <input id="contact-name" type="text" name="name" value="{{ old('name') }}" maxlength="100" autocomplete="given-name" required @error('name') aria-invalid="true" aria-describedby="error-name" @enderror>
@@ -26,8 +23,7 @@
                 </div>
                 <div class="contact-field">
                     <label for="contact-contact">{{ $text['contact_label'] ?? '' }} <span class="req" aria-hidden="true">*</span></label>
-                    <input id="contact-contact" type="text" name="contact" value="{{ old('contact') }}" maxlength="150" required autocapitalize="none" spellcheck="false" data-hint-id="contact-hint" aria-describedby="contact-hint @error('contact') error-contact @enderror" @error('contact') aria-invalid="true" @enderror>
-                    <small class="contact-hint" id="contact-hint">{{ __('site.contact.contact_hint') }}</small>
+                    <input id="contact-contact" type="text" name="contact" value="{{ old('contact') }}" maxlength="150" required autocapitalize="none" spellcheck="false" @error('contact') aria-invalid="true" aria-describedby="error-contact" @enderror>
                     @error('contact')<em class="contact-error" id="error-contact">{{ $message }}</em>@enderror
                 </div>
                 @if (! empty($text['message_label']))

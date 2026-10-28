@@ -118,7 +118,10 @@ class SiteSetting extends Model
      */
     public function organizationSchema(): array
     {
-        $logo = $this->logo_image ? (str_starts_with($this->logo_image, 'http') ? $this->logo_image : url($this->logo_image)) : null;
+        // Без завантаженого логотипа беремо іконку сайту: Google просить для Organization квадратне зображення від 112px.
+        $logo = $this->logo_image
+            ? (str_starts_with($this->logo_image, 'http') ? $this->logo_image : url($this->logo_image))
+            : url('/favicon-192.png');
         $profiles = array_values(array_filter($this->messengers(), fn (string $url): bool => str_starts_with($url, 'http')));
         $contact = array_filter([
             '@type' => 'ContactPoint',
@@ -144,7 +147,7 @@ class SiteSetting extends Model
     {
         return static::query()->first() ?? static::create([
             'header_logo' => 'Numis',
-            'footer_text' => '© Numis',
+            'footer_text' => null,
         ]);
     }
 }

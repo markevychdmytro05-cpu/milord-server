@@ -3,16 +3,19 @@
 use App\Http\Controllers\CoinController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\FeedController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\IndexNowKeyController;
 use App\Http\Controllers\LlmsController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Middleware\RequireSameOrigin;
 use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
-Route::post('contact', [ContactController::class, 'store'])->middleware('throttle:contact')->name('contact.store');
+Route::post('contact', [ContactController::class, 'store'])->middleware([RequireSameOrigin::class, 'throttle:contact'])->name('contact.store');
 Route::get('robots.txt', function () {
     $aiCrawlers = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'CCBot'];
     $lines = ['User-agent: *', 'Disallow: /admin', 'Disallow: /api', 'Disallow: /zavantazhyty/', ''];
@@ -24,7 +27,9 @@ Route::get('robots.txt', function () {
     return response(implode("\n", $lines)."\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
 })->name('robots');
 Route::get('sitemap.xml', SitemapController::class)->name('sitemap');
+Route::get('feed.xml', FeedController::class)->name('feed');
 Route::get('llms.txt', [LlmsController::class, 'index'])->name('llms');
+Route::get('{key}.txt', IndexNowKeyController::class)->where('key', '[A-Za-z0-9]{8,128}');
 Route::get('llms-full.txt', [LlmsController::class, 'full'])->name('llms.full');
 // Спільнота тимчасово вимкнена: щоб увімкнути, розкоментуйте маршрути нижче й пункт «Спільнота» в шапці (адмінка: Меню шапки).
 /*

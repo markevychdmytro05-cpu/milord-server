@@ -4,7 +4,7 @@
 @section('title', $pageNumber > 1 ? __('coins.list.title_page', ['page' => $pageNumber, 'last' => $coins->lastPage(), 'brand' => \App\Models\SiteSetting::current()->header_logo]) : __('coins.list.title', ['brand' => \App\Models\SiteSetting::current()->header_logo]))
 @section('description', $pageNumber > 1 ? __('coins.list.description_page', ['page' => $pageNumber]) : __('coins.list.description'))
 @section('canonical', route('coins.index').(request()->integer('page') > 1 ? '?page='.request()->integer('page') : ''))
-@section('robots', $sort === 'desc' || $month ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1')
+@section('robots', $sort === 'desc' || $month || $coins->total() === 0 ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1')
 
 @push('head')
     <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => [

@@ -9,6 +9,12 @@
 @php($imageSize = $imageFile && is_file($imageFile) ? getimagesize($imageFile) : false)
 @php($srcset = $webpUrl ? collect([640, 960])->filter(fn ($w) => is_file(public_path(ltrim(preg_replace('/\.webp$/', "-$w.webp", $webpUrl), '/'))))
     ->map(fn ($w) => preg_replace('/\.webp$/', "-$w.webp", $webpUrl)." {$w}w")->push($webpUrl.' '.($imageSize ? $imageSize[0] : 1440).'w')->implode(', ') : null)
+{{-- Скріншот у hero – LCP-елемент: браузер починає його завантаження вже з <head>. --}}
+@if ($webpUrl && $srcset)
+    @push('head')
+        <link rel="preload" as="image" type="image/webp" imagesrcset="{{ $srcset }}" imagesizes="(max-width: 639px) calc(88vw - 32px), (max-width: 1023px) calc(88vw - 64px), (max-width: 1279px) calc(88vw - 80px), 1040px" fetchpriority="high">
+    @endpush
+@endif
 <section class="hero">
     <div class="bloom" aria-hidden="true"></div>
     <div class="bloom" aria-hidden="true"></div>
@@ -39,9 +45,11 @@
         </div>
         @if ($hasImage)
             <div class="hero-visual">
-                <span class="bloom" aria-hidden="true"></span>
-                <span class="bloom" aria-hidden="true"></span>
-                <span class="bloom" aria-hidden="true"></span>
+                <div class="hero-backdrop" aria-hidden="true">
+                    <span class="bloom"></span>
+                    <span class="bloom"></span>
+                    <span class="bloom"></span>
+                </div>
                 <picture>
                     @if ($webpUrl)<source srcset="{{ $srcset }}" sizes="(max-width: 639px) calc(88vw - 32px), (max-width: 1023px) calc(88vw - 64px), (max-width: 1279px) calc(88vw - 80px), 1040px" type="image/webp">@endif
                     <img src="{{ $imageUrl }}" alt="{{ $text['image_alt'] ?? $text['title_1'] ?? '' }}" @if ($imageSize) width="{{ $imageSize[0] }}" height="{{ $imageSize[1] }}" @endif fetchpriority="high" decoding="async">

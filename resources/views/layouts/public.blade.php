@@ -7,6 +7,9 @@
     <meta name="description" content="@yield('description', __('site.seo.default_description'))">
     <meta name="robots" content="@yield('robots', 'index, follow, max-image-preview:large, max-snippet:-1')">
     <link rel="canonical" href="@yield('canonical', url()->current())">
+    <link rel="alternate" hreflang="uk" href="@yield('canonical', url()->current())">
+    <link rel="alternate" hreflang="x-default" href="@yield('canonical', url()->current())">
+    <link rel="alternate" type="application/rss+xml" href="{{ route('feed') }}" title="{{ $site->header_logo }}: блог">
     <link rel="alternate" type="text/plain" href="{{ route('llms') }}" title="llms.txt">
     {{-- Google показує у видачі лише растрові іконки (ICO/PNG), тож вони йдуть першими. --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="64x64">
@@ -30,12 +33,21 @@
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
         <meta property="og:image:alt" content="{{ __('site.seo.og_image_alt') }}">
+    @else
+        {{-- Розміри локальної картинки: соцмережі й месенджери показують прев’ю без очікування завантаження. --}}
+        @php($ogFile = public_path(ltrim(parse_url($ogImage, PHP_URL_PATH) ?: '', '/')))
+        @php($ogSize = is_file($ogFile) ? @getimagesize($ogFile) : false)
+        @if ($ogSize)
+            <meta property="og:image:width" content="{{ $ogSize[0] }}">
+            <meta property="og:image:height" content="{{ $ogSize[1] }}">
+        @endif
+        <meta property="og:image:alt" content="@yield('og_image_alt', trim($__env->yieldContent('title')))">
     @endif
     @stack('head')
     @foreach (['inter-cyrillic', 'inter-latin', 'geist-cyrillic', 'geist-latin'] as $font)
         <link rel="preload" href="{{ Vite::asset('resources/fonts/'.$font.'.woff2') }}" as="font" type="font/woff2" crossorigin>
     @endforeach
-    @vite('resources/css/public.css')
+    @vite(['resources/css/public.css', 'resources/js/public.js'])
 </head>
 <body class="{{ $site->hasTopbar() ? 'has-topbar' : '' }}">
     <a class="skip-link" href="#main">{{ __('site.skip_to_content') }}</a>
@@ -91,7 +103,7 @@
                         @php([$ctaFirst, $ctaRest] = [implode(' ', array_slice($ctaWords, 0, 2)), implode(' ', array_slice($ctaWords, 2))])
                         <a class="nav-cta" href="{{ $site->header_button_url }}">{{ $ctaFirst }}@if ($ctaRest !== '') <span class="nav-cta__rest">{{ $ctaRest }}</span>@endif</a>
                     @endif
-                    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="{{ __('site.nav.open') }}">
+                    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="{{ __('site.nav.open') }}" data-label-open="{{ __('site.nav.open') }}" data-label-close="{{ __('site.nav.close') }}">
                         <svg class="nav-toggle__open" aria-hidden="true" viewBox="0 0 18 12" fill="none"><path d="M1 1h16M1 6h16M1 11h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                         <svg class="nav-toggle__close" aria-hidden="true" viewBox="0 0 13 13" fill="none"><path d="M1 1l11 11M12 1L1 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
                     </button>
@@ -112,7 +124,7 @@
         <div class="foot-info wrap">
             <div class="foot-brand-col">
                 <a class="logo foot-logo" href="{{ route('home') }}" aria-label="{{ $site->header_logo }}">@include('partials.logo-mark')<span>{{ $site->header_logo }}</span></a>
-                <p class="foot-copy">{{ $site->footer_text }}</p>
+                @if ($site->footer_text)<p class="foot-copy">{{ $site->footer_text }}</p>@endif
                 @if ($messengers)
                     <div class="foot-social">
                         @foreach ($messengers as $name => $url)
@@ -171,248 +183,8 @@
         <button class="toast-close" type="button" aria-label="{{ __('site.toast.close') }}">&times;</button>
     </div>
 
-    <script>
-        (function () {
-            var toast = document.getElementById('toast');
-            var live = document.getElementById('live-status');
-            var timer;
 
-            function announce(message) {
-                if (!live || !message) { return; }
-                live.textContent = '';
-                setTimeout(function () { live.textContent = message; }, 100);
-            }
 
-            function showToast(message, type) {
-                if (!toast || !message) { return; }
-                toast.querySelector('.toast-text').textContent = message;
-                toast.classList.toggle('is-error', type === 'error');
-                toast.hidden = false;
-                requestAnimationFrame(function () { toast.classList.add('is-visible'); });
-                clearTimeout(timer);
-                timer = setTimeout(hideToast, 10000);
-                announce(message);
-            }
-
-            function hideToast() {
-                if (!toast) { return; }
-                toast.classList.remove('is-visible');
-                setTimeout(function () { toast.hidden = true; }, 350);
-            }
-
-            if (toast) {
-                toast.querySelector('.toast-close').addEventListener('click', hideToast);
-                // Повідомлення не зникає, поки на ньому курсор або фокус (WCAG 2.2.1).
-                toast.addEventListener('mouseenter', function () { clearTimeout(timer); });
-                toast.addEventListener('focusin', function () { clearTimeout(timer); });
-                toast.addEventListener('mouseleave', function () { timer = setTimeout(hideToast, 4000); });
-                document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !toast.hidden) { hideToast(); } });
-                if (toast.dataset.flash) { showToast(toast.dataset.flash); }
-                if (toast.dataset.flashError) { showToast(toast.dataset.flashError, 'error'); }
-            }
-
-            function clearErrors(form) {
-                form.querySelectorAll('.contact-error').forEach(function (el) { el.remove(); });
-                form.querySelectorAll('[aria-invalid]').forEach(function (field) {
-                    field.removeAttribute('aria-invalid');
-                    if (field.dataset.hintId) { field.setAttribute('aria-describedby', field.dataset.hintId); } else { field.removeAttribute('aria-describedby'); }
-                });
-            }
-
-            function setStatus(form, message, isError) {
-                var box = form.querySelector('.contact-status');
-                if (!box) { return; }
-                box.textContent = message || '';
-                box.classList.toggle('is-error', !!isError);
-                box.hidden = !message;
-                announce(message);
-            }
-
-            // 419: сторінка пережила сесію. Беремо свіжий CSRF-токен і повторюємо відправку один раз.
-            function refreshToken(form) {
-                return fetch(location.href, { credentials: 'same-origin' })
-                    .then(function (response) { return response.text(); })
-                    .then(function (html) {
-                        var match = html.match(/name="_token"\s+value="([^"]+)"/);
-                        if (match) { form.querySelector('[name="_token"]').value = match[1]; }
-                        return !!match;
-                    })
-                    .catch(function () { return false; });
-            }
-
-            document.addEventListener('submit', function (event) {
-                var form = event.target.closest ? event.target.closest('.contact-form') : null;
-                if (!form || !window.fetch) { return; }
-                event.preventDefault();
-
-                var button = form.querySelector('button[type=submit]');
-                if (button.getAttribute('aria-disabled') === 'true') { return; }
-                // aria-disabled, а не disabled: вимкнена кнопка скидає фокус клавіатури на <body>.
-                button.setAttribute('aria-disabled', 'true');
-                form.classList.add('is-loading');
-                clearErrors(form);
-                setStatus(form, '');
-
-                function send(retried) {
-                    return fetch(form.action, { method: 'POST', body: new FormData(form), headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
-                        .then(function (response) { return response.json().catch(function () { return {}; }).then(function (data) { return { response: response, data: data }; }); })
-                        .then(function (result) {
-                            var status = result.response.status;
-                            if (result.response.ok) {
-                                form.reset();
-                                setStatus(form, form.dataset.success || result.data.message);
-                                if (form.dataset.nextUrl) {
-                                    var next = document.createElement('a');
-                                    next.href = form.dataset.nextUrl;
-                                    next.textContent = form.dataset.nextText;
-                                    form.querySelector('.contact-status').append(' ', next);
-                                }
-                            } else if (status === 419 && !retried) {
-                                return refreshToken(form).then(function (ok) { return ok ? send(true) : setStatus(form, form.dataset.expired, true); });
-                            } else if (status === 422 && result.data.errors) {
-                                var first = null;
-                                Object.keys(result.data.errors).forEach(function (name) {
-                                    var field = form.querySelector('[name="' + name + '"]');
-                                    var wrap = field && field.closest('.contact-field');
-                                    if (!wrap) { return; }
-                                    var error = document.createElement('em');
-                                    error.className = 'contact-error';
-                                    error.id = 'error-' + name;
-                                    error.textContent = result.data.errors[name][0];
-                                    wrap.appendChild(error);
-                                    field.setAttribute('aria-invalid', 'true');
-                                    field.setAttribute('aria-describedby', (field.dataset.hintId ? field.dataset.hintId + ' ' : '') + error.id);
-                                    first = first || field;
-                                });
-                                setStatus(form, form.dataset.invalid, true);
-                                if (first) { first.focus(); }
-                            } else if (status === 429) {
-                                setStatus(form, form.dataset.tooMany, true);
-                            } else {
-                                setStatus(form, form.dataset.failed, true);
-                            }
-                        });
-                }
-
-                send(false)
-                    .catch(function () { setStatus(form, form.dataset.network, true); })
-                    .finally(function () { button.removeAttribute('aria-disabled'); form.classList.remove('is-loading'); });
-            });
-        })();
-    </script>
-
-    <script>
-        (function () {
-            var root = document.documentElement;
-            var nav = document.querySelector('.nav');
-            var toggle = document.querySelector('.nav-toggle');
-            var links = document.querySelector('.links');
-            var mobile = window.matchMedia('(max-width: 1120px)');
-            var behind = [document.getElementById('main'), document.querySelector('.site-foot')];
-
-            function setSection(item, open) {
-                item.classList.toggle('is-open', open);
-                item.querySelectorAll('[data-submenu-toggle]').forEach(function (button) { button.setAttribute('aria-expanded', open ? 'true' : 'false'); });
-            }
-            function closeSections(except) {
-                document.querySelectorAll('.dropdown.is-open').forEach(function (item) { if (item !== except) { setSection(item, false); } });
-            }
-            function fitMenu() { links.style.setProperty('--menu-h', Math.max(0, window.innerHeight - nav.getBoundingClientRect().bottom) + 'px'); }
-            function setMenu(open, how) {
-                if (!nav || !toggle || !links) { return; }
-                nav.classList.toggle('is-open', open);
-                root.classList.toggle('menu-open', open);
-                toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-                toggle.setAttribute('aria-label', open ? @json(__('site.nav.close')) : @json(__('site.nav.open')));
-                // Сторінка під повноекранним меню не отримує фокус (WCAG 2.4.3).
-                behind.forEach(function (el) { if (el) { el.inert = open && mobile.matches; } });
-                if (open) {
-                    fitMenu();
-                    // Панель стає видимою з наступного кадру, тож фокус переносимо трохи згодом.
-                    if (how === 'keyboard') { setTimeout(function () { var first = links.querySelector('a[href], button'); if (first) { first.focus(); } }, 50); }
-                } else {
-                    closeSections(null);
-                    if (how === 'escape') { toggle.focus(); }
-                }
-            }
-
-            if (toggle && links) {
-                toggle.addEventListener('click', function (event) { setMenu(!nav.classList.contains('is-open'), event.detail === 0 ? 'keyboard' : 'pointer'); });
-                window.addEventListener('resize', function () {
-                    if (!mobile.matches) { setMenu(false); } else if (nav.classList.contains('is-open')) { fitMenu(); }
-                });
-            }
-            document.addEventListener('keydown', function (event) {
-                if (event.key !== 'Escape') { return; }
-                var openItem = document.querySelector('.dropdown.is-open');
-                if (openItem) {
-                    // Перший Esc закриває підменю, другий – усе меню.
-                    var hadFocus = openItem.contains(document.activeElement);
-                    setSection(openItem, false);
-                    if (hadFocus) { openItem.querySelector('[data-submenu-toggle]').focus(); }
-                    return;
-                }
-                if (nav && nav.classList.contains('is-open')) { setMenu(false, 'escape'); }
-            });
-            document.addEventListener('click', function (event) {
-                var button = event.target.closest('[data-submenu-toggle]');
-                var item = event.target.closest('.dropdown');
-                closeSections(button ? item : null);
-                if (button) { setSection(item, !item.classList.contains('is-open')); return; }
-                if (nav && nav.classList.contains('is-open') && (!event.target.closest('.nav') || event.target.closest('.links a[href]'))) { setMenu(false); }
-            });
-            document.addEventListener('focusin', function (event) {
-                var openItem = document.querySelector('.dropdown.is-open');
-                if (openItem && !openItem.contains(event.target)) { setSection(openItem, false); }
-            });
-
-            function onScroll() { if (nav) { nav.classList.toggle('is-scrolled', window.scrollY > 8); } }
-
-            // Підсвічування розділу в меню під час прокрутки: лише для якорів на поточну сторінку (/#pricing на головній).
-            var spy = [].slice.call(document.querySelectorAll('.links a[href*="#"]')).map(function (link) {
-                var url = new URL(link.href, location.href);
-                var target = url.pathname === location.pathname && url.hash.length > 1 ? document.querySelector(url.hash) : null;
-                return target ? { link: link, target: target } : null;
-            }).filter(Boolean);
-            var spyFrame = 0;
-            function updateSpy() {
-                spyFrame = 0;
-                var line = window.innerHeight * 0.35, current = null;
-                spy.forEach(function (item) {
-                    var rect = item.target.getBoundingClientRect();
-                    if (rect.top <= line && rect.bottom > line) { current = item; }
-                });
-                spy.forEach(function (item) {
-                    var on = item === current;
-                    item.link.classList.toggle('is-active', on);
-                    if (on) { item.link.setAttribute('aria-current', 'location'); } else { item.link.removeAttribute('aria-current'); }
-                });
-            }
-            if (spy.length) {
-                window.addEventListener('scroll', function () { if (!spyFrame) { spyFrame = requestAnimationFrame(updateSpy); } }, { passive: true });
-                window.addEventListener('resize', updateSpy);
-                updateSpy();
-            }
-            onScroll();
-            window.addEventListener('scroll', onScroll, { passive: true });
-
-            // Активний пункт горизонтального перемикача (категорії, місяці) завжди у полі зору.
-            document.querySelectorAll('.kb-filters').forEach(function (strip) {
-                var active = strip.querySelector('.is-active');
-                if (active && strip.scrollWidth > strip.clientWidth) {
-                    strip.scrollLeft = active.getBoundingClientRect().left - strip.getBoundingClientRect().left + strip.scrollLeft - (strip.clientWidth - active.offsetWidth) / 2;
-                }
-            });
-        })();
-    </script>
-
-    <script>
-        document.addEventListener('click', function (event) {
-            var toggler = event.target.closest('.accordion__toggler');
-            if (!toggler) { return; }
-            toggler.setAttribute('aria-expanded', toggler.closest('.accordion__item').classList.toggle('is-open'));
-        });
-    </script>
 
 </body>
 </html>

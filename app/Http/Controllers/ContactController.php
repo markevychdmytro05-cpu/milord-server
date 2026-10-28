@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ContactRequest;
+use App\Jobs\SendLeadToTelegram;
 use App\Mail\LeadReceivedMail;
 use App\Models\Lead;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,10 @@ class ContactController extends Controller
 
             if ($email = config('site.lead_notification_email')) {
                 Mail::to($email)->queue((new LeadReceivedMail($lead))->afterCommit());
+            }
+
+            if (config('services.telegram.bot_token') && config('services.telegram.chat_id')) {
+                SendLeadToTelegram::dispatch($lead)->afterCommit();
             }
         }
 

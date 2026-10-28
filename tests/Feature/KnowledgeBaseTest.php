@@ -129,9 +129,9 @@ class KnowledgeBaseTest extends TestCase
         Page::factory()->create(['title' => 'Свіжа інша категорія', 'slug' => 'other-c', 'category' => 'Ліцензія', 'published_at' => now()]);
         Page::factory()->create(['title' => 'Стара з тієї ж категорії', 'slug' => 'same-c', 'category' => 'Купівля', 'published_at' => now()->subDays(60)]);
 
-        $html = $this->get('/blog/main-a')->assertOk()->assertSee('Читають також')->assertSee('class="read-also"', false)->getContent();
+        $html = $this->get('/blog/main-a')->assertOk()->assertSee('Читають також')->assertSee('class="read-also page-aside"', false)->getContent();
 
-        $aside = substr($html, strpos($html, 'class="read-also"'));
+        $aside = substr($html, strpos($html, 'class="read-also page-aside"'));
         $this->assertLessThan(strpos($aside, 'Свіжа інша категорія'), strpos($aside, 'Стара з тієї ж категорії'));
         $this->assertCount(2, $article->relatedArticles(4));
     }

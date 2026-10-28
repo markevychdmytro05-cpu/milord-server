@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\SendLeadToTelegram;
 use App\Mail\LeadReceivedMail;
 use App\Models\Lead;
 use App\Models\Module;
@@ -10,7 +11,9 @@ use App\Models\Page;
 use App\Models\SiteSetting;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class ContactFormTest extends TestCase
@@ -176,5 +179,28 @@ class ContactFormTest extends TestCase
         Package::factory()->create();
 
         $this->get('/')->assertSee('Замовити')->assertSee('https://t.me/nbu_desktop');
+    }
+
+    public function test_new_lead_is_sent_to_telegram_when_the_bot_is_configured(): void
+    {
+        config(['services.telegram.bot_token' => 'test-token', 'services.telegram.chat_id' => '-100123']);
+        Http::fake(['api.telegram.org/*' => Http::response(['ok' => true])]);
+
+        $this->postJson('/contact', $this->payload(['name' => 'A <b>Іван</b>']))->assertOk();
+
+        Http::assertSent(fn ($request) => $request->url() === 'https://api.telegram.org/bottest-token/sendMessage'
+            && $request['chat_id'] === '-100123'
+            && str_contains($request['text'], '+380501112233')
+            && str_contains($request['text'], 'A &lt;b&gt;Іван&lt;/b&gt;'));
+    }
+
+    public function test_lead_is_not_queued_for_telegram_without_bot_settings(): void
+    {
+        config(['services.telegram.bot_token' => null, 'services.telegram.chat_id' => null]);
+        Queue::fake();
+
+        $this->postJson('/contact', $this->payload())->assertOk();
+
+        Queue::assertNotPushed(SendLeadToTelegram::class);
     }
 }

@@ -37,7 +37,9 @@
 @endif
 --}}
 @if (backpack_user()->can('leads_view'))
-    <x-backpack::menu-item title="Заявки" icon="la la-inbox" :link="backpack_url('lead')" />
+    {{-- Нові (необроблені) заявки показуємо в дужках біля назви. --}}
+    @php($newLeads = \App\Models\Lead::where('is_processed', false)->count())
+    <x-backpack::menu-item :title="'Заявки'.($newLeads > 0 ? ' ('.$newLeads.')' : '')" icon="la la-inbox" :link="backpack_url('lead')" />
 @endif
 @if (backpack_user()->canany(['site_manage', 'pages_view', 'pages_create', 'coins_view', 'coins_create', 'translations_view', 'releases_view', 'modules_view', 'modules_create']))
     <x-backpack::menu-dropdown title="Вміст сайту" icon="la la-globe">

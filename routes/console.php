@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Support\ResponseSigner;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Validator;
 
@@ -12,6 +13,19 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('licenses:remind-expiring')->dailyAt('09:00')->withoutOverlapping(120)->onOneServer();
+
+// Щодобове обслуговування. Sitemap генерується на льоту з бази, тож завжди актуальний і окремого файлу не має.
+// Змінені за добу сторінки повторно надсилаємо в IndexNow (на випадок правок поза адмінкою), без ключа команда нічого не робить.
+Schedule::command('seo:indexnow --changed')->dailyAt('03:30')->withoutOverlapping(30)->onOneServer()
+    ->when(fn (): bool => (bool) config('services.indexnow.key'));
+
+// Прибирання: невдалі завдання черги старші за тиждень і прострочені записи кешу.
+Schedule::command('queue:prune-failed --hours=168')->dailyAt('04:00');
+Schedule::call(function (): void {
+    $table = config('cache.stores.database.table', 'cache');
+    DB::table($table)->where('expiration', '<', now()->timestamp)->delete();
+    DB::table(config('cache.stores.database.lock_table', 'cache_locks'))->where('expiration', '<', now()->timestamp)->delete();
+})->name('cache:purge-expired')->dailyAt('04:10')->onOneServer();
 
 Artisan::command('license:keygen', function () {
     $pair = ResponseSigner::generateKeyPair();
