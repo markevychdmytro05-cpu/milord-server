@@ -10,4 +10,7 @@ return [
     'locale' => 'uk',
 
     'lead_notification_email' => env('LEAD_NOTIFICATION_EMAIL'),
+
+    // За Cloudflare чи іншим проксі: «cloudflare» або список IP/CIDR через кому (див. AppServiceProvider).
+    'trusted_proxies' => env('TRUSTED_PROXIES'),
 ];

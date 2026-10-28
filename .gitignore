@@ -36,3 +36,6 @@ Thumbs.db
 /storage/app/local-admin-credentials.txt
 /.mcp.json
 /bootstrap/cache/*.php
+
+# Інструкція з деплою потрапляє в git, решта *.md ігнорується.
+!/DEPLOY.md
