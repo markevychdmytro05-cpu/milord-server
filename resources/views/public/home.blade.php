@@ -12,15 +12,19 @@
         '@context' => 'https://schema.org',
         '@graph' => [
             \App\Models\SiteSetting::current()->organizationSchema(),
-            ['@type' => 'WebSite', '@id' => url('/').'#site', 'url' => url('/'), 'name' => $siteName, 'inLanguage' => 'uk-UA', 'publisher' => ['@id' => url('/').'#org']],
+            ['@type' => 'WebSite', '@id' => url('/').'#site', 'url' => url('/'), 'name' => $siteName, 'alternateName' => parse_url(url('/'), PHP_URL_HOST), 'inLanguage' => 'uk-UA', 'publisher' => ['@id' => url('/').'#org']],
             ['@type' => 'WebPage', '@id' => url('/').'#webpage', 'url' => url('/'), 'name' => $page->seoTitle(), 'inLanguage' => 'uk-UA', 'isPartOf' => ['@id' => url('/').'#site'], 'dateModified' => $page->updated_at->toAtomString()],
             [
                 '@type' => 'SoftwareApplication',
+                '@id' => url('/').'#app',
                 'name' => $siteName,
                 'applicationCategory' => 'BusinessApplication',
                 'operatingSystem' => 'Windows, macOS',
                 'description' => $page->seoDescription(),
                 'url' => url('/'),
+                'downloadUrl' => route('downloads.index'),
+                'image' => $page->ogImageUrl(),
+                'screenshot' => $page->ogImageUrl(),
                 'inLanguage' => 'uk-UA',
                 'publisher' => ['@id' => url('/').'#org'],
                 'offers' => $packages->map(fn ($p) => [

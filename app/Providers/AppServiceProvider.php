@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Jobs\SubmitToIndexNow;
 use App\Models\License;
 use App\Models\LicenseActivation;
 use App\Models\LicensePayment;
+use App\Models\Page;
 use App\Support\ResponseSigner;
 use App\View\Composers\SiteLayoutComposer;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -40,6 +42,13 @@ class AppServiceProvider extends ServiceProvider
             URL::forceRootUrl(config('app.url'));
             URL::forceScheme('https');
         }
+
+        // Нова чи змінена опублікована сторінка одразу йде в IndexNow (лише коли задано INDEXNOW_KEY і сторінка індексується).
+        Page::saved(function (Page $page): void {
+            if (config('services.indexnow.key') && $page->is_published && ($page->robots?->isIndexable() ?? true)) {
+                SubmitToIndexNow::dispatch([$page->url()])->afterCommit();
+            }
+        });
 
         RateLimiter::for('license-api', fn (Request $request) => Limit::perMinute(config('license.rate_limit'))->by($request->ip()));
 

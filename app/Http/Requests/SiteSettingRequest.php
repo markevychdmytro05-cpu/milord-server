@@ -25,7 +25,7 @@ class SiteSettingRequest extends FormRequest
     {
         return [
             'header_logo' => ['required', 'string', 'max:60'],
-            'footer_text' => ['required', 'string', 'max:255'],
+            'footer_text' => ['nullable', 'string', 'max:255'],
             'logo_image' => ['nullable', 'string', 'max:2048', 'regex:~^(https?://|/)~i'],
             'header_button_text' => ['nullable', 'string', 'max:40', 'required_with:header_button_url'],
             'header_button_url' => ['nullable', 'string', 'max:255', new SafeUrl, 'required_with:header_button_text'],

@@ -1,9 +1,16 @@
 @extends('layouts.public')
 
-@section('title', $page->seoTitle())
-@section('description', $page->seoDescription() ?? __('site.seo.default_description'))
-@section('canonical', $page->url().(request()->integer('page') > 1 ? '?page='.request()->integer('page') : ''))
-@section('robots', $page->robotsDirective())
+@php
+    // Хаб блогу: сторінки пагінації мають власні title/description, а відфільтровані за категорією не індексуються.
+    $isBlogHub = $page->slug === \App\Models\Page::BLOG_SLUG;
+    $pageNumber = $isBlogHub ? max(1, request()->integer('page')) : 1;
+    $isFiltered = $isBlogHub && request()->filled('category');
+    $pageSuffix = $pageNumber > 1 ? ' – '.__('site.pagination.page', ['number' => $pageNumber]) : '';
+@endphp
+@section('title', $page->seoTitle().$pageSuffix)
+@section('description', ($page->seoDescription() ?? __('site.seo.default_description')).($pageNumber > 1 ? ' '.__('site.pagination.page', ['number' => $pageNumber]) : ''))
+@section('canonical', $page->url().(! $isFiltered && $pageNumber > 1 ? '?page='.$pageNumber : ''))
+@section('robots', $isFiltered ? 'noindex, follow' : $page->robotsDirective())
 @section('og_image', $page->ogImageUrl())
 @if ($page->category)
     @section('og_type', 'article')
@@ -40,7 +47,11 @@
             'dateModified' => $page->updated_at->toAtomString(),
             'datePublished' => $page->articleDate()->toAtomString(),
             'image' => $page->ogImageUrl(),
-            'author' => ['@type' => 'Organization', 'name' => \App\Models\SiteSetting::current()->header_logo, 'url' => url('/')],
+            'articleSection' => $page->category,
+            'wordCount' => str_word_count(strip_tags((string) $page->content), 0, 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюяАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ’'),
+            'author' => ['@id' => url('/').'#org'],
+            'publisher' => ['@id' => url('/').'#org'],
+            'isPartOf' => ['@id' => url('/').'#site'],
         ]
         : [
             '@type' => $page->slug === \App\Models\Page::BLOG_SLUG ? 'CollectionPage' : 'WebPage',
@@ -59,6 +70,8 @@
                     '@type' => 'ListItem', 'position' => $i + 1, 'name' => $c['name'], 'item' => $c['url'],
                 ])->all(),
             ],
+            \App\Models\SiteSetting::current()->organizationSchema(),
+            ['@type' => 'WebSite', '@id' => url('/').'#site', 'url' => url('/'), 'name' => \App\Models\SiteSetting::current()->header_logo, 'alternateName' => parse_url(url('/'), PHP_URL_HOST), 'inLanguage' => 'uk-UA', 'publisher' => ['@id' => url('/').'#org']],
             array_filter($main, fn ($value) => $value !== null && $value !== ''),
             ...(count($faqItems) >= 2 ? [['@type' => 'FAQPage', 'mainEntity' => $faqItems]] : []),
         ],
@@ -75,8 +88,16 @@
 @endpush
 
 @section('content')
+    @php
+        // Сторінки послуг і «Про нас» без блоку «Читають також» отримують праву колонку: заклик, корисні статті, контакти.
+        $showSidebar = $page->show_title && $related->isEmpty()
+            && ($page->type === \App\Models\Page::TYPE_SERVICE || $page->slug === 'pro-nas');
+        $usefulPages = $showSidebar
+            ? \App\Models\Page::published()->whereIn('slug', ['iak-pidkliuchyty-adspower-do-numis-pokrokova-instruktsiia', 'chek-lyst-pered-startom-prodazhu-monety-nbu', 'skilky-koshtuie-bot-dlia-kupivli-monet-nbu', 'litsenziia-numis-aktyvatsiia-prystriy-oflayn-dostup'])->get()
+            : collect();
+    @endphp
     <article class="page-article {{ $page->show_title ? '' : 'is-compact' }}">
-        <div class="wrap {{ $related->isNotEmpty() ? 'has-aside' : '' }}">
+        <div class="wrap {{ $related->isNotEmpty() || $showSidebar ? 'has-aside' : '' }}">
             <div class="article-main">
             <nav class="crumbs" aria-label="{{ __('site.breadcrumbs.label') }}">
                 <ol>
@@ -98,6 +119,11 @@
                     <div class="article-meta">
                         <span class="kb-tag kb-c-{{ \App\Models\Page::categoryColor($page->category) }}">{{ $page->category }}</span>
                         <time class="kb-date" datetime="{{ $page->articleDate()->toDateString() }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ __('site.date_with_year', ['date' => $page->articleDate()->locale(app()->getLocale())->translatedFormat('j F Y')]) }}</time>
+                        @if ($page->articleDate()->diffInDays($page->updated_at) >= 1)
+
+                            <time class="kb-date kb-date--updated" datetime="{{ $page->updated_at->toDateString() }}">{{ __('site.updated_on', ['date' => $page->updated_at->locale(app()->getLocale())->translatedFormat('j F Y')]) }}</time>
+
+                        @endif
                     </div>
                     @if ($page->og_image)
                         @php($coverPath = parse_url($page->ogImageUrl(), PHP_URL_PATH) ?: '')
@@ -105,32 +131,86 @@
                         @php($coverWebp = $coverBase !== $coverPath && is_file(public_path(ltrim($coverBase, '/').'-960.webp')))
                         <figure class="article-cover">
                             @if ($coverWebp)<picture><source type="image/webp" srcset="{{ $coverBase }}-640.webp 640w, {{ $coverBase }}-960.webp 960w" sizes="(min-width: 1024px) min(720px, calc(95vw - 400px)), (min-width: 640px) min(720px, calc(100vw - 64px)), calc(100vw - 32px)">@endif
-                            <img src="{{ $coverWebp ? $coverPath : $page->ogImageUrl() }}" alt="" width="1200" height="750" fetchpriority="high" decoding="async">
+                            <img src="{{ $coverWebp ? $coverPath : $page->ogImageUrl() }}" alt="{{ $page->title }}" width="1200" height="750" fetchpriority="high" decoding="async">
                             @if ($coverWebp)</picture>@endif
                         </figure>
                     @endif
                 @endif
             @endif
-            @if ($page->content)
-                <div class="prose">{!! \App\Support\SafeHtml::clean($page->content) !!}</div>
+            <?php
+                // Банер із закликом стоїть усередині тексту (посередині між заголовками), а не перед формою в підвалі.
+                $allModules = $page->modules_list;
+                $isBanner = fn ($module) => $module->module_template->code === 'cta-row';
+                $bannerHtml = $allModules->filter($isBanner)->map(fn ($module) => $module->draw())->implode("\n");
+                $afterModules = $allModules->reject($isBanner);
+                $prose = $page->content ? \App\Support\SafeHtml::clean($page->content) : '';
+                // «Часті питання» з тексту статті показуємо акордеоном, як на решті сторінок (якщо сторінка не має власного модуля FAQ).
+                $faqAccordion = [];
+                $hasFaqModule = $allModules->contains(fn ($module) => $module->module_template->code === 'faqs');
+                $faqHeading = preg_quote(__('site.faq_heading'), '~');
+                if (! $hasFaqModule && preg_match('~<h2[^>]*>\s*'.$faqHeading.'\s*</h2>(.*?)(?=<h2|$)~su', $prose, $faqMatch)) {
+                    preg_match_all('~<h3[^>]*>(.*?)</h3>(.*?)(?=<h3|$)~su', $faqMatch[1], $faqPairs, PREG_SET_ORDER);
+                    foreach ($faqPairs as $pair) {
+                        $faqAccordion[] = ['question' => trim(html_entity_decode(strip_tags($pair[1]), ENT_QUOTES | ENT_HTML5)), 'answer' => trim($pair[2])];
+                    }
+                    if (count($faqAccordion) >= 2) {
+                        $prose = preg_replace('~<h2[^>]*>\s*'.$faqHeading.'\s*</h2>.*?(?=<h2|$)~su', '', $prose, 1);
+                    } else {
+                        $faqAccordion = [];
+                    }
+                }
+                $proseHead = $prose;
+                $proseTail = '';
+                if (trim($bannerHtml) !== '' && $prose !== '') {
+                    preg_match_all('~<h2[^>]*>(.*?)</h2>~su', $prose, $headings, PREG_OFFSET_CAPTURE);
+                    $isFaq = fn ($heading) => trim(strip_tags($heading)) === __('site.faq_heading');
+                    $body = array_values(array_filter(array_keys($headings[0]), fn ($i) => ! $isFaq($headings[1][$i][0])));
+                    $faq = array_values(array_filter(array_keys($headings[0]), fn ($i) => $isFaq($headings[1][$i][0])));
+                    $at = count($body) >= 2 ? $headings[0][$body[intdiv(count($body), 2)]][1] : ($faq ? $headings[0][$faq[0]][1] : null);
+                    if ($at !== null) {
+                        $proseHead = substr($prose, 0, $at);
+                        $proseTail = substr($prose, $at);
+                    }
+                }
+            ?>
+            @if ($prose !== '')
+                <div class="prose">{!! $proseHead !!}</div>
+            @endif
+            {!! $bannerHtml !!}
+            @if ($proseTail !== '')
+                <div class="prose prose-cont">{!! $proseTail !!}</div>
             @endif
             </div>
 
+            @if ($showSidebar)
+                <aside class="read-also page-aside" aria-label="{{ __('site.page_aside.label') }}">
+                    <h2>{{ __('site.page_aside.try') }}</h2>
+                    <div class="ra-card aside-cta">
+                        <strong>{{ __('site.page_aside.try_title') }}</strong>
+                        <a class="btn" href="{{ route('home') }}#contact">{{ __('site.page_aside.try_button') }} <svg class="arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h12M9 3l5 5-5 5"/></svg></a>
+                    </div>
+                    @if ($usefulPages->isNotEmpty())
+                        <h2>{{ __('site.page_aside.useful') }}</h2>
+                        @foreach ($usefulPages as $useful)
+                            @include('partials.aside-link', ['item' => $useful])
+                        @endforeach
+                    @endif
+                </aside>
+            @endif
+
             @if ($related->isNotEmpty())
-                <aside class="read-also" aria-label="{{ __('site.read_also') }}">
+                <aside class="read-also page-aside" aria-label="{{ __('site.read_also') }}">
                     <h2>{{ __('site.read_also') }}</h2>
                     @foreach ($related as $item)
-                        <a class="ra-card" href="{{ $item->url() }}">
-                            <span class="kb-date"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ __('site.date_with_year', ['date' => $item->articleDate()->locale(app()->getLocale())->translatedFormat('j F Y')]) }}</span>
-                            <span class="kb-tags"><span class="kb-tag kb-c-{{ \App\Models\Page::categoryColor($item->category) }}">{{ $item->category }}</span></span>
-                            <strong>{{ $item->title }}</strong>
-                            @if ($item->excerpt)<span class="ra-excerpt">{{ $item->excerpt }}</span>@endif
-                        </a>
+                        @include('partials.aside-link', ['item' => $item])
                     @endforeach
                 </aside>
             @endif
         </div>
     </article>
 
-    {!! $page->drawModules() !!}
+    @if ($faqAccordion !== [])
+        @include('partials.faq-accordion', ['items' => $faqAccordion])
+    @endif
+    {!! $afterModules->map(fn ($module) => $module->draw())->implode("\n") !!}
 @endsection

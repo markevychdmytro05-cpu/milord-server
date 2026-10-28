@@ -3,9 +3,10 @@
 @section('title', __('downloads.title', ['brand' => \App\Models\SiteSetting::current()->header_logo]))
 @section('description', __('downloads.description'))
 @section('canonical', route('downloads.index'))
-@section('robots', 'index, follow')
+@section('robots', $releases->isEmpty() ? 'noindex, follow' : 'index, follow')
 
 @push('head')
+    <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'FAQPage', 'mainEntity' => collect(__('downloads.faq'))->map(fn ($item) => ['@type' => 'Question', 'name' => $item['q'], 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $item['a']]])->all()], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
     <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => __('site.breadcrumbs.home'), 'item' => route('home')],
         ['@type' => 'ListItem', 'position' => 2, 'name' => __('downloads.breadcrumb'), 'item' => route('downloads.index')],
@@ -74,6 +75,21 @@
                 </div>
                 <p class="dl-footnote">{{ __('downloads.unsigned_hint') }}</p>
             @endif
+
+            {{-- Текстова частина: корисна людям і дає сторінці зміст незалежно від того, чи вже є релізи. --}}
+            <section class="dl-guide prose" aria-labelledby="dl-install">
+                <h2 id="dl-install">{{ __('downloads.install_heading') }}</h2>
+                <ol>
+                    @foreach (__('downloads.install_steps') as $step)
+                        <li>{{ $step }}</li>
+                    @endforeach
+                </ol>
+                <p>{{ __('downloads.install_more') }}
+                    <a href="{{ route('articles.show', 'iak-pidkliuchyty-adspower-do-numis-pokrokova-instruktsiia') }}">{{ __('downloads.install_link_connect') }}</a>,
+                    <a href="{{ route('articles.show', 'chek-lyst-pered-startom-prodazhu-monety-nbu') }}">{{ __('downloads.install_link_checklist') }}</a>.
+                </p>
+            </section>
         </div>
     </section>
+    @include('partials.faq-accordion', ['title' => __('downloads.faq_heading'), 'items' => collect(__('downloads.faq'))->map(fn ($item) => ['question' => $item['q'], 'answer' => '<p>'.e($item['a']).'</p>'])->all()])
 @endsection
