@@ -4,7 +4,6 @@ use App\Models\ModuleTemplate;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/** Смуга з виміряними цифрами на головній і сторінка «Що нового» з журналом змін програми. */
 return new class extends Migration
 {
     public function up(): void

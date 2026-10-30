@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/** Залишок після міграції про AdsPower: фраза про з’єднання Numis зі сторінки про реєстрацію в магазині НБУ. */
 return new class extends Migration
 {
     public function up(): void
@@ -23,6 +22,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

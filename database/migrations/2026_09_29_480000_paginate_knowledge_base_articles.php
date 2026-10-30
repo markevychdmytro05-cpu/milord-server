@@ -3,9 +3,6 @@
 use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * База знань розбита на сторінки: 9 статей (сітка 3×3) на сторінку.
- */
 return new class extends Migration
 {
     public function up(): void

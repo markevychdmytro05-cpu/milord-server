@@ -3,9 +3,6 @@
 use App\Models\ModuleTemplate;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * З hero прибрано лічильник акаунтів і двохрядкову примітку під кнопками.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -41,6 +38,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

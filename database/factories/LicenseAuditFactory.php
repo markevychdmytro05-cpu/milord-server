@@ -6,16 +6,8 @@ use App\Models\License;
 use App\Models\LicenseAudit;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<LicenseAudit>
- */
 class LicenseAuditFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [

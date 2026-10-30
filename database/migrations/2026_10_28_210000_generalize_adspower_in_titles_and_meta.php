@@ -3,14 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Numis працює з кількома антидетект-браузерами, тож у заголовках і описах загальних сторінок (головна, блог, огляди)
- * пишемо «антидетект-браузер». Сторінки, присвячені саме AdsPower (профілі, підключення, прогрів), лишаються як є.
- * Змінюємо лише точні фрагменти: тексти, відредаговані в адмінці, не чіпаємо.
- */
 return new class extends Migration
 {
-    /** @var array<string, array<string, array<string, string>>> slug => поле => [старе => нове] */
     private const REPLACEMENTS = [
         '/' => [
             'meta_title' => ['програма Numis з AdsPower' => 'програма Numis'],
@@ -69,6 +63,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

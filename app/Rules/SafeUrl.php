@@ -5,9 +5,6 @@ namespace App\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-/**
- * Дозволяє лише відносні шляхи, якорі, http(s), mailto: і tel: – без javascript: та data:.
- */
 class SafeUrl implements ValidationRule
 {
     public function validate(string $attribute, mixed $value, Closure $fail): void

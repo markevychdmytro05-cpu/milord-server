@@ -7,11 +7,6 @@ use App\Models\Page;
 
 class ChangelogModule implements ModuleInterface
 {
-    /**
-     * Останні записи журналу змін беруться зі сторінки «Що нового»: заголовок h2 — дата, список — зміни.
-     *
-     * @param  array<string, mixed>  $settings
-     */
     public function draw(array $settings): string
     {
         $page = Page::published()->where('slug', 'shcho-novoho')->first();

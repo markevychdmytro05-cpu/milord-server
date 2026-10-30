@@ -76,7 +76,6 @@
                 <p class="dl-footnote">{{ __('downloads.unsigned_hint') }}</p>
             @endif
 
-            {{-- Текстова частина: корисна людям і дає сторінці зміст незалежно від того, чи вже є релізи. --}}
             <section class="dl-guide prose" aria-labelledby="dl-install">
                 <h2 id="dl-install">{{ __('downloads.install_heading') }}</h2>
                 <ol>

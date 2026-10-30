@@ -3,7 +3,6 @@
 use App\Models\MenuItem;
 use Illuminate\Database\Migrations\Migration;
 
-/** Каталог монет і сторінка завантаження мали лише 2–3 внутрішні посилання; підвал є на кожній сторінці. */
 return new class extends Migration
 {
     private const LINKS = [

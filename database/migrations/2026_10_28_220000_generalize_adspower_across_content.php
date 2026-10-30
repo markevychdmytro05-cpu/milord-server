@@ -4,27 +4,19 @@ use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Numis працює не лише з AdsPower, тож у загальних текстах сайту (послуги, статті, FAQ, головна, зміни) пишемо
- * «антидетект-браузер». Матеріали, присвячені саме AdsPower, лишаються як є: сторінка «Профілі AdsPower»,
- * статті про підключення й прогрів AdsPower та їхні FAQ-блоки.
- */
 return new class extends Migration
 {
-    /** Сторінки, присвячені AdsPower. */
     private const ADSPOWER_PAGES = [
         'profili-adspower',
         'iak-pidkliuchyty-adspower-do-numis-pokrokova-instruktsiia',
         'prohriv-profiliv-adspower-u-numis-shcho-tse-i-iak-zapustyty',
     ];
 
-    /** FAQ-модулі цих сторінок. */
     private const ADSPOWER_MODULES = [
         'SEO – FAQ: adspower-profiles',
         'SEO – FAQ: nalashtuvannya-adspower',
     ];
 
-    /** @var array<string, string> регулярний вираз => заміна (порядок важливий) */
     private const RULES = [
         '/Кілька профілів AdsPower одночасно/u' => 'Кілька профілів одночасно',
         '/Кілька профілів AdsPower/u' => 'Кілька профілів',
@@ -70,7 +62,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 
     private function generalize(string $text): string
@@ -82,7 +73,6 @@ return new class extends Migration
         return $text;
     }
 
-    /** @param  mixed  $value */
     private function walk($value)
     {
         if (is_string($value)) {

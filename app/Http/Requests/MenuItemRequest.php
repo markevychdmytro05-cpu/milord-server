@@ -14,9 +14,6 @@ class MenuItemRequest extends FormRequest
         return backpack_user()?->can('site_manage') ?? false;
     }
 
-    /**
-     * @return array<string, array<int, mixed>>
-     */
     public function rules(): array
     {
         return [
@@ -29,9 +26,6 @@ class MenuItemRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return ['page_id' => 'сторінка', 'url' => 'адреса', 'title' => 'назва'];

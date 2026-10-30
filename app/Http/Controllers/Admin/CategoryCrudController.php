@@ -13,7 +13,6 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Validation\Rule;
 
-/** @property-read CrudPanel $crud */
 class CategoryCrudController extends CrudController
 {
     use CreateOperation;

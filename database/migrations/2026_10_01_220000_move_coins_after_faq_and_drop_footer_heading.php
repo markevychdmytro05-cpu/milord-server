@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/** Календар монет після FAQ, а не посеред воронки; без другого заклику до зв’язку у футері. */
 return new class extends Migration
 {
     public function up(): void
@@ -27,6 +26,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

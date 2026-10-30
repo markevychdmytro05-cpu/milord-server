@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Package extends Model
 {
-    /** @use HasFactory<PackageFactory> */
     use CrudTrait, HasFactory;
 
     protected $fillable = ['name', 'max_accounts', 'max_devices', 'price', 'duration_days', 'is_active', 'show_on_home'];
@@ -33,13 +32,11 @@ class Package extends Model
         return $this->hasMany(License::class);
     }
 
-    /** @param  Builder<Package>  $query */
     public function scopeAvailable(Builder $query): void
     {
         $query->where('is_active', true)->orderBy('price');
     }
 
-    /** @param  Builder<Package>  $query */
     public function scopeForHome(Builder $query): void
     {
         $query->available()->where('show_on_home', true);

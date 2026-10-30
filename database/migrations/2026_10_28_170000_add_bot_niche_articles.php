@@ -5,13 +5,6 @@ use App\Models\Module;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * SEO: п’ять статей під нішу «бот для автоматизації купівлі монет НБУ»: сповіщення проти автокупівлі,
- * чому монети розкуповують за хвилини, способи автоматизації, скільки коштує Numis, чек-лист перед стартом продажу.
- *
- * Факти про продукт узято з наявних статей і тарифів сайту, зовнішні – з посиланнями на джерела в тексті.
- * FAQ-блок вставлено в сам текст (h2 «Часті питання», далі пари h3 + p): з нього шаблон сторінки будує FAQPage.
- */
 return new class extends Migration
 {
     private const CTA_NAME = 'SEO – Заклик: пробний період';
@@ -62,7 +55,6 @@ return new class extends Migration
             });
     }
 
-    /** @return array<string, array{slug: string, category: string, title: string, meta_title: string, description: string, excerpt: string, cover: string, content: string}> */
     private function articles(): array
     {
         return [

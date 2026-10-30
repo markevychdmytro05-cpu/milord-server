@@ -5,14 +5,8 @@ namespace Database\Factories;
 use App\Models\CommunityTopic;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<CommunityTopic>
- */
 class CommunityTopicFactory extends Factory
 {
-    /**
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [

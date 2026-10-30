@@ -13,9 +13,6 @@ class CommunityTopicRequest extends FormRequest
         return true;
     }
 
-    /**
-     * @return array<string, array<int, mixed>>
-     */
     public function rules(): array
     {
         return [
@@ -28,9 +25,6 @@ class CommunityTopicRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [

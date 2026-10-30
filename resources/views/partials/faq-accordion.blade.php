@@ -1,4 +1,3 @@
-{{-- Блок «Часті питання» в єдиному вигляді (акордеон), як у модулі FAQ. $items: [['question' => ..., 'answer' => безпечний HTML], ...] --}}
 @php($faqId = 'faq-'.substr(md5(json_encode($items)), 0, 6))
 <div class="faq">
     <div class="container">

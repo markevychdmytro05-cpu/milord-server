@@ -10,11 +10,6 @@ use Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
-/**
- * Скарги користувачів на теми спільноти.
- *
- * @property-read CrudPanel $crud
- */
 class CommunityReportCrudController extends CrudController
 {
     use DeleteOperation;

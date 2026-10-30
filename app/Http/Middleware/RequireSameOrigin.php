@@ -6,10 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Захист публічної форми без CSRF-токена (токен вимагає сесії, а сторінки віддаються без неї):
- * браузерний запит має прийти з нашого ж сайту. Решту відсікають ліміт запитів і приманка в формі.
- */
 class RequireSameOrigin
 {
     public function handle(Request $request, Closure $next): Response

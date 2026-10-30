@@ -4,10 +4,6 @@ use App\Models\MenuItem;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Сторінки для колонок підвалу (послуги, про нас, документи) та самі пункти меню підвалу.
- * Юридичні тексти — чернетка: їх потрібно перевірити перед публікацією реального сервісу.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -61,7 +57,6 @@ return new class extends Migration
             return $item;
         };
 
-        // Пункти без вкладених збираються в колонку «Меню».
         $make(['title' => 'Можливості', 'url' => '/#features']);
         $make(['title' => 'Як це працює', 'url' => '/#how']);
         $make(['title' => 'Тарифи', 'url' => '/#pricing']);

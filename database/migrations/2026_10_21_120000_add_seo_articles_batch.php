@@ -5,13 +5,6 @@ use App\Models\Module;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * SEO: п’ять статей бази знань за реальними пошуковими запитами про купівлю монет в інтернет-магазині НБУ
- * (реєстрація й вхід, таймери кошика, план випуску на 2026 рік, де купити, магазин не працює).
- *
- * Факти взято з Правил реалізації (постанова НБУ від 21.11.2025 № 140), сторінок bank.gov.ua та повідомлень НБУ.
- * FAQ-блок вставлено в сам текст (h2 «Часті питання», далі пари h3 + p): з нього шаблон сторінки будує FAQPage.
- */
 return new class extends Migration
 {
     private const CATEGORY = 'Купівля';
@@ -64,7 +57,6 @@ return new class extends Migration
             });
     }
 
-    /** @return array<string, array{slug: string, title: string, meta_title: string, description: string, excerpt: string, cover: string, content: string}> */
     private function articles(): array
     {
         return [

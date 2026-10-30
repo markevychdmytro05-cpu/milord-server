@@ -3,9 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Три орієнтовні платні тарифи під карткою пробного. Назви, ціни й ліміти тимчасові: їх змінюють в адмінці (розділ пакетів).
- */
 return new class extends Migration
 {
     public function up(): void
@@ -37,6 +34,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -14,8 +14,6 @@ class ContactController extends Controller
 {
     public function store(ContactRequest $request): JsonResponse|RedirectResponse
     {
-        // Заповнена приманка — бот: вдаємо успіх, але заявку не зберігаємо.
-        // Назва поля навмисно беззмістовна: «website» підставляли менеджери паролів, і живі заявки губилися.
         if (! $request->filled('nb_hp')) {
             $lead = Lead::create([
                 ...$request->safe()->only(['name', 'contact', 'message']),

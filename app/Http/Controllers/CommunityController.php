@@ -176,7 +176,6 @@ class CommunityController extends Controller
         return $name !== '' ? $name : (string) (explode(' ', trim($license->customer))[0] ?: __('community.anonymous'));
     }
 
-    /** Більше двох посилань або точний дубль власного тексту за добу. */
     private function looksLikeSpam(string $text, License $license, bool $topic): bool
     {
         if (preg_match_all('~https?://|www\.|t\.me/~iu', $text) > 2) {

@@ -22,9 +22,6 @@ use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Prologue\Alerts\Facades\Alert;
 
-/**
- * @property-read CrudPanel $crud
- */
 class LicenseCrudController extends CrudController
 {
     use CreateOperation { store as traitStore; }

@@ -36,7 +36,6 @@ class PageController extends Controller
         return $this->lowercaseRedirect($slug, 'services.show') ?? $this->render(Page::TYPE_SERVICE, $slug);
     }
 
-    /** Адреса з великими літерами не дублюється, а постійно перенаправляється на канонічну. */
     private function lowercaseRedirect(string $slug, string $route): ?RedirectResponse
     {
         return $slug === strtolower($slug) ? null : redirect()->route($route, strtolower($slug), 301);

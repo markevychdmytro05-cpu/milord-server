@@ -3,9 +3,6 @@
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Переписані статті бази знань під пошукові запити: коротко, по суті, без технічного жаргону.
- */
 return new class extends Migration
 {
     private const NEW_SLUGS = ['yak-kupyty-monetu-nbu', 'bot-dlya-kupivli-monet-nbu', 'ne-dodaje-v-koshyk'];
@@ -44,7 +41,6 @@ return new class extends Migration
         Page::whereIn('slug', self::NEW_SLUGS)->delete();
     }
 
-    /** @return array<string, array{title: string, meta_title: string, description: string, category: string, days_ago: int, cover: string, content: string}> */
     private function articles(): array
     {
         return [

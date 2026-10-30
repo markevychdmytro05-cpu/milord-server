@@ -39,9 +39,6 @@ class AuthenticateBackpackSession extends AuthenticateSession
         });
     }
 
-    /**
-     * @param  Request  $request
-     */
     protected function storePasswordHashInSession($request): void
     {
         if (! $this->user) {

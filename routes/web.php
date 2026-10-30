@@ -31,20 +31,6 @@ Route::get('feed.xml', FeedController::class)->name('feed');
 Route::get('llms.txt', [LlmsController::class, 'index'])->name('llms');
 Route::get('{key}.txt', IndexNowKeyController::class)->where('key', '[A-Za-z0-9]{8,128}');
 Route::get('llms-full.txt', [LlmsController::class, 'full'])->name('llms.full');
-// Спільнота тимчасово вимкнена: щоб увімкнути, розкоментуйте маршрути нижче й пункт «Спільнота» в шапці (адмінка: Меню шапки).
-/*
-Route::prefix('spilnota')->name('community.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\CommunityController::class, 'index'])->name('index');
-    Route::get('nova', [\App\Http\Controllers\CommunityController::class, 'create'])->name('create');
-    Route::post('/', [\App\Http\Controllers\CommunityController::class, 'store'])->middleware('throttle:community-post')->name('store');
-    Route::post('kliuch', [\App\Http\Controllers\CommunityController::class, 'enter'])->middleware('throttle:community-key')->name('enter');
-    Route::post('vykhid', [\App\Http\Controllers\CommunityController::class, 'leave'])->name('leave');
-    Route::get('{slug}', [\App\Http\Controllers\CommunityController::class, 'show'])->where('slug', '[A-Za-z0-9-]+')->name('show');
-    Route::post('{slug}/like', [\App\Http\Controllers\CommunityController::class, 'like'])->where('slug', '[A-Za-z0-9-]+')->middleware('throttle:60,1')->name('like');
-    Route::post('{slug}/skarha', [\App\Http\Controllers\CommunityController::class, 'report'])->where('slug', '[A-Za-z0-9-]+')->middleware('throttle:community-post')->name('report');
-    Route::post('{slug}/komentari', [\App\Http\Controllers\CommunityController::class, 'comment'])->where('slug', '[A-Za-z0-9-]+')->middleware('throttle:community-post')->name('comment');
-});
-*/
 Route::get('zavantazhyty', [DownloadController::class, 'index'])->name('downloads.index');
 Route::get('zavantazhyty/{target}', [DownloadController::class, 'start'])->where('target', '(win|mac|linux)-(x64|arm64)')->middleware('throttle:downloads')->name('downloads.start');
 Route::get('zavantazhyty/{release}/file', [DownloadController::class, 'file'])->whereNumber('release')->middleware('signed')->name('downloads.file');
@@ -53,7 +39,6 @@ Route::get('monety-nbu/{slug}', [CoinController::class, 'show'])->where('slug', 
 Route::get('services/{slug}', [PageController::class, 'service'])->where('slug', '[A-Za-z0-9-]+')->name('services.show');
 Route::permanentRedirect('baza-znan-numis', '/blog');
 Route::permanentRedirect('kalendar-vypusku-monet-nbu-2026', '/blog/plan-vypusku-monet-nbu-na-2026-rik-shcho-vyyde-do-kintsia-roku');
-// Блог переїхав із /baza-znan: старі адреси хаба й статей разом із ?page і ?category постійно ведуть на /blog.
 Route::get('baza-znan/{slug?}', fn (Request $request, ?string $slug = null) => redirect()->to(
     ($slug ? route('articles.show', $slug) : route('pages.show', Page::BLOG_SLUG)).($request->getQueryString() ? '?'.$request->getQueryString() : ''), 301,
 ))->where('slug', '[A-Za-z0-9-]+');

@@ -19,7 +19,6 @@ class LicenseBillingTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @return array<string, mixed> */
     private function paymentData(string $operation = 'payment'): array
     {
         return [
@@ -53,7 +52,6 @@ class LicenseBillingTest extends TestCase
         $this->assertDatabaseHas('license_audits', ['license_id' => $license->id, 'event' => 'payment_recorded', 'actor_id' => $manager->id]);
     }
 
-    /** @return array<string, array{string, string, string}> */
     public static function renewalDates(): array
     {
         return [
@@ -110,7 +108,6 @@ class LicenseBillingTest extends TestCase
         $this->assertSame(12545, LicensePayment::sole()->amount_cents);
     }
 
-    /** @return array<string, array{string}> */
     public static function invalidAmounts(): array
     {
         return [

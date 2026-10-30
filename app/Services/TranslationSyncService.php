@@ -7,17 +7,8 @@ use App\Support\SiteLocale;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 
-/**
- * Обмін перекладами між файлами lang/{locale}/{group}.php і таблицею language_lines.
- * Файли – значення за замовчуванням, база – правки з адмінки, що їх перекривають.
- */
 class TranslationSyncService
 {
-    /**
-     * Додає до бази ключі з файлів (нові рядки й нові мови); наявні правки з адмінки не змінюються.
-     *
-     * @return array{created: int, updated: int}
-     */
     public function importFromFiles(): array
     {
         $created = $updated = 0;
@@ -41,11 +32,6 @@ class TranslationSyncService
         return ['created' => $created, 'updated' => $updated];
     }
 
-    /**
-     * Записує значення з бази у файли lang/{locale}/{group}.php (файли доповнюються й перезаписуються).
-     *
-     * @return int кількість записаних файлів
-     */
     public function exportToFiles(): int
     {
         $files = [];
@@ -74,11 +60,6 @@ class TranslationSyncService
         return count($files);
     }
 
-    /**
-     * Ключі з файлів: [група => [мова => [ключ з крапками => текст]]] для мов сайту.
-     *
-     * @return array<string, array<string, array<string, string>>>
-     */
     public function fileLines(): array
     {
         $result = [];
@@ -96,7 +77,6 @@ class TranslationSyncService
         return $result;
     }
 
-    /** Форматування масиву в стилі проєкту: короткий синтаксис, відступи по 4 пробіли, одинарні лапки. */
     private function export(array $value, int $level = 0): string
     {
         $indent = str_repeat('    ', $level + 1);

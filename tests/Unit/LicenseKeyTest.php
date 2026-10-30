@@ -8,9 +8,6 @@ use PHPUnit\Framework\TestCase;
 
 class LicenseKeyTest extends TestCase
 {
-    /**
-     * @return array<string, array{string}>
-     */
     public static function keyVariants(): array
     {
         return [

@@ -4,9 +4,6 @@ use App\Models\ModuleTemplate;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * SEO: змістовні заголовки службових сторінок і опис зображення в hero (поле image_alt).
- */
 return new class extends Migration
 {
     private const HERO_ALT = 'Інтерфейс Numis: список завдань автоматичної купівлі монет НБУ';
@@ -47,6 +44,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

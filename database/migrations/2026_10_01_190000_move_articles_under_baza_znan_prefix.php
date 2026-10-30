@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /** Внутрішні посилання на статті бази знань переписуються з /slug на /baza-znan/slug. */
     public function up(): void
     {
         $slugs = DB::table('pages')->where('type', 'page')->whereNotNull('category')->where('category', '!=', '')
@@ -47,6 +46,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -1,4 +1,3 @@
-{{-- Список записів із підполями text/textarea; надсилається як name[i][підполе]. --}}
 @php
     $subfields = $field['subfields'] ?? [];
     $raw = old_empty_or_null($field['name'], null) ?? $field['value'] ?? $field['default'] ?? [];

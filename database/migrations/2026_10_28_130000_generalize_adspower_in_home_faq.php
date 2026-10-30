@@ -3,9 +3,6 @@
 use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Numis працює не лише з AdsPower: у питанні головної про підключення пишемо про антидетект-браузер загалом.
- */
 return new class extends Migration
 {
     private const NAME = 'Головна – FAQ';
@@ -40,6 +37,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

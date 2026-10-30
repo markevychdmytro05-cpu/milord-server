@@ -5,9 +5,6 @@ use App\Models\ModuleTemplate;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Для SEO: на сторінки послуг, статті, «Про нас» і хаб бази знань додаються FAQ-модулі (з розміткою FAQPage) та спільний заклик.
- */
 return new class extends Migration
 {
     private const CTA_NAME = 'SEO – Заклик: пробний період';

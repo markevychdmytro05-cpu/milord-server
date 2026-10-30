@@ -1,4 +1,3 @@
-{{-- Компактне посилання для бічної колонки: мініатюра обкладинки ліворуч, заголовок праворуч. --}}
 @php($asideCover = $item->og_image ? parse_url($item->ogImageUrl(), PHP_URL_PATH) : null)
 @php($asideBase = $asideCover ? preg_replace('/\.(jpe?g|png)$/i', '', $asideCover) : null)
 @php($asideWebp = $asideBase && $asideBase !== $asideCover && is_file(public_path(ltrim($asideBase, '/').'-640.webp')))

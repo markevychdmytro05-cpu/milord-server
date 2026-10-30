@@ -16,7 +16,6 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Http\JsonResponse;
 
-/** @property-read CrudPanel $crud */
 class UserCrudController extends CrudController
 {
     use CreateOperation { store as traitStore; }

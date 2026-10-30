@@ -4,9 +4,6 @@ use App\Models\ModuleTemplate;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Прибирає надписи-«пілюлі» над заголовками секцій і напис «Europe/Kyiv» у футері.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -40,6 +37,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -1,7 +1,3 @@
-{{--
-    Перемикач прямо в таблиці. Потрібно: $column['toggle_route'] – URL-префікс, до якого додається /{id}/toggle.
-    Сервер повертає {"value": bool}; при помилці перемикач повертається назад.
---}}
 @php
     $checked = (bool) data_get($entry, $column['name']);
     $switchId = 'toggle-'.$column['name'].'-'.$entry->getKey();

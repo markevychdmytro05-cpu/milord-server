@@ -37,7 +37,6 @@ class TranslationTest extends TestCase
         $this->assertSame([], $missing, 'Ключі без перекладу в lang/uk: '.json_encode($missing, JSON_UNESCAPED_UNICODE));
     }
 
-    /** Перекладач кешує завантажені групи в межах запиту, тож у тестах скидаємо кеш після змін у базі. */
     private function reloadTranslations(): void
     {
         app('translator')->setLoaded([]);

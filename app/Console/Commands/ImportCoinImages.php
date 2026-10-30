@@ -36,7 +36,6 @@ class ImportCoinImages extends Command
         $bar->finish();
         $this->newLine(2);
 
-        // Каталог обігових монет іде першим: у ньому є чисті зображення й точні характеристики.
         $catalog = $news->circulationCatalog();
         $this->info('Монет у каталозі обігових монет НБУ: '.count($catalog));
         $articles = [...$catalog, ...$articles];
@@ -109,7 +108,6 @@ class ImportCoinImages extends Command
         return self::SUCCESS;
     }
 
-    /** Зберігає фото в public/uploads/coins і повертає шлях від кореня сайту. */
     private function download(Coin $coin, string $imageUrl): ?string
     {
         $response = Http::withUserAgent('NumisCoinCatalog/1.0 (https://t.me/NumisNBU)')->timeout(60)->retry(2, 2000, throw: false)->get($imageUrl);
@@ -128,9 +126,6 @@ class ImportCoinImages extends Command
         return "/uploads/coins/{$coin->slug}.{$extension}";
     }
 
-    /**
-     * @param  array{url: string, title: string, description: string, image: ?string, text: string, facts?: array<string, string>}  $article
-     */
     private function describe(array $article, string $lead): string
     {
         $source = '<a href="'.e($article['url']).'" rel="nofollow noopener" target="_blank">Джерело: bank.gov.ua</a>';
@@ -146,7 +141,6 @@ class ImportCoinImages extends Command
                 $facts,
             )).'</ul>';
 
-        // Розділ «Як не пропустити появу монети» з посиланнями показує шаблон сторінки монети, тут лише дані НБУ.
         return $intro;
     }
 }

@@ -32,7 +32,6 @@ class RoleRequest extends FormRequest
         ];
     }
 
-    /** @return array<\Closure> */
     public function after(): array
     {
         return [function (Validator $validator): void {

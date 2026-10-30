@@ -6,13 +6,6 @@ use App\Models\ModuleTemplate;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Одна дія «пробний ключ» на всьому сайті та дрібні правки структури:
- * - шапка, герой, пробний тариф, форма й повідомлення після відправки називають дію однаково;
- * - під кнопками героя – рядок про 3 дні без оплати (нове поле «Примітка під кнопками»);
- * - у меню «Можливості» й «Послуги» стають одним пунктом; «Оберіть пакет» → «Тарифи»; «Цифри, які ми виміряли» → «Numis у цифрах».
- * Текст міняється лише там, де досі стоїть початкове значення, тож правки з адмінки не перезаписуються.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -40,7 +33,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 
     private function addHeroNoteField(): void
@@ -57,9 +49,6 @@ return new class extends Migration
         $template->update(['template' => $config]);
     }
 
-    /**
-     * @param  array<string, array{0: ?string, 1: string}>  $changes  поле => [старе значення (null – поле ще порожнє), нове]
-     */
     private function replaceTexts(string $templateCode, array $changes): void
     {
         $template = ModuleTemplate::byCode($templateCode);
@@ -82,7 +71,6 @@ return new class extends Migration
         }
     }
 
-    /** Сторінки функцій переходять під пункт «Можливості» (/#features), а окремий пункт «Послуги» вимикається. */
     private function mergeFeaturesMenu(): void
     {
         $features = MenuItem::where('menu', MenuItem::HEADER)->whereNull('parent_id')->where('url', '/#features')->first();
@@ -95,7 +83,6 @@ return new class extends Migration
         MenuItem::where('parent_id', $services->id)->update(['parent_id' => $features->id]);
         $services->update(['is_active' => false]);
 
-        // Перераховуємо вкладені множини (lft/rgt/depth) за новим деревом, щоб сортування в адмінці лишилося коректним.
         $items = MenuItem::where('menu', MenuItem::HEADER)->orderBy('lft')->orderBy('id')->get()->groupBy('parent_id');
         $counter = 0;
         $walk = function (?int $parentId, int $depth) use (&$walk, &$counter, $items): void {

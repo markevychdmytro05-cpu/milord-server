@@ -7,16 +7,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 
-/**
- * Надсилає нову заявку з форми в чат Telegram (бот і чат задаються в .env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID).
- */
 class SendLeadToTelegram implements ShouldQueue
 {
     use Queueable;
 
     public int $tries = 3;
 
-    /** @var list<int> */
     public array $backoff = [10, 60];
 
     public function __construct(public Lead $lead) {}

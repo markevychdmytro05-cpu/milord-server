@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/** В інструкції з купівлі зазначено, що продаж стартує о 10:00 за київським часом. */
 return new class extends Migration
 {
     public function up(): void
@@ -35,6 +34,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -11,11 +11,6 @@ use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
-/**
- * Коментарі спільноти: модерація (схвалити, приховати, відредагувати, видалити).
- *
- * @property-read CrudPanel $crud
- */
 class CommunityCommentCrudController extends CrudController
 {
     use DeleteOperation;

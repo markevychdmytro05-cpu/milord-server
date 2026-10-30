@@ -53,7 +53,6 @@ return new class extends Migration
         ]);
     }
 
-    /** @param  array<string, Page>  $articles */
     private function addFooterGroup(Page $hub, array $articles): void
     {
         $position = (int) MenuItem::where('menu', MenuItem::FOOTER)->max('rgt');
@@ -72,7 +71,6 @@ return new class extends Migration
         $root->update(['rgt' => ++$position]);
     }
 
-    /** @param  array<string, Page>  $articles */
     private function hub(array $articles): string
     {
         $items = '';
@@ -90,7 +88,6 @@ return new class extends Migration
             .'<li>Створіть завдання на час старту продажу за Києвом.</li></ol>';
     }
 
-    /** @return list<array{string, string, string, string, string}> */
     private function articles(): array
     {
         return [

@@ -5,9 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Рядок «© Numis» під логотипом у підвалі зайвий: текст підвалу стає необовʼязковим, а наявне значення «© Numis» очищується.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -21,6 +18,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

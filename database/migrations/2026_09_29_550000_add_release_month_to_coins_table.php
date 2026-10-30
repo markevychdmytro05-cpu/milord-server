@@ -5,10 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Місяць введення в обіг за планом НБУ (точна дата продажу відома пізніше). Наявні монети
- * отримують місяць із тексту опису, який створила імпортна команда: «... за планом – вересень 2026 року».
- */
 return new class extends Migration
 {
     private const MONTHS = [

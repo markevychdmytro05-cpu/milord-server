@@ -20,10 +20,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend([RedirectToCanonicalPath::class, StatelessPublicPages::class]);
         $middleware->append([NoIndexPrivateAreas::class, SecurityHeaders::class]);
 
-        // Форма заявки не вимагає токена (див. RequireSameOrigin): сторінки віддаються без сесії.
         $middleware->preventRequestForgery(except: ['contact']);
 
-        // Лише локально (ngrok): у проді довіряти X-Forwarded-* усім не можна, бо ліміти API рахуються за IP.
         if (env('APP_ENV') === 'local') {
             $middleware->trustProxies(at: '*');
         }

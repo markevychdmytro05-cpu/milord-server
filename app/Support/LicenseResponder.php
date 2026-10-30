@@ -37,9 +37,6 @@ final class LicenseResponder
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE), $result->status);
     }
 
-    /**
-     * @return array{id: int, max_accounts: int, max_devices: int, expires_at: ?string}
-     */
     private static function licensePayload(License $license): array
     {
         return [
@@ -50,9 +47,6 @@ final class LicenseResponder
         ];
     }
 
-    /**
-     * @return array{version: string, notes: ?string, size: int, sha256: string, url: string}
-     */
     private static function updatePayload(Release $release): array
     {
         return [

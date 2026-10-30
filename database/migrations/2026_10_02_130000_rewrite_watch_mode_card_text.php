@@ -3,9 +3,6 @@
 use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Картка «Режим спостереження» на головній: пояснює, що програма сама швидко оновлює сторінку замість користувача.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -30,6 +27,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -4,7 +4,6 @@ use App\Models\ModuleTemplate;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/** Читабельніший скріншот у hero; у шапці не дублюється пункт «Контакти», бо є кнопка «Спробувати безкоштовно». */
 return new class extends Migration
 {
     public function up(): void
@@ -23,6 +22,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

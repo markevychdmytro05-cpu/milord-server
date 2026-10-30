@@ -1,5 +1,4 @@
 @if ($paginator->hasPages())
-    {{-- Перша сторінка без параметра page: /monety-nbu, а не /monety-nbu?page=1. --}}
     @php($clean = fn (?string $url): ?string => $url === null ? null : rtrim(preg_replace('/([?&])page=1$/', '', $url), '?&'))
     <nav class="kb-pagination" aria-label="{{ __('site.pagination.label') }}">
         @if ($paginator->onFirstPage())

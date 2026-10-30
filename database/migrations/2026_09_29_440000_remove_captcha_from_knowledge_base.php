@@ -3,9 +3,6 @@
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * База знань більше не згадує CAPTCHA: правки в статтях, метаданих і адресі статті про чергу та 429.
- */
 return new class extends Migration
 {
     private const OLD_SLUG = 'cherha-kapcha-429';
@@ -45,10 +42,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 
-    /** @param  array<string, string>  $replacements */
     private function edit(string $slug, array $replacements): void
     {
         $page = Page::where('slug', $slug)->first();
@@ -58,7 +53,6 @@ return new class extends Migration
         }
     }
 
-    /** Без розділів про недоліки й обмеження: лишаються нейтральні факти. */
     private function softenLimitations(): void
     {
         $this->replacePattern('yak-kupyty-monetu-nbu-pershym', [
@@ -82,7 +76,6 @@ return new class extends Migration
         ]);
     }
 
-    /** @param  array<string, string>  $patterns */
     private function replacePattern(string $slug, array $patterns): void
     {
         $page = Page::where('slug', $slug)->first();

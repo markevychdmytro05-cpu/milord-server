@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Cache;
 
 final class LicenseRequestProof
 {
-    /**
-     * @param  array<string, mixed>  $data
-     */
     public static function verify(array $data, string $action): bool
     {
         if (abs(now()->timestamp - (int) $data['request_time']) > 300) {

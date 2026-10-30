@@ -8,13 +8,6 @@ use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * Шаблон (тип) модуля. Опис у JSON-колонці template:
- *  - fields / rules            – загальні поля й правила валідації;
- *  - lang_fields / lang_rules  – поля, що зберігаються окремо для кожної мови (setting[uk][title]).
- *
- * Код шаблону визначає клас модуля (App\Modules\{Code}Module) і blade-шаблон.
- */
 class ModuleTemplate extends Model
 {
     use CrudTrait;
@@ -26,7 +19,6 @@ class ModuleTemplate extends Model
         return ['template' => AsArrayObject::class];
     }
 
-    /** @return HasMany<Module, $this> */
     public function modules(): HasMany
     {
         return $this->hasMany(Module::class);
@@ -37,9 +29,6 @@ class ModuleTemplate extends Model
         return static::where('code', $code)->first();
     }
 
-    /**
-     * @param  array<string, mixed>  $setting
-     */
     public function makeModule(string $name, array $setting): Module
     {
         $config = ['name' => $name, 'module_template_id' => $this->id, 'setting' => []];
@@ -62,11 +51,6 @@ class ModuleTemplate extends Model
         return ! empty($this->template['lang_fields']);
     }
 
-    /**
-     * Поля форми Backpack для цього шаблону.
-     *
-     * @return list<array<string, mixed>>
-     */
     public function fields(): array
     {
         $template = $this->template;
@@ -100,11 +84,6 @@ class ModuleTemplate extends Model
         return $result;
     }
 
-    /**
-     * Ключі налаштувань, які приймаються з форми (для мовних полів – «uk.title»).
-     *
-     * @return list<string>
-     */
     public function column_names(): array
     {
         $template = $this->template;
@@ -123,9 +102,6 @@ class ModuleTemplate extends Model
         return $result;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function rules(): array
     {
         $template = $this->template;
@@ -142,11 +118,6 @@ class ModuleTemplate extends Model
         return $result;
     }
 
-    /**
-     * Назви полів, у яких очікується завантаження файлу.
-     *
-     * @return list<string>
-     */
     public function uploadFields(): array
     {
         return collect($this->template['fields'] ?? [])
@@ -154,11 +125,6 @@ class ModuleTemplate extends Model
             ->keys()->all();
     }
 
-    /**
-     * @param  array<string, mixed>  $field
-     * @param  array<string, mixed>  $config
-     * @return array<string, mixed>
-     */
     private function buildField(array $field, array $config): array
     {
         $field = array_filter($field, fn ($value): bool => $value !== null);
@@ -176,10 +142,6 @@ class ModuleTemplate extends Model
         };
     }
 
-    /**
-     * @param  array<string, mixed>  $config
-     * @return array<int|string, string>
-     */
     private function selectOptions(array $config): array
     {
         $provider = $config['provider'] ?? [];

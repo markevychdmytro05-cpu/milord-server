@@ -15,7 +15,6 @@ use Spatie\Permission\Traits\HasRoles;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use CrudTrait, HasFactory, Notifiable;
 
     use HasRoles {
@@ -28,11 +27,6 @@ class User extends Authenticatable
 
     public const ROLE_MANAGER = 'manager';
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -52,15 +46,11 @@ class User extends Authenticatable
         return $this->roles->first()?->name;
     }
 
-    /** @return list<string> */
     public function getPermissionNamesAttribute(): array
     {
         return $this->permissions->pluck('name')->all();
     }
 
-    /**
-     * Вимкнений користувач або користувач без ролі не має жодних прав, навіть особистих.
-     */
     public function checkPermissionTo($permission, ?string $guardName = null): bool
     {
         return $this->is_active && $this->roles->isNotEmpty() && $this->checkSpatiePermissionTo($permission, $guardName);

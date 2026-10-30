@@ -11,11 +11,6 @@ use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
-/**
- * Шапка й підвал публічного сайту. Єдиний запис, тільки редагування.
- *
- * @property-read CrudPanel $crud
- */
 class SiteSettingCrudController extends CrudController
 {
     use UpdateOperation { update as traitUpdate; }

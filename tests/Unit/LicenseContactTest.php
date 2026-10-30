@@ -8,26 +8,23 @@ use PHPUnit\Framework\TestCase;
 
 class LicenseContactTest extends TestCase
 {
-    /**
-     * @return array<string, array{?string, ?string}>
-     */
     public static function contacts(): array
     {
         return [
-            'telegram handle' => ['@dbecker', 'https://t.me/dbecker'],
-            'telegram link without scheme' => ['t.me/dbecker', 'https://t.me/dbecker'],
-            'full link kept as is' => ['https://t.me/dbecker/', 'https://t.me/dbecker/'],
+            'telegram handle' => ['@example_user', 'https://t.me/example_user'],
+            'telegram link without scheme' => ['t.me/example_user', 'https://t.me/example_user'],
+            'full link kept as is' => ['https://t.me/example_user/', 'https://t.me/example_user/'],
             'http link kept as is' => ['http://example.com', 'http://example.com'],
             'any site without scheme' => ['instagram.com/some.user', 'https://instagram.com/some.user'],
             'link with query' => ['wa.me/380671234567?text=hi', 'https://wa.me/380671234567?text=hi'],
             'email' => ['client@example.com', 'mailto:client@example.com'],
             'phone becomes tel' => ['+380 67 123-45-67', 'tel:+380671234567'],
             'viber link kept as is' => ['viber://chat?number=%2B380671234567', 'viber://chat?number=%2B380671234567'],
-            'tg link kept as is' => ['tg://resolve?domain=dbecker', 'tg://resolve?domain=dbecker'],
+            'tg link kept as is' => ['tg://resolve?domain=example_user', 'tg://resolve?domain=example_user'],
             'whatsapp link kept as is' => ['whatsapp://send?phone=380671234567', 'whatsapp://send?phone=380671234567'],
             'unknown scheme stays text' => ['ftp://example.com', null],
             'data scheme stays text' => ['data:text/html,<b>x</b>', null],
-            'plain name stays text' => ['Іван', null],
+            'plain name stays text' => ['Тест', null],
             'invalid handle stays text' => ['@conroy.odie', null],
             'credentials in url stay text' => ['user@evil.com@site.com', null],
             'javascript is never a link' => ['javascript:alert(1)', null],
@@ -58,8 +55,8 @@ class LicenseContactTest extends TestCase
 
     public function test_telegram_link_opens_in_new_tab(): void
     {
-        $link = (new License(['contact' => '@dbecker']))->contactLink();
+        $link = (new License(['contact' => '@example_user']))->contactLink();
 
-        $this->assertSame('<a href="https://t.me/dbecker" target="_blank" rel="noopener">@dbecker</a>', $link);
+        $this->assertSame('<a href="https://t.me/example_user" target="_blank" rel="noopener">@example_user</a>', $link);
     }
 }

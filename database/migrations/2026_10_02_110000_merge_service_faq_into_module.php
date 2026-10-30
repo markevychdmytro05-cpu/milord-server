@@ -3,9 +3,6 @@
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * На сторінках послуг FAQ був і в тексті, і окремим модулем: питання з тексту переходять у модуль-акордеон.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -39,6 +36,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -6,9 +6,6 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Одна адреса на сторінку: «/blog/» і «/index.php…» постійно ведуть на канонічну адресу без слеша й front-controller.
- */
 class RedirectToCanonicalPath
 {
     public function handle(Request $request, Closure $next): Response

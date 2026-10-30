@@ -1,4 +1,3 @@
-// Скрипти публічного сайту (раніше вбудовані в сторінки): тости й форма, меню, підсвітка розділу, акордеон, слайдер тарифів.
 (function () {
     var toast = document.getElementById('toast');
     var live = document.getElementById('live-status');
@@ -29,7 +28,6 @@
 
     if (toast) {
         toast.querySelector('.toast-close').addEventListener('click', hideToast);
-        // Повідомлення не зникає, поки на ньому курсор або фокус (WCAG 2.2.1).
         toast.addEventListener('mouseenter', function () { clearTimeout(timer); });
         toast.addEventListener('focusin', function () { clearTimeout(timer); });
         toast.addEventListener('mouseleave', function () { timer = setTimeout(hideToast, 4000); });
@@ -55,7 +53,6 @@
         announce(message);
     }
 
-    // 419: сторінка пережила сесію. Беремо свіжий CSRF-токен і повторюємо відправку один раз.
     function refreshToken(form) {
         return fetch(location.href, { credentials: 'same-origin' })
             .then(function (response) { return response.text(); })
@@ -74,7 +71,6 @@
 
         var button = form.querySelector('button[type=submit]');
         if (button.getAttribute('aria-disabled') === 'true') { return; }
-        // aria-disabled, а не disabled: вимкнена кнопка скидає фокус клавіатури на <body>.
         button.setAttribute('aria-disabled', 'true');
         form.classList.add('is-loading');
         clearErrors(form);
@@ -143,11 +139,9 @@
         root.classList.toggle('menu-open', open);
         toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         toggle.setAttribute('aria-label', open ? toggle.dataset.labelClose : toggle.dataset.labelOpen);
-        // Сторінка під повноекранним меню не отримує фокус (WCAG 2.4.3).
         behind.forEach(function (el) { if (el) { el.inert = open && mobile.matches; } });
         if (open) {
             fitMenu();
-            // Панель стає видимою з наступного кадру, тож фокус переносимо трохи згодом.
             if (how === 'keyboard') { setTimeout(function () { var first = links.querySelector('a[href], button'); if (first) { first.focus(); } }, 50); }
         } else {
             closeSections(null);
@@ -165,7 +159,6 @@
         if (event.key !== 'Escape') { return; }
         var openItem = document.querySelector('.dropdown.is-open');
         if (openItem) {
-            // Перший Esc закриває підменю, другий – усе меню.
             var hadFocus = openItem.contains(document.activeElement);
             setSection(openItem, false);
             if (hadFocus) { openItem.querySelector('[data-submenu-toggle]').focus(); }
@@ -187,7 +180,6 @@
 
     function onScroll() { if (nav) { nav.classList.toggle('is-scrolled', window.scrollY > 8); } }
 
-    // Підсвічування розділу в меню під час прокрутки: лише для якорів на поточну сторінку (/#pricing на головній).
     var spy = [].slice.call(document.querySelectorAll('.links a[href*="#"]')).map(function (link) {
         var url = new URL(link.href, location.href);
         var target = url.pathname === location.pathname && url.hash.length > 1 ? document.querySelector(url.hash) : null;
@@ -215,7 +207,6 @@
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    // Активний пункт горизонтального перемикача (категорії, місяці) завжди у полі зору.
     document.querySelectorAll('.kb-filters').forEach(function (strip) {
         var active = strip.querySelector('.is-active');
         if (active && strip.scrollWidth > strip.clientWidth) {
@@ -237,7 +228,6 @@ document.addEventListener('click', function (event) {
     var buttons = root.closest('section').querySelectorAll('.plans-arrow');
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
     function step() { var card = track.querySelector('.plan'); return card ? card.offsetWidth + parseFloat(getComputedStyle(track).columnGap || 0) : 300; }
-    // aria-disabled замість disabled: інакше на краю слайдера фокус клавіатури падає на <body>.
     function update() {
         buttons[0].setAttribute('aria-disabled', track.scrollLeft <= 2 ? 'true' : 'false');
         buttons[1].setAttribute('aria-disabled', track.scrollLeft + track.clientWidth >= track.scrollWidth - 2 ? 'true' : 'false');
@@ -253,7 +243,6 @@ document.addEventListener('click', function (event) {
     update();
 })();
 
-// «Замовити» веде на форму заявки: підставляємо назву тарифу, якщо повідомлення ще порожнє.
 document.addEventListener('click', function (event) {
     var link = event.target.closest('[data-plan]');
     var message = link && document.querySelector('.contact-form [name="message"]');

@@ -16,9 +16,6 @@ class ModuleTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @param  array<string, mixed>  $setting
-     */
     private function module(string $code, array $setting, string $name = 'Тестовий модуль'): Module
     {
         return ModuleTemplate::byCode($code)->makeModule($name, ['active' => 1] + $setting);
@@ -117,9 +114,6 @@ class ModuleTest extends TestCase
         $this->assertSame(1, $module->setting['active']);
     }
 
-    /**
-     * @return array<string, array{string}>
-     */
     public static function templateCodes(): array
     {
         return array_combine(

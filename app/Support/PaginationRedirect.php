@@ -6,12 +6,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-/**
- * Канонічні адреси пагінації: перша сторінка без параметра page, неіснуюча – перенаправлення на останню наявну.
- */
 final class PaginationRedirect
 {
-    /** ?page=1, ?page=0 і нечислові значення ведуть на адресу без параметра. */
     public static function fromFirstPage(Request $request): ?RedirectResponse
     {
         if (! $request->query->has('page') || $request->integer('page') > 1) {
@@ -21,9 +17,6 @@ final class PaginationRedirect
         return self::to($request, null);
     }
 
-    /**
-     * @param  LengthAwarePaginator<int, mixed>  $paginator
-     */
     public static function fromOutOfRange(Request $request, LengthAwarePaginator $paginator): ?RedirectResponse
     {
         if ($paginator->currentPage() <= $paginator->lastPage()) {

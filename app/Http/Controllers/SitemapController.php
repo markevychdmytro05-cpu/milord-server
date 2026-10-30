@@ -21,7 +21,6 @@ class SitemapController extends Controller
 
         $releasesAt = Release::active()->max('published_at');
 
-        // Хаби змінюються разом із тим, що на них показано: тарифи, монети, релізи, статті.
         $homeUpdatedAt = $this->latest([
             $home?->updated_at,
             Package::forHome()->max('updated_at'),
@@ -42,7 +41,6 @@ class SitemapController extends Controller
         ])->header('Content-Type', 'application/xml');
     }
 
-    /** @param  list<\DateTimeInterface|string|null>  $dates */
     private function latest(array $dates): ?Carbon
     {
         return collect($dates)->filter()->map(fn ($date): Carbon => Carbon::parse($date))->max();

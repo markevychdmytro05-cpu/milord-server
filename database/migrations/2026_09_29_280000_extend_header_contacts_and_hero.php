@@ -31,7 +31,6 @@ return new class extends Migration
         });
     }
 
-    /** Hero отримує пункти-списком, другу кнопку та зображення праворуч. */
     private function extendHeroTemplate(): void
     {
         $template = ModuleTemplate::byCode('hero');

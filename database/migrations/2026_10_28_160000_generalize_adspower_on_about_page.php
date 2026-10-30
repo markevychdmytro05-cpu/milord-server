@@ -4,16 +4,12 @@ use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Numis працюватиме з кількома антидетект-браузерами на вибір, тож на сторінці «Про нас» не привʼязуємо його до AdsPower.
- */
 return new class extends Migration
 {
     private const SLUG = 'pro-nas';
 
     private const FAQ_NAME = 'SEO – FAQ: about';
 
-    /** @var array<string, array<string, string>> поле сторінки => [старий фрагмент => новий] */
     private const PAGE_REPLACEMENTS = [
         'meta_description' => [
             'через профілі AdsPower.' => 'через профілі антидетект-браузера.',
@@ -61,6 +57,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

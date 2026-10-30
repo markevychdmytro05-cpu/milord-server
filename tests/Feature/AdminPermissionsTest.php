@@ -21,7 +21,6 @@ class AdminPermissionsTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** Адміністратор без одного права – через окрему роль. */
     private function adminWithout(string $permission): User
     {
         $role = Role::factory()->create();

@@ -3,9 +3,6 @@
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Скріншоти програми на сторінках «Про нас» і «Що нового».
- */
 return new class extends Migration
 {
     public function up(): void
@@ -19,7 +16,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 
     private function insertAfter(string $slug, string $pattern, string $html): void

@@ -4,9 +4,6 @@ use App\Models\MenuItem;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Головні сторінки з підвалу з'являються і в меню шапки: «Послуги» (випадаючий список), «Про нас», «Контакти».
- */
 return new class extends Migration
 {
     public function up(): void

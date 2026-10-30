@@ -1,4 +1,3 @@
-{{-- Slug із кнопкою «Згенерувати» з поля-джерела ($field['source'], за замовчуванням title). --}}
 @php
     $value = old_empty_or_null($field['name'], '') ?? $field['value'] ?? $field['default'] ?? '';
     $id = 'slug-input-'.\Illuminate\Support\Str::slug($field['name']);

@@ -18,9 +18,6 @@ class SiteSettingRequest extends FormRequest
         $this->merge(['logo_image' => LocalUrl::path($this->input('logo_image'))]);
     }
 
-    /**
-     * @return array<string, array<int, string>>
-     */
     public function rules(): array
     {
         return [
@@ -47,9 +44,6 @@ class SiteSettingRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [

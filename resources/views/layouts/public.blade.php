@@ -11,7 +11,6 @@
     <link rel="alternate" hreflang="x-default" href="@yield('canonical', url()->current())">
     <link rel="alternate" type="application/rss+xml" href="{{ route('feed') }}" title="{{ $site->header_logo }}: блог">
     <link rel="alternate" type="text/plain" href="{{ route('llms') }}" title="llms.txt">
-    {{-- Google показує у видачі лише растрові іконки (ICO/PNG), тож вони йдуть першими. --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="64x64">
     <link rel="icon" type="image/png" href="{{ asset('favicon-192.png') }}" sizes="192x192">
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
@@ -34,7 +33,6 @@
         <meta property="og:image:height" content="630">
         <meta property="og:image:alt" content="{{ __('site.seo.og_image_alt') }}">
     @else
-        {{-- Розміри локальної картинки: соцмережі й месенджери показують прев’ю без очікування завантаження. --}}
         @php($ogFile = public_path(ltrim(parse_url($ogImage, PHP_URL_PATH) ?: '', '/')))
         @php($ogSize = is_file($ogFile) ? @getimagesize($ogFile) : false)
         @if ($ogSize)
@@ -77,7 +75,6 @@
                         @if ($item->tree_children->isNotEmpty())
                             @php($sectionActive = $item->isCurrent($currentPath) || $item->hasCurrentChild($currentPath))
                             @php($submenuId = 'submenu-'.$loop->index)
-                            {{-- Розділ без власної адреси – кнопка-розкривачка (APG Disclosure), а не посилання на «#». --}}
                             <div @class(['dropdown', 'is-active' => $sectionActive])>
                                 @if ($item->href())
                                     <a href="{{ $item->href() }}" class="has-children {{ $sectionActive ? 'is-active' : '' }}" @if ($item->isCurrent($currentPath)) aria-current="page" @endif @if ($item->open_in_new_tab) target="_blank" rel="noopener" @endif>{{ $item->label }}</a>
@@ -98,7 +95,6 @@
                 </div>
                 <div class="nav-right">
                     @if ($site->header_button_text && $site->header_button_url)
-                        {{-- На вузьких екранах лишаються перші два слова («Пробний ключ»), хвіст ховається. --}}
                         @php($ctaWords = preg_split('/\s+/u', trim($site->header_button_text)))
                         @php([$ctaFirst, $ctaRest] = [implode(' ', array_slice($ctaWords, 0, 2)), implode(' ', array_slice($ctaWords, 2))])
                         <a class="nav-cta" href="{{ $site->header_button_url }}">{{ $ctaFirst }}@if ($ctaRest !== '') <span class="nav-cta__rest">{{ $ctaRest }}</span>@endif</a>
@@ -176,7 +172,6 @@
         </div>
     </footer>
 
-    {{-- Живий регіон існує від початку, тож зчитувачі екрана озвучують результат відправки форми. --}}
     <div class="visually-hidden" id="live-status" role="status" aria-live="polite"></div>
     <div class="toast" id="toast" role="status" aria-live="polite" data-flash="{{ session('contact_sent') ?? session('community_status') }}" data-flash-error="{{ session('community_error') }}" hidden>
         <span class="toast-text"></span>

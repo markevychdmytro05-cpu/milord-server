@@ -7,9 +7,6 @@ use App\Models\SiteSetting;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Прибирає надпис-значок із hero та замінює довгі тире (—) на середні (–) у збережених даних сайту.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -20,7 +17,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 
     private function removeHeroBadge(): void

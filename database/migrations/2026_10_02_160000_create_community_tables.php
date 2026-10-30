@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\PermissionRegistrar;
 
-/** Спільнота: теми й коментарі користувачів із ключем ліцензії, модерація в адмінці, пункт меню «Спільнота». */
 return new class extends Migration
 {
     private const PERMISSIONS = [

@@ -3,9 +3,6 @@
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * У статті про швидкий розпродаж частка інтернет-магазину була застарілою (60%): з 15 жовтня 2025 року це 75% тиражу.
- */
 return new class extends Migration
 {
     private const OLD = '<li><strong>Значна частка йде в онлайн.</strong> За <a href="https://kosht.media/nova-moneta-batkivske-shchastia-de-kupyty/">повідомленнями медіа</a>, через інтернет-магазин НБУ реалізовують 60% тиражу, тому на старті продажу туди приходить багато покупців одночасно.</li>';
@@ -25,6 +22,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

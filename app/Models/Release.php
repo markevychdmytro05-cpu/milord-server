@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\URL;
 
 class Release extends Model
 {
-    /** @use HasFactory<ReleaseFactory> */
     use CrudTrait, HasFactory;
 
     public const DISK = 'local';
@@ -39,7 +38,6 @@ class Release extends Model
         ];
     }
 
-    /** @param  Builder<Release>  $query */
     public function scopeActive(Builder $query): void
     {
         $query->where('is_active', true);
@@ -51,11 +49,6 @@ class Release extends Model
             ->sort(fn (self $a, self $b): int => version_compare($b->version, $a->version))->first();
     }
 
-    /**
-     * Найновіша активна збірка для кожної пари «платформа + архітектура».
-     *
-     * @return Collection<int, Release>
-     */
     public static function latestPerTarget(): Collection
     {
         return static::active()->get()->groupBy(fn (self $release): string => $release->target())
@@ -64,9 +57,6 @@ class Release extends Model
             ->values();
     }
 
-    /**
-     * Збірка, яку варто запропонувати клієнту: новіша за його версію й доступна для його платформи.
-     */
     public static function offerFor(?string $platform, ?string $arch, ?string $currentVersion): ?self
     {
         if (! isset(self::PLATFORMS[$platform]) || ! isset(self::ARCHES[$arch]) || ! $currentVersion) {

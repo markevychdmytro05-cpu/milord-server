@@ -3,9 +3,6 @@
 use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Numis працює не лише з AdsPower, тож у кроці «Додайте профілі» на головній пишемо про антидетект-браузер загалом.
- */
 return new class extends Migration
 {
     private const NAME = 'Головна – Як це працює';
@@ -35,6 +32,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

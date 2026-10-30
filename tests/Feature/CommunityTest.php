@@ -31,9 +31,6 @@ class CommunityTest extends TestCase
         return $license;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     private function topicPayload(array $overrides = []): array
     {
         return $overrides + [

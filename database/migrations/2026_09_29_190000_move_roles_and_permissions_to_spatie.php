@@ -11,7 +11,6 @@ return new class extends Migration
 
     private const USER_MODEL = 'App\Models\User';
 
-    /** @return array<string, array<string, string>> */
     private function catalog(): array
     {
         return [

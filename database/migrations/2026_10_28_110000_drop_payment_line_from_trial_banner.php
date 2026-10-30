@@ -3,9 +3,6 @@
 use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * На сайті немає оплати, тож у банері пробного періоду речення про «оформлення й оплату в браузері» зайве.
- */
 return new class extends Migration
 {
     private const NAME = 'SEO – Заклик: пробний період';
@@ -36,6 +33,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

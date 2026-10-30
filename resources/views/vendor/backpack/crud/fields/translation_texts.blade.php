@@ -1,4 +1,3 @@
-{{-- Текст перекладу для кожної мови сайту: name="text[uk]". Значення – масив {мова: текст} моделі LanguageLine. --}}
 @php
     $values = (array) (old($field['name']) ?? $field['value'] ?? []);
 @endphp

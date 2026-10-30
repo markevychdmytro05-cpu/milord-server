@@ -24,12 +24,6 @@ class SiteLayoutComposer
         ]);
     }
 
-    /**
-     * Групи підвалу (пункти з вкладеними) стають колонками лінків.
-     *
-     * @param  Collection<int, MenuItem>  $groups
-     * @return Collection<int, array{title: string, items: Collection<int, MenuItem>}>
-     */
     private function columns(Collection $groups): Collection
     {
         return $groups->map(fn (MenuItem $item): array => ['title' => $item->label, 'items' => $item->tree_children])->values();

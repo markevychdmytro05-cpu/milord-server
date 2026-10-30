@@ -5,14 +5,8 @@ namespace Database\Factories;
 use App\Models\Coin;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Coin>
- */
 class CoinFactory extends Factory
 {
-    /**
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [

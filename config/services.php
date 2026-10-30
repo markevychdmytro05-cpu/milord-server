@@ -2,18 +2,6 @@
 
 return [
 
-    /*
-    |--------------------------------------------------------------------------
-    | Third Party Services
-    |--------------------------------------------------------------------------
-    |
-    | This file is for storing the credentials for third party services such
-    | as Resend, Postmark, AWS, and more. This file provides the de facto
-    | location for this type of information, allowing packages to have
-    | a conventional file to locate the various service credentials.
-    |
-    */
-
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
@@ -35,13 +23,11 @@ return [
         ],
     ],
 
-    // Сповіщення про нові заявки в Telegram (бот від @BotFather, ID чату або каналу).
     'telegram' => [
         'bot_token' => env('TELEGRAM_BOT_TOKEN'),
         'chat_id' => env('TELEGRAM_CHAT_ID'),
     ],
 
-    // IndexNow: миттєве повідомлення Bing та іншим пошуковикам про нові й змінені сторінки (ключ – 8-128 латинських літер чи цифр).
     'indexnow' => [
         'key' => env('INDEXNOW_KEY'),
     ],

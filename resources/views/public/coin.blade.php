@@ -36,7 +36,6 @@
             $coin->metal ? ['@type' => 'PropertyValue', 'name' => __('coins.schema.metal'), 'value' => $coin->metal] : null,
             $coin->mintage !== null ? ['@type' => 'PropertyValue', 'name' => __('coins.schema.mintage'), 'value' => $coin->mintage, 'unitText' => __('coins.schema.unit')] : null,
         ])),
-        // Наявність на складі НБУ ми не знаємо, тож вказуємо лише відомі факти: ціну й початок продажу.
         'offers' => array_filter([
             '@type' => 'Offer',
             'url' => $coin->nbu_url ?: $coin->url(),
@@ -64,7 +63,6 @@
                 'isPartOf' => ['@id' => url('/').'#site'],
                 'primaryImageOfPage' => $coin->imageUrl(),
             ]),
-            // ImageObject лише з указаним джерелом фото: Google вимагає creditText/creator для метаданих зображення.
             ...($coin->image && $coin->image_source ? [array_filter([
                 '@type' => 'ImageObject',
                 'contentUrl' => $coin->imageUrl(),

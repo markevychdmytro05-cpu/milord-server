@@ -1,4 +1,3 @@
-{{-- This file is used for menu items by any Backpack v7 theme --}}
 @if (backpack_user()->can('dashboard_view'))
     <li class="nav-item"><a class="nav-link" href="{{ backpack_url('dashboard') }}"><i class="la la-home nav-icon"></i> {{ trans('backpack::base.dashboard') }}</a></li>
 @endif
@@ -27,17 +26,7 @@
 @if (backpack_user()->can('access_manage'))
     <x-backpack::menu-item title="Ролі та права" icon="la la-user-shield" :link="backpack_url('role')" />
 @endif
-{{-- Спільнота тимчасово вимкнена:
-@if (backpack_user()->can('community_view'))
-    <x-backpack::menu-dropdown title="Спільнота" icon="la la-comments">
-        <x-backpack::menu-dropdown-item title="Теми" icon="la la-comment-dots" :link="backpack_url('community-topic')" />
-        <x-backpack::menu-dropdown-item title="Коментарі" icon="la la-comment" :link="backpack_url('community-comment')" />
-        <x-backpack::menu-dropdown-item title="Скарги" icon="la la-flag" :link="backpack_url('community-report')" />
-    </x-backpack::menu-dropdown>
-@endif
---}}
 @if (backpack_user()->can('leads_view'))
-    {{-- Нові (необроблені) заявки показуємо в дужках біля назви. --}}
     @php($newLeads = \App\Models\Lead::where('is_processed', false)->count())
     <x-backpack::menu-item :title="'Заявки'.($newLeads > 0 ? ' ('.$newLeads.')' : '')" icon="la la-inbox" :link="backpack_url('lead')" />
 @endif

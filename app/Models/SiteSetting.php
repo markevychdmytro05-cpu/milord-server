@@ -6,11 +6,6 @@ use App\Models\Concerns\HasOrderedModules;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Налаштування публічного сайту: завжди один рядок.
- *
- * @property list<int> $footer_modules ідентифікатори модулів підвалу в порядку виводу
- */
 class SiteSetting extends Model
 {
     use CrudTrait, HasOrderedModules;
@@ -37,13 +32,11 @@ class SiteSetting extends Model
         return 'site_setting_id';
     }
 
-    /** @return list<int> */
     public function getFooterModulesAttribute(): array
     {
         return $this->orderedModuleIds();
     }
 
-    /** @param  list<int|string>|null  $value */
     public function setFooterModulesAttribute(?array $value): void
     {
         $this->queueModules($value);
@@ -95,11 +88,6 @@ class SiteSetting extends Model
         return $digits !== '' ? 'viber://chat?number=%2B'.$digits : null;
     }
 
-    /**
-     * Налаштовані месенджери: назва => посилання.
-     *
-     * @return array<string, string>
-     */
     public function messengers(): array
     {
         return array_filter([
@@ -111,14 +99,8 @@ class SiteSetting extends Model
         ]);
     }
 
-    /**
-     * Схема Organization: логотип, контакти й офіційні профілі (тільки http/https-посилання).
-     *
-     * @return array<string, mixed>
-     */
     public function organizationSchema(): array
     {
-        // Без завантаженого логотипа беремо іконку сайту: Google просить для Organization квадратне зображення від 112px.
         $logo = $this->logo_image
             ? (str_starts_with($this->logo_image, 'http') ? $this->logo_image : url($this->logo_image))
             : url('/favicon-192.png');

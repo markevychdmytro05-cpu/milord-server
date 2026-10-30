@@ -11,11 +11,6 @@ use Backpack\CRUD\app\Http\Controllers\Operations\ShowOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
-/**
- * Заявки з форми зв'язку.
- *
- * @property-read CrudPanel $crud
- */
 class LeadCrudController extends CrudController
 {
     use DeleteOperation;
@@ -29,7 +24,6 @@ class LeadCrudController extends CrudController
         CRUD::setEntityNameStrings('заявку', 'заявки');
         AdminPermissions::crud(['list' => 'leads_view', 'show' => 'leads_view', 'delete' => 'leads_delete']);
 
-        // Перемикач «оброблено» – окрема дія (редагування заявок немає).
         if (backpack_user()?->can('leads_update')) {
             CRUD::allowAccess('update');
         }

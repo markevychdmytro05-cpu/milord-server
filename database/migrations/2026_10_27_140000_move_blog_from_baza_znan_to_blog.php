@@ -4,10 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Блог переїжджає з /baza-znan на /blog: slug хаба й внутрішні посилання на хаб і статті.
- * Старі адреси не губляться: маршрут baza-znan/{slug?} постійно перенаправляє їх на нові.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -18,7 +14,6 @@ return new class extends Migration
 
         DB::table('pages')->where('type', 'page')->where('slug', 'baza-znan')->update(['slug' => 'blog']);
 
-        // Посилання в HTML (href="/baza-znan/…"), адреси пунктів меню (/baza-znan) і JSON модулів з екранованими слешами (\/baza-znan\/…).
         $pattern = '~(?<=^|["\'(])(\\\\?)/baza-znan(?=\\\\?[/"\'#?\s<)]|$)~';
 
         foreach (['pages' => ['content', 'excerpt'], 'modules' => null, 'site_settings' => null, 'menu_items' => ['url']] as $table => $columns) {
@@ -49,6 +44,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -13,7 +13,6 @@ use Spatie\Sluggable\SlugOptions;
 
 class Coin extends Model
 {
-    /** @use HasFactory<CoinFactory> */
     use CrudTrait, HasFactory, HasSlug;
 
     protected $fillable = [
@@ -21,7 +20,6 @@ class Coin extends Model
         'image', 'image_source', 'image_credit', 'excerpt', 'content', 'meta_title', 'meta_description', 'og_image', 'robots', 'is_published', 'show_on_home',
     ];
 
-    /** Точна дата продажу визначає рік і місяць випуску, щоб сортування й блок «Найближчі випуски» не розходились. */
     protected static function booted(): void
     {
         static::saving(function (Coin $coin): void {
@@ -46,27 +44,16 @@ class Coin extends Model
         ];
     }
 
-    /** @param  Builder<Coin>  $query */
     public function scopePublished(Builder $query): void
     {
         $query->where('is_published', true);
     }
 
-    /**
-     * Монети з фото: у списках і блоках показуються лише вони.
-     *
-     * @param  Builder<Coin>  $query
-     */
     public function scopeWithImage(Builder $query): void
     {
         $query->whereNotNull('image')->where('image', '!=', '');
     }
 
-    /**
-     * Найближчі випуски: продаж ще попереду, а без точної дати – місяць випуску поточний або пізніший.
-     *
-     * @param  Builder<Coin>  $query
-     */
     public function scopeUpcoming(Builder $query): void
     {
         $now = now();
@@ -80,11 +67,6 @@ class Coin extends Model
         })->orderBy('release_year')->orderBy('release_month')->orderBy('sale_starts_at')->orderBy('id');
     }
 
-    /**
-     * Хронологічний порядок за датою виходу; монети без дати завжди в кінці.
-     *
-     * @param  Builder<Coin>  $query
-     */
     public function scopeChronological(Builder $query, string $direction = 'asc'): void
     {
         $direction = $direction === 'desc' ? 'desc' : 'asc';
@@ -94,24 +76,17 @@ class Coin extends Model
             ->orderBy('sale_starts_at', $direction)->orderBy('id', $direction);
     }
 
-    /**
-     * Індексовані монети: дозволені за robots і з власним описом (сторінка лише з фактами плану – тонка, її не індексуємо).
-     *
-     * @param  Builder<Coin>  $query
-     */
     public function scopeIndexable(Builder $query): void
     {
         $query->whereIn('robots', [PageRobotsType::IndexFollow->value, PageRobotsType::IndexNofollow->value])
             ->whereNotNull('content')->where('content', '!=', '');
     }
 
-    /** Тонка сторінка: немає власного опису, лише факти з плану випуску. */
     public function isThin(): bool
     {
         return trim(strip_tags((string) $this->content)) === '';
     }
 
-    /** Slug з української транслітерації назви; заповнений вручну slug не чіпаємо. */
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
@@ -122,7 +97,6 @@ class Coin extends Model
             ->skipGenerateWhen(fn () => filled($this->slug));
     }
 
-    /** Назва без службового префікса: «Паляниця», а не «Монета НБУ «Паляниця»». */
     public function shortTitle(): string
     {
         $title = preg_replace('/^('.preg_quote(__('coins.prefix_investment'), '/').'|'.preg_quote(__('coins.prefix'), '/').')\s*/u', '', $this->title);
@@ -134,11 +108,6 @@ class Coin extends Model
         return preg_replace('/^«([^«»]*)»$/u', '$1', trim($title));
     }
 
-    /**
-     * Назви місяців поточною мовою: номер => назва.
-     *
-     * @return array<int, string>
-     */
     public static function months(): array
     {
         return (array) trans('coins.months');
@@ -149,7 +118,6 @@ class Coin extends Model
         return route('coins.show', $this->slug);
     }
 
-    /** Дата продажу, а за її відсутності місяць введення в обіг за планом НБУ («Вересень 2026»). */
     public function releaseLabel(): ?string
     {
         if ($this->sale_starts_at) {
@@ -159,7 +127,6 @@ class Coin extends Model
         return $this->release_month ? __('coins.months.'.$this->release_month).' '.$this->release_year : null;
     }
 
-    /** Монета вже вийшла: продаж розпочато або місяць випуску за планом уже настав. */
     public function hasBeenReleased(): bool
     {
         if ($this->sale_starts_at) {
@@ -173,13 +140,11 @@ class Coin extends Model
         return $this->release_year < now()->year || ($this->release_year === now()->year && $this->release_month <= now()->month);
     }
 
-    /** Продаж ще не почався: дата старту в майбутньому. */
     public function isUpcoming(): bool
     {
         return $this->sale_starts_at !== null && $this->sale_starts_at->isFuture();
     }
 
-    /** Абсолютна адреса зображення монети. */
     public function imageUrl(): ?string
     {
         if (! $this->image) {
@@ -189,7 +154,6 @@ class Coin extends Model
         return str_starts_with($this->image, '/') ? url($this->image) : $this->image;
     }
 
-    /** Зображення для соцмереж: своє, а за його відсутності зображення монети. */
     public function ogImageUrl(): ?string
     {
         $image = $this->og_image ?: $this->image;
@@ -212,7 +176,6 @@ class Coin extends Model
         return $robots->isIndexable() ? $robots->value.', max-image-preview:large, max-snippet:-1' : $robots->value;
     }
 
-    /** Заголовок для видачі; до нього додається бренд, якщо вміщується в ліміт. */
     public function seoTitle(): string
     {
         $title = $this->meta_title ?: $this->generatedTitle();
@@ -232,7 +195,6 @@ class Coin extends Model
         return $this->meta_description ?: $this->generatedDescription();
     }
 
-    /** Заголовок із назви монети, якщо SEO-заголовок не заповнено. */
     private function generatedTitle(): string
     {
         $title = $this->title.': '.__('coins.seo.title_suffix');
@@ -240,7 +202,6 @@ class Coin extends Model
         return mb_strlen($title) <= 60 ? $title : $this->title;
     }
 
-    /** Унікальний опис для видачі з фактів монети, якщо SEO-опис не заповнено. */
     private function generatedDescription(): string
     {
         $facts = array_filter([

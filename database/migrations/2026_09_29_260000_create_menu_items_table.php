@@ -5,10 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Меню шапки й підвалу – дерево пунктів (як ApiMenuItem в iptel-ua: parent_id/lft/rgt/depth, впорядкування перетягуванням).
- * Старі списки посилань у налаштуваннях і прапорці «у шапці/підвалі» на сторінках переносяться в пункти меню.
- */
 return new class extends Migration
 {
     public function up(): void

@@ -5,9 +5,6 @@ use App\Models\ModuleTemplate;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Живіші тексти головної без шаблонних «трійок» і жаргону, різні дати статей бази знань.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -63,7 +60,6 @@ return new class extends Migration
         }
     }
 
-    /** @param  callable(array<string, mixed>): array<string, mixed>  $change */
     private function updateModule(string $code, string $name, callable $change): void
     {
         $module = ModuleTemplate::byCode($code)?->modules()->where('name', $name)->first();
@@ -91,6 +87,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

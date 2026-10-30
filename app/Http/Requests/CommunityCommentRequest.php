@@ -11,9 +11,6 @@ class CommunityCommentRequest extends FormRequest
         return true;
     }
 
-    /**
-     * @return array<string, array<int, string>>
-     */
     public function rules(): array
     {
         return [
@@ -23,9 +20,6 @@ class CommunityCommentRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return ['body' => __('community.form.comment'), 'name' => __('community.form.name')];

@@ -9,7 +9,6 @@
         </div>
 
         <div class="contact-form-wrap" id="contact-form">
-            {{-- Повідомлення для JS-відправки: помилки показуються біля полів, підсумок і успіх – у .contact-status. --}}
             <form class="contact-form" method="post" action="{{ route('contact.store') }}" novalidate
                 data-success="{{ $text['success_text'] ?? '' }}" data-invalid="{{ __('site.contact.invalid') }}" data-expired="{{ __('site.contact.expired') }}"
                 data-too-many="{{ __('site.toast.too_many') }}" data-failed="{{ __('site.toast.failed') }}" data-network="{{ __('site.toast.network') }}">

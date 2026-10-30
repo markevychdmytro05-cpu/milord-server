@@ -15,11 +15,6 @@ use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
-/**
- * Основа керування меню: пункти впорядковуються перетягуванням, вкладеність – до двох рівнів.
- *
- * @property-read CrudPanel $crud
- */
 abstract class MenuCrudController extends CrudController
 {
     use CreateOperation;
@@ -28,7 +23,6 @@ abstract class MenuCrudController extends CrudController
     use ReorderOperation;
     use UpdateOperation { update as traitUpdate; }
 
-    /** @return array{0: string, 1: string, 2: string} menu, route, назва */
     abstract protected function menu(): array;
 
     public function setup()

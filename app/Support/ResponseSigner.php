@@ -31,7 +31,6 @@ final class ResponseSigner
         return base64_encode(sodium_crypto_sign_detached($payload, $secret));
     }
 
-    /** @return array{public: string, secret: string} base64 */
     public static function generateKeyPair(): array
     {
         $pair = sodium_crypto_sign_keypair();

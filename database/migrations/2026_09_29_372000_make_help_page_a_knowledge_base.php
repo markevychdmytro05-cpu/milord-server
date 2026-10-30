@@ -5,9 +5,6 @@ use App\Models\ModuleTemplate;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Хаб «База знань» стає сіткою карток: статтям задаються категорії та дати, до хабу прикріплюється модуль Articles.
- */
 return new class extends Migration
 {
     private const CATEGORIES = [

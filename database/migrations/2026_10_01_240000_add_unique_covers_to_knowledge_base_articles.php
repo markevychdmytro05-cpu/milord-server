@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/** Кожна стаття бази знань отримує власну обкладинку (раніше п’ять були без неї, а п’ять ділили одну). */
 return new class extends Migration
 {
     private const COVERS = [
@@ -28,6 +27,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

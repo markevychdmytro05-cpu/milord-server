@@ -12,7 +12,6 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Support\Facades\Storage;
 
-/** @property-read CrudPanel $crud */
 class ReleaseCrudController extends CrudController
 {
     use DeleteOperation { destroy as traitDestroy; }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Response;
 
-/** Файл-підтвердження володіння сайтом для IndexNow: /{ключ}.txt віддає сам ключ. */
 class IndexNowKeyController extends Controller
 {
     public function __invoke(string $key): Response

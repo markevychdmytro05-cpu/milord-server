@@ -4,13 +4,6 @@ use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * SEO-метадані й типографіка після аудиту:
- * - коротший опис головної (українські літери ширші, тож Google обрізає вже після ~130 символів);
- * - конкретні title/description для сторінок послуг замість дубля назви;
- * - довгі тире (—) → середні (–), апостроф ʼ (U+02BC) → ’ (U+2019), як у решті текстів.
- * Метадані оновлюються лише там, де ще стоїть початкове значення, тож правки з адмінки не перезаписуються.
- */
 return new class extends Migration
 {
     private const META = [
@@ -90,6 +83,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

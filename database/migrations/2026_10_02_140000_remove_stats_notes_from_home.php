@@ -3,9 +3,6 @@
 use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Блок «Цифри» на головній без пояснювальних приміток під показниками.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -28,6 +25,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

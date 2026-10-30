@@ -25,7 +25,6 @@ use RuntimeException;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /** Публічні діапазони Cloudflare (https://www.cloudflare.com/ips/): оновлюйте, якщо Cloudflare їх змінить. */
     private const CLOUDFLARE_PROXIES = [
         '173.245.48.0/20', '103.21.244.0/22', '103.22.200.0/22', '103.31.4.0/22', '141.101.64.0/18', '108.162.192.0/18',
         '190.93.240.0/20', '188.114.96.0/20', '197.234.240.0/22', '198.41.128.0/17', '162.158.0.0/15', '104.16.0.0/13',
@@ -33,33 +32,23 @@ class AppServiceProvider extends ServiceProvider
         '2400:cb00::/32', '2606:4700::/32', '2803:f800::/32', '2405:b500::/32', '2405:8100::/32', '2a06:98c0::/29', '2c0f:f248::/32',
     ];
 
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
-        //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        // Канонічні адреси, sitemap і JSON-LD будуються з запиту; у продакшні вони завжди мають вказувати на APP_URL (https).
         if ($this->app->isProduction() && str_starts_with((string) config('app.url'), 'https://')) {
             URL::forceRootUrl(config('app.url'));
             URL::forceScheme('https');
         }
 
-        // Нова чи змінена опублікована сторінка одразу йде в IndexNow (лише коли задано INDEXNOW_KEY і сторінка індексується).
         Page::saved(function (Page $page): void {
             if (config('services.indexnow.key') && $page->is_published && ($page->robots?->isIndexable() ?? true)) {
                 SubmitToIndexNow::dispatch([$page->url()])->afterCommit();
             }
         });
 
-        // Довірені проксі читаємо з конфігу (а не з env() у bootstrap/app.php): так це працює і з config:cache.
         if ($proxies = config('site.trusted_proxies')) {
             TrustProxies::at($proxies === 'cloudflare' ? self::CLOUDFLARE_PROXIES : array_map('trim', explode(',', $proxies)));
         }

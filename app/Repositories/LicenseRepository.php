@@ -27,9 +27,6 @@ class LicenseRepository
         return $license->activations()->make(['device_id' => $deviceId]);
     }
 
-    /**
-     * @param  array<string, mixed>  $attributes
-     */
     public function saveActivation(LicenseActivation $activation, array $attributes): LicenseActivation
     {
         $activation->fill($attributes)->save();

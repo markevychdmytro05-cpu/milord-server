@@ -1,7 +1,6 @@
 @extends('layouts.public')
 
 @php
-    // Хаб блогу: сторінки пагінації мають власні title/description, а відфільтровані за категорією не індексуються.
     $isBlogHub = $page->slug === \App\Models\Page::BLOG_SLUG;
     $pageNumber = $isBlogHub ? max(1, request()->integer('page')) : 1;
     $isFiltered = $isBlogHub && request()->filled('category');
@@ -36,7 +35,6 @@
             ];
         }
     }
-    // Article лише для статей бази знань; решта сторінок (послуги, про нас, документи, хаб) – WebPage.
     $main = $page->isArticle()
         ? [
             '@type' => 'Article',
@@ -89,7 +87,6 @@
 
 @section('content')
     @php
-        // Сторінки послуг і «Про нас» без блоку «Читають також» отримують праву колонку: заклик, корисні статті, контакти.
         $showSidebar = $page->show_title && $related->isEmpty()
             && ($page->type === \App\Models\Page::TYPE_SERVICE || $page->slug === 'pro-nas');
         $usefulPages = $showSidebar
@@ -138,13 +135,11 @@
                 @endif
             @endif
             <?php
-                // Банер із закликом стоїть усередині тексту (посередині між заголовками), а не перед формою в підвалі.
                 $allModules = $page->modules_list;
                 $isBanner = fn ($module) => $module->module_template->code === 'cta-row';
                 $bannerHtml = $allModules->filter($isBanner)->map(fn ($module) => $module->draw())->implode("\n");
                 $afterModules = $allModules->reject($isBanner);
                 $prose = $page->content ? \App\Support\SafeHtml::clean($page->content) : '';
-                // «Часті питання» з тексту статті показуємо акордеоном, як на решті сторінок (якщо сторінка не має власного модуля FAQ).
                 $faqAccordion = [];
                 $hasFaqModule = $allModules->contains(fn ($module) => $module->module_template->code === 'faqs');
                 $faqHeading = preg_quote(__('site.faq_heading'), '~');

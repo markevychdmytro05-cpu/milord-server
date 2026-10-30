@@ -3,10 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Сторінки «календар випуску 2026» ніколи не існувало: посилання ведуть на статтю про план випуску монет НБУ.
- * З описів монет прибирається блок «Як не пропустити появу…»: шаблон сторінки монети вже показує такий самий розділ.
- */
 return new class extends Migration
 {
     private const OLD_URL = '/kalendar-vypusku-monet-nbu-2026';
@@ -32,6 +28,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

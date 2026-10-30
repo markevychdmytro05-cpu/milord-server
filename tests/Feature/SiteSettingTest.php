@@ -11,9 +11,6 @@ class SiteSettingTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @return array<string, mixed>
-     */
     private function payload(array $overrides = []): array
     {
         return $overrides + [

@@ -3,9 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Абзац про проєкт у футері прибрано.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -15,6 +12,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

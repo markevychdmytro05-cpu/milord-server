@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class LicenseAudit extends Model
 {
-    /** @use HasFactory<LicenseAuditFactory> */
     use CrudTrait, HasFactory;
 
     public const EVENTS = [
@@ -30,10 +29,6 @@ class LicenseAudit extends Model
         return ['changes' => 'array', 'metadata' => 'array'];
     }
 
-    /**
-     * @param  array<string, array{old: mixed, new: mixed}>  $changes
-     * @param  array<string, mixed>  $metadata
-     */
     public static function record(License $license, string $event, array $changes = [], array $metadata = []): self
     {
         $actor = auth('backpack')->user();

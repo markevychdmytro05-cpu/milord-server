@@ -3,9 +3,6 @@
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Скріншоти програми в статтях бази знань, де їх ще не було: кабінет, автокупівля, Local API, кількість профілів.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -25,7 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 
     private function insertAfter(string $slug, string $pattern, string $html): void

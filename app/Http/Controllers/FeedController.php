@@ -6,9 +6,6 @@ use App\Models\Page;
 use App\Models\SiteSetting;
 use Illuminate\Http\Response;
 
-/**
- * RSS-стрічка блогу: нові статті швидше потрапляють у пошукові системи, агрегатори й ШІ-краулери.
- */
 class FeedController extends Controller
 {
     public function __invoke(): Response

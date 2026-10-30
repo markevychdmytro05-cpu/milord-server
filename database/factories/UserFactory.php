@@ -7,21 +7,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends Factory<User>
- */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
     protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
@@ -34,7 +23,6 @@ class UserFactory extends Factory
         ];
     }
 
-    /** Роль за замовчуванням – менеджер, як і раніше. */
     public function configure(): static
     {
         return $this->afterCreating(function (User $user): void {
@@ -57,7 +45,6 @@ class UserFactory extends Factory
         return $this->afterCreating(fn (User $user) => $user->syncRoles($role));
     }
 
-    /** @param  list<string>  $permissions */
     public function withPermissions(array $permissions): static
     {
         return $this->afterCreating(fn (User $user) => $user->givePermissionTo($permissions));
@@ -68,9 +55,6 @@ class UserFactory extends Factory
         return $this->state(fn (array $attributes) => ['is_active' => false]);
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [

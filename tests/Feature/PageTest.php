@@ -12,10 +12,6 @@ class PageTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @param  array<string, mixed>  $overrides
-     * @return array<string, mixed>
-     */
     private function payload(array $overrides = []): array
     {
         return $overrides + [

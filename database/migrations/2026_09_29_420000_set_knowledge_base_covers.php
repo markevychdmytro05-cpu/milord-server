@@ -3,9 +3,6 @@
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Обкладинки статей бази знань (згенеровані ілюстрації в public/images/kb).
- */
 return new class extends Migration
 {
     private const COVERS = [

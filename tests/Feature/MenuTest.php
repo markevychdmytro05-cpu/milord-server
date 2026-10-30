@@ -13,9 +13,6 @@ class MenuTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @param  array<string, mixed>  $attributes
-     */
     private function item(string $menu, array $attributes, int $position = 0): MenuItem
     {
         return MenuItem::create($attributes + [

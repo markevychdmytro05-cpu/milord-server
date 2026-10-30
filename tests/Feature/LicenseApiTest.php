@@ -19,15 +19,10 @@ class LicenseApiTest extends TestCase
 
     private const DEVICE_C = 'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc';
 
-    /** @var array<string, string> */
     private array $deviceKeys = [];
 
     private int $requestCounter = 0;
 
-    /**
-     * @param  array<string, mixed>  $extra
-     * @return array<string, mixed>
-     */
     private function signedRequest(string $action, string $key, string $device, array $extra = []): array
     {
         $pair = $this->deviceKeys[$device] ??= sodium_crypto_sign_keypair();
@@ -51,25 +46,16 @@ class LicenseApiTest extends TestCase
         return $data;
     }
 
-    /**
-     * @param  array<string, mixed>  $extra
-     */
     private function activate(License $license, string $device = self::DEVICE, array $extra = []): TestResponse
     {
         return $this->postJson('/api/v1/license/activate', $this->signedRequest('activate', $license->key, $device, $extra));
     }
 
-    /**
-     * @param  array<string, mixed>  $extra
-     */
     private function check(License $license, string $device = self::DEVICE, array $extra = []): TestResponse
     {
         return $this->postJson('/api/v1/license/check', $this->signedRequest('check', $license->key, $device, $extra));
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     private function payload(TestResponse $response): array
     {
         return json_decode($response->json('data'), true);

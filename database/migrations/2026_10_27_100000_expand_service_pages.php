@@ -4,18 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Сторінки послуг («Автоматична купівля», «Профілі AdsPower», «Режим спостереження», «Ліцензія на пристрій»,
- * «Журнал завдань») мали по 34–84 слова. Тепер кожна розповідає про свою можливість на 500–550 слів: лід, кроки,
- * скріншот програми, сценарії, обмеження й посилання на статті бази знань. Факти взято лише з уже опублікованих
- * текстів сайту (статті, модулі головної, журнал змін), підписів у скріншотах і коду ліцензійного сервера.
- *
- * Сторінка автоматичної купівлі отримує власний H1: попередній збігався з головною й конкурував із нею в пошуку.
- * Пункт меню без власної назви показує заголовок сторінки, тому для довшого H1 задається короткий підпис.
- *
- * Текст, заголовок і підпис меню змінюються лише там, де ще стоїть початкове значення: правки з адмінки
- * не перезаписуються, а про кожен пропуск виводиться попередження.
- */
 return new class extends Migration
 {
     private const AUTO_BUY = 'avtomatychna-kupivlia-monet-nbu';
@@ -24,7 +12,6 @@ return new class extends Migration
 
     private const NEW_TITLE = 'Додавання монети НБУ в кошик у момент старту';
 
-    /** Підпис пункту меню замість довгого заголовка сторінки. */
     private const MENU_LABEL = 'Додавання в кошик';
 
     public function up(): void
@@ -74,10 +61,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 
-    /** Пункти меню без власної назви показують заголовок сторінки: для довгого H1 їм потрібен короткий підпис. */
     private function shortenMenuLabels(int $pageId): void
     {
         foreach (DB::table('menu_items')->where('page_id', $pageId)->get(['id', 'title']) as $item) {
@@ -89,10 +74,6 @@ return new class extends Migration
         }
     }
 
-    /**
-     * У Migration немає властивості $command (вона є лише в Seeder), тому звернення до неї кидає ErrorException.
-     * Попередження йде в stderr, щоб було видно під час `php artisan migrate`, і в лог.
-     */
     private function warn(string $message): void
     {
         Log::warning('[expand_service_pages] '.$message);
@@ -102,11 +83,6 @@ return new class extends Migration
         }
     }
 
-    /**
-     * Початковий текст сторінок, який залишили попередні міграції: його порівнюють із поточним значенням.
-     *
-     * @return array<string, string>
-     */
     private function originals(): array
     {
         return [
@@ -128,11 +104,6 @@ HTML,
         ];
     }
 
-    /**
-     * Нові тексти сторінок.
-     *
-     * @return array<string, string>
-     */
     private function contents(): array
     {
         return [

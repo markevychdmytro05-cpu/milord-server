@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/** Виправляє «у Telegram на пошту» і повтор речення на сторінці ліцензії. */
 return new class extends Migration
 {
     public function up(): void
@@ -25,6 +24,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

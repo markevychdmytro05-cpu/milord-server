@@ -13,9 +13,6 @@ class TranslationRequest extends FormRequest
         return backpack_user()?->can($this->route('id') ? 'translations_update' : 'translations_create') ?? false;
     }
 
-    /**
-     * @return array<string, array<int, mixed>>
-     */
     public function rules(): array
     {
         return [
@@ -30,9 +27,6 @@ class TranslationRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [
@@ -43,7 +37,6 @@ class TranslationRequest extends FormRequest
         ];
     }
 
-    /** Порожні переклади не зберігаються: без них діє значення з файлу або мови за замовчуванням. */
     protected function prepareForValidation(): void
     {
         $this->merge([

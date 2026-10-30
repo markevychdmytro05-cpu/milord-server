@@ -16,7 +16,6 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Http\RedirectResponse;
 
-/** @property-read CrudPanel $crud */
 class TranslationCrudController extends CrudController
 {
     use CreateOperation;
@@ -79,7 +78,6 @@ class TranslationCrudController extends CrudController
         return $this->traitUpdate();
     }
 
-    /** Додає в базу ключі з файлів lang/ (наявні правки не змінюються). */
     public function sync(TranslationSyncService $service): RedirectResponse
     {
         CRUD::hasAccessOrFail('update');
@@ -89,7 +87,6 @@ class TranslationCrudController extends CrudController
         return back()->with('success', "Синхронізовано з файлами: нових рядків {$result['created']}, доповнено мовами {$result['updated']}.");
     }
 
-    /** Записує переклади з бази у файли lang/, щоб їх можна було закомітити. */
     public function export(TranslationSyncService $service): RedirectResponse
     {
         CRUD::hasAccessOrFail('update');

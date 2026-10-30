@@ -1,7 +1,6 @@
 @extends(backpack_view('blank'))
 
 @php
-    /** @var \App\Models\License $entry */
     $breadcrumbs = [
         trans('backpack::crud.admin') => backpack_url('dashboard'),
         $crud->entity_name_plural => url($crud->route),

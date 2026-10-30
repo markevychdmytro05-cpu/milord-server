@@ -11,7 +11,6 @@ class LicenseActivationService
 {
     public function __construct(private readonly LicenseRepository $licenses) {}
 
-    /** @param  array<string, mixed>  $data */
     public function activate(array $data, ?string $ip): LicenseCheckResult
     {
         return (function () use ($data, $ip): LicenseCheckResult {
@@ -42,7 +41,6 @@ class LicenseActivationService
         })();
     }
 
-    /** @param  array<string, mixed>  $data */
     public function check(array $data, ?string $ip): LicenseCheckResult
     {
         return (function () use ($data, $ip): LicenseCheckResult {
@@ -84,9 +82,6 @@ class LicenseActivationService
         return null;
     }
 
-    /**
-     * @param  array<string, mixed>  $data
-     */
     private function touchAndRespond(License $license, LicenseActivation $activation, array $data, ?string $ip): LicenseCheckResult
     {
         $this->licenses->saveActivation($activation, [

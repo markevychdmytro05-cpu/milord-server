@@ -1,9 +1,7 @@
-/* Форми створення/редагування стоять по центру (contentClass mx-auto) — заголовок над ними теж. */
 body:has([bp-section="crud-operation-create"], [bp-section="crud-operation-update"]) .header-operation {
     justify-content: center;
 }
 
-/* Великий перемикач у таблицях (колонка type=toggle): у маленький важко влучити. */
 .toggle-lg {
     padding-left: 3.25rem;
     min-height: 1.75rem;

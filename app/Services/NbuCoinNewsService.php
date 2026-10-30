@@ -8,25 +8,14 @@ use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
-/**
- * Дані про монети на bank.gov.ua: каталог обігових монет і новини про випуски (фото, характеристики, перше речення повідомлення).
- * Сайт НБУ відкритий для краулерів (robots.txt без обмежень); запити йдуть невеликими партіями з паузою й кешуються.
- */
 class NbuCoinNewsService
 {
     public const SITEMAP_URL = 'https://bank.gov.ua/sitemap/sitemap.xml';
 
-    /** Запасна сторінка, якщо в sitemap не знайдено актуальної: на ній перелік усіх обігових монет по 10 гривень. */
     public const CIRCULATION_URL = 'https://bank.gov.ua/ua/uah/obig-coin/10-grn-2026-kherson';
 
-    /** Новини, які точно не про монети: їх не завантажуємо. */
     private const SKIP_SLUGS = '~monetarn|oblikov|stavk|presbrifing|makroekonom|stabilnist|valyut|kurs-|licenz|likvid~';
 
-    /**
-     * Адреси останніх новин (sitemap відсортований від старих до нових).
-     *
-     * @return list<string>
-     */
     public function candidateUrls(int $recent = 900): array
     {
         $news = array_filter($this->sitemapUrls(), fn (string $url): bool => str_contains($url, '/ua/news/all/'));
@@ -37,7 +26,6 @@ class NbuCoinNewsService
         ));
     }
 
-    /** Актуальна сторінка каталогу обігових монет по 10 гривень (остання за роком у sitemap). */
     public function circulationUrl(): string
     {
         $pages = array_filter($this->sitemapUrls(), fn (string $url): bool => (bool) preg_match('~/ua/uah/obig-coin/10-grn-\d{4}-~', $url));
@@ -45,11 +33,6 @@ class NbuCoinNewsService
         return $pages === [] ? self::CIRCULATION_URL : end($pages);
     }
 
-    /**
-     * Каталог обігових монет НБУ: назва, дата введення в обіг, характеристики й зображення (останнє – реверс із унікальним дизайном).
-     *
-     * @return list<array{url: string, title: string, description: string, image: ?string, text: string, facts: array<string, string>}>
-     */
     public function circulationCatalog(): array
     {
         $url = $this->circulationUrl();
@@ -90,13 +73,6 @@ class NbuCoinNewsService
         return $entries;
     }
 
-    /**
-     * Завантажує новини партіями (з кешем на 30 днів); недоступні пропускає.
-     *
-     * @param  list<string>  $urls
-     * @param  (callable(int): void)|null  $onProgress  викликається після кожної обробленої адреси
-     * @return list<array{url: string, title: string, description: string, image: ?string, text: string}>
-     */
     public function articles(array $urls, ?callable $onProgress = null): array
     {
         $articles = [];
@@ -127,13 +103,6 @@ class NbuCoinNewsService
         return $articles;
     }
 
-    /**
-     * Запис, у якому згадано всі відмінні слова назви монети (за основами слів); перемагає той, де їх більше в заголовку.
-     * Записи каталогу (із полем facts) мають пріоритет над новинами.
-     *
-     * @param  list<array{url: string, title: string, description: string, image: ?string, text: string}>  $articles
-     * @return array{url: string, title: string, description: string, image: ?string, text: string}|null
-     */
     public function match(Coin $coin, array $articles): ?array
     {
         $stems = CoinTitleStems::of($coin->shortTitle());
@@ -159,7 +128,6 @@ class NbuCoinNewsService
                 $score += 2 * (int) str_contains($title, $stem) + (int) str_contains($description, $stem);
             }
 
-            // Каталог обігових монет точніший за новину: там зображення самої монети й офіційні характеристики.
             $score += isset($article['facts']) ? 100 : 0;
 
             if ($score > $bestScore) {
@@ -171,11 +139,6 @@ class NbuCoinNewsService
         return $best;
     }
 
-    /**
-     * Перше речення повідомлення, не довше $limit символів.
-     *
-     * @param  array{url: string, title: string, description: string, image: ?string, text: string}  $article
-     */
     public function lead(array $article, int $limit = 320): string
     {
         $text = $article['description'] ?: $article['text'];
@@ -185,11 +148,6 @@ class NbuCoinNewsService
         return mb_strlen($sentence) > $limit ? mb_substr($sentence, 0, $limit - 1).'…' : $sentence;
     }
 
-    /**
-     * Усі адреси sitemap НБУ (кеш на добу: файл має ~15 МБ); недоступний sitemap дає порожній список.
-     *
-     * @return list<string>
-     */
     private function sitemapUrls(): array
     {
         $cached = Cache::get('nbu-sitemap-urls');
@@ -210,9 +168,6 @@ class NbuCoinNewsService
         return $matches[1];
     }
 
-    /**
-     * @return array{url: string, title: string, description: string, image: ?string, text: string}
-     */
     private function parse(string $url, Response $response): array
     {
         $html = $response->body();

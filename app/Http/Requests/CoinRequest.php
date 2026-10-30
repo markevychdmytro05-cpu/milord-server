@@ -15,7 +15,6 @@ class CoinRequest extends FormRequest
         return backpack_user()?->can($this->route('id') ? 'coins_update' : 'coins_create') ?? false;
     }
 
-    /** Порожній slug генерує модель (spatie/laravel-sluggable) з назви. */
     protected function prepareForValidation(): void
     {
         $slug = trim((string) $this->input('slug'));
@@ -27,9 +26,6 @@ class CoinRequest extends FormRequest
         ]);
     }
 
-    /**
-     * @return array<string, array<int, mixed>>
-     */
     public function rules(): array
     {
         return [
@@ -56,9 +52,6 @@ class CoinRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [

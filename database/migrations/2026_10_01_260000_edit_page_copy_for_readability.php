@@ -3,13 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Редагування текстів сторінок: «Про нас» без корпоративної води, коротші кінцівки статей,
- * без жирних лідерів у списках, одне тире замість двох видів, без дубля «або… або» у контактах.
- */
 return new class extends Migration
 {
-    /** Статті, де лишається рядок про календар випусків (інструкції з купівлі). */
     private const KEEP_CALENDAR_LINE = ['iak-kupyty-monetu-v-internet-mahazyni-nbu-pokrokova-instruktsiia', 'avtokupivlia-monet-nbu-iak-tse-pratsiuye-i-komu-pidkhodyt', 'avtomatychna-kupivlia-monet-nbu'];
 
     public function up(): void
@@ -53,7 +48,6 @@ return new class extends Migration
         }
     }
 
-    /** У блоці «Читайте також» лишається не більше трьох посилань. */
     private function limitRelatedLinks(string $content): string
     {
         return preg_replace_callback('~(Читайте також(?:</h2>\s*<p>|: ))((?:<a [^>]+>[^<]*</a>(?: · )?){4,})~u', function (array $match): string {
@@ -77,7 +71,7 @@ return new class extends Migration
             .'<h2>Що виходить у магазині НБУ</h2>'
             .'<p>Ми ведемо довідник випусків: <a href="/monety-nbu">монети НБУ</a> з датами й тиражами та <a href="/kalendar-vypusku-monet-nbu-2026">календар випуску 2026</a> за офіційним планом Національного банку.</p>'
             .'<h2>Зв’язок</h2>'
-            .'<p>Напишіть нам у <a href="https://t.me/NumisNBU" rel="noopener" target="_blank">Telegram</a>, на пошту <a href="mailto:egorkolenkov43@gmail.com">egorkolenkov43@gmail.com</a> або залиште заявку у формі внизу сторінки.</p>';
+            .'<p>Напишіть нам у <a href="https://t.me/NumisNBU" rel="noopener" target="_blank">Telegram</a>, на пошту <a href="mailto:help@numis.in.ua">help@numis.in.ua</a> або залиште заявку у формі внизу сторінки.</p>';
 
         DB::table('pages')->where('type', 'page')->where('slug', 'pro-nas')->update([
             'content' => $content,
@@ -87,6 +81,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -18,11 +18,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Prologue\Alerts\Facades\Alert;
 
-/**
- * Модулі сайту. Список згрупований за шаблонами; форма будується зі схеми шаблону.
- *
- * @property-read CrudPanel $crud
- */
 class ModuleCrudController extends CrudController
 {
     use DeleteOperation;
@@ -116,13 +111,6 @@ class ModuleCrudController extends CrudController
         return redirect(backpack_url('module'));
     }
 
-    /**
-     * Загальні поля замінюються цілком (щоб видалені елементи списків зникали), мовні – по ключах.
-     *
-     * @param  array<string, mixed>  $current
-     * @param  array<string, mixed>  $input
-     * @return array<string, mixed>
-     */
     private function mergeSetting(array $current, array $input): array
     {
         $merged = array_replace($current, Arr::except($input, SiteLocale::all()));
@@ -136,9 +124,6 @@ class ModuleCrudController extends CrudController
         return $merged;
     }
 
-    /**
-     * @param  list<array<string, mixed>>  $fields
-     */
     private function addFields(array $fields): void
     {
         foreach ($fields as $field) {

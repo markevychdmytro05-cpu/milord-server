@@ -8,9 +8,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Як у Civic Linker: у футері лише загальні сторінки й документи, а хаб бази знань має власний заголовок у ряд із фільтрами.
- */
 return new class extends Migration
 {
     public function up(): void

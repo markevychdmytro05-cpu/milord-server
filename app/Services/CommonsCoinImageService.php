@@ -6,25 +6,14 @@ use App\Models\Coin;
 use App\Support\CoinTitleStems;
 use Illuminate\Support\Facades\Http;
 
-/**
- * Фото монет із Wikimedia Commons: лише файли з вільними ліцензіями (public domain, CC0, CC BY, CC BY-SA),
- * назва яких містить усі відмінні слова назви монети. Автор і ліцензія повертаються для підпису під фото.
- */
 class CommonsCoinImageService
 {
     private const API = 'https://commons.wikimedia.org/w/api.php';
 
     private const USER_AGENT = 'NumisCoinCatalog/1.0 (https://t.me/NumisNBU)';
 
-    /** Дозволені ліцензії; CC BY-NC, ND та «fair use» не підходять. */
     private const FREE_LICENSE = '~^(cc0|public domain|pd\b|pd-|cc[- ]by(?![- ]?nc)(?![- ]?nd)|attribution)~i';
 
-    /**
-     * Файли з нестандартними назвами (англійською чи скорочено): уривок назви монети => [пошукові запити, що має містити назва файлу].
-     * Рік завантаження й ліцензія перевіряються так само, як і для решти файлів.
-     *
-     * @var array<string, array{queries: list<string>, contains: string}>
-     */
     private const ALIASES = [
         'Великодня радість' => ['queries' => ['Pysanka-26 coin reverse'], 'contains' => 'pysanka-26'],
         'проголошення незалежності Сполучених Штатів' => ['queries' => ['250 років США монета'], 'contains' => '250 років сша'],
@@ -35,9 +24,6 @@ class CommonsCoinImageService
         'Червона рута' => ['queries' => ['Червона рута A'], 'contains' => 'червона рута a'],
     ];
 
-    /**
-     * @return array{url: string, page: string, credit: string, title: string}|null
-     */
     public function find(Coin $coin): ?array
     {
         $stems = CoinTitleStems::of($coin->shortTitle());
@@ -75,11 +61,6 @@ class CommonsCoinImageService
         ];
     }
 
-    /**
-     * Запити від повної назви до найхарактернішої частини («Кирило Кожум’яка»).
-     *
-     * @return list<string>
-     */
     private function queries(Coin $coin): array
     {
         $title = trim(preg_replace('~\s*\(.*\)~u', '', $coin->shortTitle()));
@@ -88,9 +69,6 @@ class CommonsCoinImageService
         return array_values(array_unique(array_filter([$title, end($parts) ?: null, str_replace(['“', '”', '"', '«', '»'], '', $title)])));
     }
 
-    /**
-     * @return list<array{title: string, url: string, page: string, license: string, artist: string, width: int, uploaded: int, mime: string}>
-     */
     private function search(string $query): array
     {
         usleep(1_200_000);
@@ -130,17 +108,10 @@ class CommonsCoinImageService
         return $files;
     }
 
-    /**
-     * Оцінка файлу: -1 – не підходить; вище – краще (реверс без пакування – найкращий варіант).
-     *
-     * @param  array{title: string, url: string, page: string, license: string, artist: string, width: int, uploaded: int, mime: string}  $file
-     * @param  list<string>  $stems
-     */
     private function score(array $file, array $stems, int $year): int
     {
         $title = CoinTitleStems::normalize(preg_replace('~^File:|\.[a-z]+$~i', '', $file['title']));
 
-        // Файл минулого року чи з іншим роком у назві – це інша монета з такою самою темою («Архістратиг Михаїл 2022»).
         $otherYear = preg_match_all('~\b(19|20)\d{2}\b~', $title, $years) && array_filter($years[0], fn (string $found): bool => $year !== 0 && (int) $found !== $year) !== [];
 
         if ($otherYear || ($year !== 0 && $file['uploaded'] < $year)
@@ -156,9 +127,6 @@ class CommonsCoinImageService
             + (str_contains($title, 'аверс') ? -1 : 0);
     }
 
-    /**
-     * @param  array{title: string, url: string, page: string, license: string, artist: string, width: int, uploaded: int, mime: string}  $file
-     */
     private function credit(array $file): string
     {
         $author = mb_substr($file['artist'], 0, 80);

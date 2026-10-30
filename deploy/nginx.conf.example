@@ -1,10 +1,5 @@
-# Приклад конфігурації nginx для numis.in.ua (PHP-FPM, за Cloudflare або без нього).
-# Не перевірено на живому сервері: адаптуйте шляхи, сокет PHP-FPM і сертифікати під свою інфраструктуру.
-
-# Кеш HTML публічних сторінок: застосунок віддає їх без cookie й з Cache-Control: public, s-maxage=300.
 fastcgi_cache_path /var/cache/nginx/numis levels=1:2 keys_zone=numis:20m max_size=200m inactive=60m use_temp_path=off;
 
-# Редірект www → без www
 server {
     listen 80;
     listen [::]:80;
@@ -36,26 +31,22 @@ server {
     charset utf-8;
     server_tokens off;
 
-    # Стиснення (Brotli за наявності модуля ngx_brotli, інакше лише gzip).
     gzip on;
     gzip_comp_level 5;
     gzip_vary on;
     gzip_min_length 512;
     gzip_types text/plain text/css application/javascript application/json application/xml application/rss+xml image/svg+xml;
 
-    # Статика зі хешем у назві: кеш на рік.
     location /build/ {
         add_header Cache-Control "public, max-age=31536000, immutable";
         try_files $uri =404;
     }
 
-    # Зображення та іконки: місяць.
     location ~* \.(?:jpg|jpeg|png|webp|avif|svg|ico|woff2)$ {
         add_header Cache-Control "public, max-age=2592000";
         try_files $uri =404;
     }
 
-    # Пряме звернення до index.php закрите: застосунок працює через front controller.
     location ~ ^/index\.php(/|$) {
         return 404;
     }
@@ -64,7 +55,6 @@ server {
         try_files $uri /index.php?$query_string;
     }
 
-    # Кешуємо відповідь PHP для гостей без cookie сесії (її отримує той, хто відправив форму).
     set $skip_cache 0;
     if ($request_method != GET) { set $skip_cache 1; }
     if ($http_cookie ~* "numis-session") { set $skip_cache 1; }

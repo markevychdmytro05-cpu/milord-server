@@ -5,14 +5,8 @@ namespace Database\Factories;
 use App\Models\Release;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<Release>
- */
 class ReleaseFactory extends Factory
 {
-    /**
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         $version = '1.0.'.fake()->unique()->numberBetween(0, 9999);

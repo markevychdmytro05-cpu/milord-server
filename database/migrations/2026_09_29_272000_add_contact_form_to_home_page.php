@@ -5,9 +5,6 @@ use App\Models\ModuleTemplate;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Форма зв'язку додається на головну перед завершальним закликом.
- */
 return new class extends Migration
 {
     public function up(): void

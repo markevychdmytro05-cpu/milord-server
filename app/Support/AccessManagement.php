@@ -12,34 +12,20 @@ use Throwable;
 
 class AccessManagement
 {
-    /**
-     * @template T
-     *
-     * @param  callable(User): T  $change
-     * @return T
-     */
     public static function run(callable $change): mixed
     {
         try {
             return self::runInTransaction($change);
         } catch (Throwable $exception) {
-            // Відкат транзакції не скидає кеш прав, який міг перезаповнитися незакомічними даними.
             app(PermissionRegistrar::class)->forgetCachedPermissions();
 
             throw $exception;
         }
     }
 
-    /**
-     * @template T
-     *
-     * @param  callable(User): T  $change
-     * @return T
-     */
     private static function runInTransaction(callable $change): mixed
     {
         return DB::transaction(function () use ($change): mixed {
-            // This permanent row serializes access changes before checking the current actor.
             Role::where('name', User::ROLE_ADMIN)->lockForUpdate()->firstOrFail();
             $actor = User::find(backpack_user()->id);
             Gate::forUser($actor)->authorize('access_manage');

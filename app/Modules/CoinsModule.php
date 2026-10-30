@@ -8,7 +8,6 @@ use App\Support\SiteLocale;
 
 class CoinsModule implements ModuleInterface
 {
-    /** Найближчі випуски з фото; якщо таких немає, показуються останні випущені монети з фото. Без монет блок не виводиться. */
     public function draw(array $settings): string
     {
         $limit = max(3, min(24, (int) ($settings['limit'] ?? 6)));

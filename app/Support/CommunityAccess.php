@@ -5,9 +5,6 @@ namespace App\Support;
 use App\Models\License;
 use Illuminate\Http\Request;
 
-/**
- * Доступ до спільноти за ключем ліцензії: ключ перевіряється один раз, далі в сесії лежить id ліцензії.
- */
 class CommunityAccess
 {
     public const SESSION_KEY = 'community_license_id';
@@ -25,7 +22,6 @@ class CommunityAccess
         return $license;
     }
 
-    /** Ліцензія поточного відвідувача або null, якщо ключ не введено чи він уже недійсний. */
     public static function license(Request $request): ?License
     {
         $id = $request->session()->get(self::SESSION_KEY);

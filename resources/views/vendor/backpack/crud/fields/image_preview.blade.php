@@ -1,4 +1,3 @@
-{{-- Попередній перегляд зображення з іншого поля форми ($field['source'] – ім’я поля з шляхом до файлу); оновлюється під час вибору. --}}
 @php
     $id = 'image-preview-'.\Illuminate\Support\Str::slug($field['name']);
 @endphp

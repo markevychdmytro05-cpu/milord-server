@@ -4,10 +4,6 @@ use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Розділ «База знань» тепер називається «Блог»: назва хаба, його H1 і SEO-заголовок, пункти меню.
- * Адреси на /blog переносить наступна міграція.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -32,6 +28,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

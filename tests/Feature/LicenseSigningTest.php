@@ -15,7 +15,6 @@ class LicenseSigningTest extends TestCase
 
     private const DEVICE = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
-    /** @return array<string, string> */
     private function signedRequest(string $action, string $key): array
     {
         $pair = sodium_crypto_sign_keypair();

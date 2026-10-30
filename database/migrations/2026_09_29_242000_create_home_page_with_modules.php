@@ -5,9 +5,6 @@ use App\Models\ModuleTemplate;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Поточний вміст головної сторінки переноситься в модулі, щоб керувати ним з адмінки.
- */
 return new class extends Migration
 {
     public function up(): void

@@ -14,9 +14,6 @@ enum PageRobotsType: string
         return $this === self::IndexFollow || $this === self::IndexNofollow;
     }
 
-    /**
-     * @return array<string, string> значення => підпис
-     */
     public static function asSelectArray(): array
     {
         return array_column(self::cases(), 'value', 'value');

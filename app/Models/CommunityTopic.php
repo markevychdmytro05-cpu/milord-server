@@ -12,12 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 
-/**
- * Тема спільноти: новина, питання, відгук, ідея, помилка, обговорення або FAQ.
- */
 class CommunityTopic extends Model
 {
-    /** @use HasFactory<CommunityTopicFactory> */
     use CrudTrait, HasFactory, HasSlug;
 
     public const STATUS_PENDING = 'pending';
@@ -28,10 +24,8 @@ class CommunityTopic extends Model
 
     public const STATUSES = [self::STATUS_PENDING, self::STATUS_PUBLISHED, self::STATUS_HIDDEN];
 
-    /** Типи, які можуть створювати користувачі з ключем. */
     public const USER_TYPES = ['question', 'review', 'idea', 'bug', 'discussion'];
 
-    /** Усі типи; новини й FAQ додає лише команда. */
     public const TYPES = ['news', 'question', 'review', 'idea', 'bug', 'discussion', 'faq'];
 
     protected $fillable = [
@@ -53,7 +47,6 @@ class CommunityTopic extends Model
         ];
     }
 
-    /** Адреси службових маршрутів спільноти, які тема зайняти не може. */
     private const RESERVED_SLUGS = ['nova', 'kliuch', 'vykhid'];
 
     protected static function booted(): void
@@ -71,7 +64,6 @@ class CommunityTopic extends Model
         });
     }
 
-    /** Slug з української транслітерації заголовка. */
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
@@ -82,13 +74,11 @@ class CommunityTopic extends Model
             ->skipGenerateWhen(fn () => filled($this->slug));
     }
 
-    /** @param  Builder<CommunityTopic>  $query */
     public function scopePublished(Builder $query): void
     {
         $query->where('status', self::STATUS_PUBLISHED);
     }
 
-    /** Для перемикача в адмінці: опубліковано чи ні (на модерації й приховане = ні). */
     public function getIsPublishedAttribute(): bool
     {
         return $this->status === self::STATUS_PUBLISHED;

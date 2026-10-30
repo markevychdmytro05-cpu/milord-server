@@ -3,10 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Скріншоти програми в текстах сторінок вставлені як PNG, хоча поряд лежать WebP-двійники
- * (754 КБ проти 253 КБ на десяти файлах). Посилання переводяться на WebP, лише якщо двійник існує.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -27,6 +23,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

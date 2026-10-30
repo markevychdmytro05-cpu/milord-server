@@ -8,11 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
 
-/**
- * Пункт меню шапки чи підвалу: посилання на сторінку або на довільну адресу; може мати вкладені пункти.
- *
- * @property Collection<int, MenuItem> $tree_children
- */
 class MenuItem extends Model
 {
     use CrudTrait;
@@ -33,37 +28,31 @@ class MenuItem extends Model
         ];
     }
 
-    /** @return BelongsTo<Page, $this> */
     public function page(): BelongsTo
     {
         return $this->belongsTo(Page::class);
     }
 
-    /** @return BelongsTo<MenuItem, $this> */
     public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent_id');
     }
 
-    /** @return HasMany<MenuItem, $this> */
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')->orderBy('lft');
     }
 
-    /** Підпис пункту: власний або назва сторінки. */
     public function getLabelAttribute(): string
     {
         return $this->title ?: ($this->page?->title ?? $this->url ?? '–');
     }
 
-    /** Пункт-заголовок: без сторінки й адреси (наприклад, назва колонки підвалу). */
     public function isHeading(): bool
     {
         return ! $this->page_id && ! $this->url;
     }
 
-    /** Адреса пункту; null, якщо сторінка неопублікована чи видалена або пункт є заголовком. */
     public function href(): ?string
     {
         if ($this->page_id) {
@@ -73,10 +62,6 @@ class MenuItem extends Model
         return $this->url;
     }
 
-    /**
-     * Чи веде пункт на поточну сторінку: збіг шляху або вкладена адреса (/monety-nbu/x для /monety-nbu).
-     * Якорі на головну (/#pricing) не рахуються: їх підсвічує прокрутка на самій сторінці.
-     */
     public function isCurrent(string $path): bool
     {
         $href = $this->href();
@@ -91,17 +76,11 @@ class MenuItem extends Model
         return $target !== '/' && ($path === $target || str_starts_with($path, $target.'/'));
     }
 
-    /** Чи є серед вкладених пунктів той, що веде на поточну сторінку. */
     public function hasCurrentChild(string $path): bool
     {
         return $this->tree_children->contains(fn (self $child): bool => $child->isCurrent($path));
     }
 
-    /**
-     * Дерево активних пунктів меню з доступними адресами; вкладені лежать у $item->tree_children.
-     *
-     * @return Collection<int, MenuItem>
-     */
     public static function tree(string $menu): Collection
     {
         $items = static::query()->with('page')->where('menu', $menu)->where('is_active', true)
@@ -117,12 +96,6 @@ class MenuItem extends Model
         return $build(null);
     }
 
-    /**
-     * Пункти дерева одним списком у порядку обходу (для плоского меню підвалу).
-     *
-     * @param  Collection<int, MenuItem>  $tree
-     * @return Collection<int, MenuItem>
-     */
     public static function flatten(Collection $tree): Collection
     {
         return $tree->flatMap(fn (self $item): Collection => collect([$item])->concat(static::flatten($item->getRelation('tree_children'))));

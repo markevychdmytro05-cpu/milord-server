@@ -10,13 +10,6 @@ class ModuleService
 {
     public const DISK = 'public';
 
-    /**
-     * Зберігає завантажені файли полів image/upload і повертає шляхи до них.
-     * Поля без нового файлу з $input прибираються, щоб при оновленні лишилось попереднє значення.
-     *
-     * @param  array<string, mixed>  $input
-     * @return array<string, mixed>
-     */
     public function saveUploads(array $input, ModuleTemplate $template): array
     {
         foreach ($template->uploadFields() as $field) {
@@ -32,7 +25,6 @@ class ModuleService
         return $input;
     }
 
-    /** Публічна адреса збереженого файлу; повний URL повертається як є. */
     public function url(?string $path): string
     {
         if (! $path) {

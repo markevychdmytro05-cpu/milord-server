@@ -7,10 +7,6 @@ use App\Models\User;
 
 class SuperAdminService
 {
-    /**
-     * Створює користувача (або оновлює наявного за email): активний, роль admin і всі наявні права.
-     * Пароль змінюється лише якщо його передано.
-     */
     public function grant(string $email, string $name, ?string $password): User
     {
         $user = User::firstOrNew(['email' => $email]);

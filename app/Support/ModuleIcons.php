@@ -2,9 +2,6 @@
 
 namespace App\Support;
 
-/**
- * Набір ліній-іконок (viewBox 24×24) для модулів.
- */
 final class ModuleIcons
 {
     private const ICONS = [

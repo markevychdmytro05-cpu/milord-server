@@ -5,10 +5,6 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Блок контактів у футері: заголовок, email-и з підписами, телефон, соцмережі й абзац про проєкт.
- * Верхня смуга шапки тепер вмикається окремо. Значення зразкові: замініть їх на справжні в адмінці.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -24,7 +20,6 @@ return new class extends Migration
             $table->string('facebook')->nullable()->after('instagram');
         });
 
-        // Верхня смуга лишається ввімкненою, якщо вона вже показувалась.
         DB::table('site_settings')->update([
             'show_topbar' => DB::raw('CASE WHEN contact_email IS NOT NULL OR contact_phone IS NOT NULL OR contact_address IS NOT NULL THEN 1 ELSE 0 END'),
             'footer_heading' => 'Надсилайте свої запитання та пропозиції',

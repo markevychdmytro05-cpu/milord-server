@@ -8,9 +8,6 @@ use App\Models\SiteSetting;
 use Illuminate\Http\Response;
 use Illuminate\Support\Collection;
 
-/**
- * Файли для мовних моделей за специфікацією llmstxt.org: короткий індекс і повний текст сайту.
- */
 class LlmsController extends Controller
 {
     public function index(): Response

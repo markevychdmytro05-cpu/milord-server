@@ -7,9 +7,6 @@ use App\Models\ModuleTemplate;
 use App\Support\LocalUrl;
 use Illuminate\Foundation\Http\FormRequest;
 
-/**
- * Правила валідації беруться зі схеми шаблону модуля (ModuleTemplate::rules()).
- */
 class ModuleRequest extends FormRequest
 {
     public function authorize(): bool
@@ -17,7 +14,6 @@ class ModuleRequest extends FormRequest
         return backpack_user()?->can($this->route('module') ? 'modules_update' : 'modules_create') ?? false;
     }
 
-    /** Непозначені чекбокси приводяться до 0, елементи списків – до послідовних індексів. */
     protected function prepareForValidation(): void
     {
         $template = $this->moduleTemplate();
@@ -40,9 +36,6 @@ class ModuleRequest extends FormRequest
         $this->merge($data);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function rules(): array
     {
         return $this->moduleTemplate()->rules();

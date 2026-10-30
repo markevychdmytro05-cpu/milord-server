@@ -2,9 +2,6 @@
 
 namespace App\Support;
 
-/**
- * Хто може користуватись файловим менеджером: усі, хто редагує контент сайту.
- */
 final class MediaAccess
 {
     public const PERMISSIONS = [

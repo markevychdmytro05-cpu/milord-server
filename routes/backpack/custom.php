@@ -2,12 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-// --------------------------
-// Custom Backpack Routes
-// --------------------------
-// This route file is loaded automatically by Backpack\CRUD.
-// Routes you generate using Backpack\Generators will be placed here.
-
 Route::group([
     'prefix' => config('backpack.base.route_prefix', 'admin'),
     'middleware' => array_merge(
@@ -15,7 +9,7 @@ Route::group([
         (array) config('backpack.base.middleware_key', 'admin')
     ),
     'namespace' => 'App\Http\Controllers\Admin',
-], function () { // custom admin routes
+], function () {
     Route::crud('license', 'LicenseCrudController');
     Route::post('license/{id}/payments', 'LicensePaymentController@store')->whereNumber('id')->name('license.payments.store');
     Route::post('license/{id}/payments/{paymentId}/void', 'LicensePaymentController@void')->whereNumber(['id', 'paymentId'])->name('license.payments.void');
@@ -47,15 +41,6 @@ Route::group([
     Route::get('module/{module}/preview', 'ModuleCrudController@preview')->whereNumber('module')->name('module.preview');
     Route::post('module/{module}/copy', 'ModuleCrudController@copy')->whereNumber('module')->name('module.copy');
     Route::crud('category', 'CategoryCrudController');
-    // Спільнота тимчасово вимкнена: щоб увімкнути, розкоментуйте.
-    /*
-    Route::crud('community-topic', 'CommunityTopicCrudController');
-    Route::post('community-topic/{id}/toggle', 'CommunityTopicCrudController@togglePublished')->whereNumber('id');
-    Route::crud('community-comment', 'CommunityCommentCrudController');
-    Route::post('community-comment/{id}/toggle', 'CommunityCommentCrudController@togglePublished')->whereNumber('id');
-    Route::crud('community-report', 'CommunityReportCrudController');
-    Route::post('community-report/{id}/toggle', 'CommunityReportCrudController@toggleProcessed')->whereNumber('id');
-    */
     Route::crud('lead', 'LeadCrudController');
     Route::post('lead/{id}/toggle', 'LeadCrudController@toggleProcessed')->whereNumber('id');
     Route::crud('site-setting', 'SiteSettingCrudController');
@@ -64,8 +49,5 @@ Route::group([
     Route::post('header-menu/{id}/toggle', 'HeaderMenuCrudController@toggleActive')->whereNumber('id');
     Route::post('footer-menu/{id}/toggle', 'FooterMenuCrudController@toggleActive')->whereNumber('id');
     Route::post('package/{id}/toggle', 'PackageCrudController@toggleActive')->whereNumber('id');
-}); // this should be the absolute last line of this file
+});
 
-/**
- * DO NOT ADD ANYTHING HERE.
- */

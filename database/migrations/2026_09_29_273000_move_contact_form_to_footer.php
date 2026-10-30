@@ -5,9 +5,6 @@ use App\Models\Page;
 use App\Models\SiteSetting;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Форма зв'язку живе в підвалі, тож показується на кожній сторінці сайту.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -35,6 +32,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

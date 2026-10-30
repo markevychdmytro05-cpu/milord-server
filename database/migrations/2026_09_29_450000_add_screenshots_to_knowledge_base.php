@@ -4,10 +4,6 @@ use App\Models\Module;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Скріншоти програми в статтях бази знань, стаття про прогрів профілів (стара назва «Тест поведінки»)
- * та FAQ без згадок CAPTCHA й застережень про гарантії.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -24,7 +20,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 
     private function cleanFaqModules(): void

@@ -1,4 +1,3 @@
-{{-- Впорядкований вибір: значення надсилаються масивом у порядку списку. --}}
 @php
     $selected = array_map('intval', (array) (old_empty_or_null($field['name'], null) ?? $field['value'] ?? $field['default'] ?? []));
     $options = $field['options'] ?? [];

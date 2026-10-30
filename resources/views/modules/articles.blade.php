@@ -31,7 +31,6 @@
                 @foreach ($articles as $article)
                     <a class="kb-card" href="{{ $article->url() }}">
                         @if ($article->og_image)
-                            {{-- Обкладинка 1200×750 показується в слоті ~370px: WebP 640/960 поряд із JPG легші в 5–8 разів. --}}
                             @php($cover = $moduleFiles->url($article->og_image))
                             @php($coverBase = preg_replace('/\.(jpe?g|png)$/i', '', $cover))
                             @php($coverWebp = str_starts_with($cover, '/') && $coverBase !== $cover && is_file(public_path(ltrim($coverBase, '/').'-640.webp')))

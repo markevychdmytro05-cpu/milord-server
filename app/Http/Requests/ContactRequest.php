@@ -11,9 +11,6 @@ class ContactRequest extends FormRequest
         return true;
     }
 
-    /**
-     * @return array<string, array<int, string>>
-     */
     public function rules(): array
     {
         return [
@@ -29,7 +26,6 @@ class ContactRequest extends FormRequest
         return $this->sourceUrl() ?? url('/');
     }
 
-    /** Адреса сторінки, з якої надіслано форму (лише власний сайт). */
     public function sourceUrl(): ?string
     {
         $url = (string) $this->input('source');

@@ -25,7 +25,6 @@ class Category extends Model
         return Page::where('category', $this->name)->count();
     }
 
-    /** @return array<string, string> назва => назва */
     public static function asSelectArray(): array
     {
         return self::orderBy('name')->pluck('name', 'name')->all();

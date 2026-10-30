@@ -5,9 +5,6 @@ use App\Models\ModuleTemplate;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * SEO: стаття під запит «автокупівля монет НБУ» і порівняльна стаття «вручну чи автоматично».
- */
 return new class extends Migration
 {
     private const CTA_NAME = 'SEO – Заклик: пробний період';
@@ -51,7 +48,6 @@ return new class extends Migration
         $service?->update(['content' => str_replace(self::SERVICE_LINK, '', (string) $service->content)]);
     }
 
-    /** @param  list<array{0: string, 1: string}>  $faq */
     private function attachModules(Page $page, array $faq): void
     {
         $faqTemplate = ModuleTemplate::byCode('faqs');
@@ -72,7 +68,6 @@ return new class extends Migration
         $page->update(['page_modules' => [...$page->page_modules, $faqModule->id, ...($cta ? [$cta->id] : [])]]);
     }
 
-    /** @return array<string, array{title: string, meta_title: string, description: string, content: string, faq: list<array{0: string, 1: string}>}> */
     private function articles(): array
     {
         return [

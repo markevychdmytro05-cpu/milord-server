@@ -4,7 +4,6 @@ use App\Models\ModuleTemplate;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/** Блок «Історія версій» на головній: останні записи зі сторінки «Що нового». */
 return new class extends Migration
 {
     public function up(): void
@@ -55,6 +54,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

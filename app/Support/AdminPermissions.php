@@ -8,18 +8,12 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 class AdminPermissions
 {
-    /**
-     * Права для форм: розділ => [код => підпис].
-     *
-     * @return array<string, array<string, string>>
-     */
     public static function catalog(): array
     {
         return Permission::orderBy('id')->get()->groupBy('group')
             ->map(fn ($permissions) => $permissions->pluck('title', 'name')->all())->all();
     }
 
-    /** @param array<string, string> $operations */
     public static function crud(array $operations): void
     {
         foreach ($operations as $operation => $permission) {
@@ -45,7 +39,6 @@ class AdminPermissions
         return null;
     }
 
-    /** @return list<string> */
     public static function hiddenAuditEvents(User $user): array
     {
         return [

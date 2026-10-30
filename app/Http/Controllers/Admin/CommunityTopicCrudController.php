@@ -13,11 +13,6 @@ use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 use Illuminate\Validation\Rule;
 
-/**
- * Теми спільноти: модерація користувацьких тем і публікація новин та FAQ від команди.
- *
- * @property-read CrudPanel $crud
- */
 class CommunityTopicCrudController extends CrudController
 {
     use CreateOperation;
@@ -93,7 +88,6 @@ class CommunityTopicCrudController extends CrudController
         return response()->json(['value' => $topic->is_published]);
     }
 
-    /** @return array<string, string> */
     private function statusLabels(): array
     {
         return [

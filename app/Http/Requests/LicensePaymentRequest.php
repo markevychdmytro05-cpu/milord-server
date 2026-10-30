@@ -13,7 +13,6 @@ class LicensePaymentRequest extends FormRequest
         return backpack_user()?->can('payments_create') ?? false;
     }
 
-    /** @return array<string, array<mixed>> */
     public function rules(): array
     {
         return [
@@ -34,7 +33,6 @@ class LicensePaymentRequest extends FormRequest
         }
     }
 
-    /** @return array<string, string> */
     public function messages(): array
     {
         return [

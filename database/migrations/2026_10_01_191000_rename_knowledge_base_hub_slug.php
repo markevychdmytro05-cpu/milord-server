@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /** Хаб бази знань: /baza-znan-numis → /baza-znan, з оновленням внутрішніх посилань. */
     public function up(): void
     {
         if (DB::table('pages')->where('type', 'page')->where('slug', 'baza-znan')->exists()) {
@@ -43,6 +42,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

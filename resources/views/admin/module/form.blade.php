@@ -1,4 +1,3 @@
-{{-- Спільна форма створення/редагування модуля: поля будуються зі схеми шаблону. --}}
 @include('crud::inc.grouped_errors')
 
 <form method="post" enctype="multipart/form-data" action="{{ $formAction }}" id="crudForm">

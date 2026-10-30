@@ -8,12 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * Коментар до теми спільноти.
- */
 class CommunityComment extends Model
 {
-    /** @use HasFactory<CommunityCommentFactory> */
     use CrudTrait, HasFactory;
 
     public const STATUS_PENDING = 'pending';
@@ -37,7 +33,6 @@ class CommunityComment extends Model
         static::deleted($refresh);
     }
 
-    /** Для перемикача в адмінці: опубліковано чи ні (на модерації й приховане = ні). */
     public function getIsPublishedAttribute(): bool
     {
         return $this->status === self::STATUS_PUBLISHED;

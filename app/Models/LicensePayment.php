@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LicensePayment extends Model
 {
-    /** @use HasFactory<LicensePaymentFactory> */
     use HasFactory;
 
     public const OPERATION_PAYMENT = 'payment';

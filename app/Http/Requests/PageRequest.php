@@ -16,22 +16,17 @@ class PageRequest extends FormRequest
         return backpack_user()?->can($this->route('id') ? 'pages_update' : 'pages_create') ?? false;
     }
 
-    /** Порожній slug генерує модель (spatie/laravel-sluggable) з заголовка. */
     protected function prepareForValidation(): void
     {
         $slug = trim((string) $this->input('slug'));
 
         $this->merge([
             'og_image' => LocalUrl::path($this->input('og_image')),
-            // Тип не редагується у формі: нові записи – звичайні сторінки, наявні зберігають свій тип.
             'type' => $this->route('id') ? (Page::find($this->route('id'))?->type ?? Page::TYPE_PAGE) : Page::TYPE_PAGE,
             'slug' => $slug === Page::ROOT_SLUG ? $slug : ($slug === '' ? null : Str::slug($slug, '-', 'uk')),
         ]);
     }
 
-    /**
-     * @return array<string, array<int, mixed>>
-     */
     public function rules(): array
     {
         $isPage = $this->input('type') === Page::TYPE_PAGE;
@@ -59,9 +54,6 @@ class PageRequest extends FormRequest
         ];
     }
 
-    /**
-     * @return array<string, string>
-     */
     public function attributes(): array
     {
         return [

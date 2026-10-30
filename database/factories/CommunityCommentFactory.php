@@ -6,14 +6,8 @@ use App\Models\CommunityComment;
 use App\Models\CommunityTopic;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends Factory<CommunityComment>
- */
 class CommunityCommentFactory extends Factory
 {
-    /**
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [

@@ -9,6 +9,5 @@ return [
 
     'rate_limit' => (int) env('LICENSE_API_RATE_LIMIT', 30),
 
-    // Посилання для замовлення ліцензії (Telegram, форма тощо). Порожнє – кнопки на сайті приховані.
     'contact_url' => env('LICENSE_CONTACT_URL'),
 ];

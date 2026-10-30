@@ -3,15 +3,10 @@
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Каннібалізація запитів про автокупівлю: сім сторінок (послуга й шість статей) мають кожна свій головний запит,
- * а внизу – блок «Матеріали за темою» з посиланнями одна на одну різними ключовими анкорами.
- */
 return new class extends Migration
 {
     private const HEADING = 'Матеріали за темою';
 
-    /** @var array<string, array{type: string, url: string, anchor: string}> */
     private const CLUSTER = [
         'avtomatychna-kupivlia-monet-nbu' => ['type' => Page::TYPE_SERVICE, 'url' => '/services/avtomatychna-kupivlia-monet-nbu', 'anchor' => 'Додавання монети в кошик у момент старту: як працює Numis'],
         'avtokupivlia-monet-nbu-iak-tse-pratsiuye-i-komu-pidkhodyt' => ['type' => Page::TYPE_PAGE, 'url' => '/blog/avtokupivlia-monet-nbu-iak-tse-pratsiuye-i-komu-pidkhodyt', 'anchor' => 'Автокупівля монет НБУ: як це працює і кому підходить'],
@@ -44,6 +39,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

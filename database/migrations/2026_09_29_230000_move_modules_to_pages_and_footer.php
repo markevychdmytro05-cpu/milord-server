@@ -6,10 +6,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\PermissionRegistrar;
 
-/**
- * Модулі прикріплюються прямо до сторінки й до підвалу (як у iptel-ua, де сторінка – це і є шаблон з модулями).
- * Окрема сутність Layout більше не потрібна: її звʼязки переносяться, таблиці й права видаляються.
- */
 return new class extends Migration
 {
     public function up(): void

@@ -9,7 +9,6 @@ use Spatie\Permission\Models\Role as SpatieRole;
 
 class Role extends SpatieRole
 {
-    /** @use HasFactory<RoleFactory> */
     use CrudTrait, HasFactory;
 
     protected $guard_name = 'web';
@@ -21,7 +20,6 @@ class Role extends SpatieRole
         return ['is_system' => 'boolean'];
     }
 
-    /** @return list<string> */
     public function getPermissionNamesAttribute(): array
     {
         return $this->permissions->pluck('name')->all();

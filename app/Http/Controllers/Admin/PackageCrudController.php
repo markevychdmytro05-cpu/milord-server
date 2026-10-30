@@ -12,7 +12,6 @@ use Backpack\CRUD\app\Http\Controllers\Operations\UpdateOperation;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanel;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
-/** @property-read CrudPanel $crud */
 class PackageCrudController extends CrudController
 {
     use CreateOperation;

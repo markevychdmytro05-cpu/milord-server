@@ -4,9 +4,6 @@ use App\Models\Module;
 use App\Models\Page;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Часті питання про AdsPower живуть лише в FAQ-модулі, а в статті про прогрів курсор згадано без застережень.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -17,7 +14,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 
     private function moveFaqToModule(): void

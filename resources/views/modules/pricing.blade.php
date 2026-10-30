@@ -1,6 +1,5 @@
 @php($locale = \App\Support\SiteLocale::current())
 @php($text = $settings[$locale] ?? [])
-{{-- Безкоштовний пробний тариф – банер зверху, платні – картки під ним. --}}
 @php($trials = $packages->filter(fn ($package) => $package->isTrial()))
 @php($paid = $packages->reject(fn ($package) => $package->isTrial())->values())
 <section class="section {{ $paid->count() <= 4 ? 'plans-fit' : '' }}" @if (! empty($settings['anchor'])) id="{{ $settings['anchor'] }}" @endif>

@@ -20,13 +20,9 @@ class ContactFormTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @param  array<string, mixed>  $overrides
-     * @return array<string, mixed>
-     */
     private function payload(array $overrides = []): array
     {
-        return $overrides + ['name' => 'Іван', 'contact' => '+380501112233', 'message' => 'Хочу тариф Про', 'source' => url('/')];
+        return $overrides + ['name' => 'Тест', 'contact' => '+380501112233', 'message' => 'Хочу тариф Про', 'source' => url('/')];
     }
 
     public function test_home_page_shows_the_contact_form(): void
@@ -52,7 +48,7 @@ class ContactFormTest extends TestCase
     {
         $this->postJson('/contact', $this->payload())->assertOk()->assertJson(['message' => 'Дякуємо! Напишемо вам із ключем найближчим часом.']);
 
-        $this->assertDatabaseHas('leads', ['name' => 'Іван', 'contact' => '+380501112233', 'source_url' => url('/'), 'is_processed' => false]);
+        $this->assertDatabaseHas('leads', ['name' => 'Тест', 'contact' => '+380501112233', 'source_url' => url('/'), 'is_processed' => false]);
     }
 
     public function test_new_lead_queues_notification_to_configured_address(): void
@@ -123,7 +119,7 @@ class ContactFormTest extends TestCase
     public function test_admin_sees_and_processes_leads(): void
     {
         $admin = User::factory()->admin()->create();
-        $lead = Lead::factory()->create(['name' => 'Марія']);
+        $lead = Lead::factory()->create(['name' => 'Клієнт']);
 
         $this->actingAs($admin, 'backpack')->get('/admin/lead')->assertOk()->assertSee('Заявки');
         $this->actingAs($admin, 'backpack')->postJson("/admin/lead/{$lead->id}/toggle")->assertOk()->assertJson(['value' => true]);
@@ -186,12 +182,12 @@ class ContactFormTest extends TestCase
         config(['services.telegram.bot_token' => 'test-token', 'services.telegram.chat_id' => '-100123']);
         Http::fake(['api.telegram.org/*' => Http::response(['ok' => true])]);
 
-        $this->postJson('/contact', $this->payload(['name' => 'A <b>Іван</b>']))->assertOk();
+        $this->postJson('/contact', $this->payload(['name' => 'A <b>Тест</b>']))->assertOk();
 
         Http::assertSent(fn ($request) => $request->url() === 'https://api.telegram.org/bottest-token/sendMessage'
             && $request['chat_id'] === '-100123'
             && str_contains($request['text'], '+380501112233')
-            && str_contains($request['text'], 'A &lt;b&gt;Іван&lt;/b&gt;'));
+            && str_contains($request['text'], 'A &lt;b&gt;Тест&lt;/b&gt;'));
     }
 
     public function test_lead_is_not_queued_for_telegram_without_bot_settings(): void

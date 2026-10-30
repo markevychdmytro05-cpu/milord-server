@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /** Старий slug => новий, після транслітераційної перегенерації. */
     private const MAP = [
         'services/auto-buy' => 'services/avtomatychna-kupivlia-monet-nbu',
         'services/adspower-profiles' => 'services/profili-adspower',
@@ -63,7 +62,6 @@ return new class extends Migration
 
     private function rewrite(string $text): string
     {
-        // Довгі slug-и першими, щоб «yak-kupyty-monetu-nbu» не зачепив «…-pershym».
         $map = self::MAP;
         uksort($map, fn ($a, $b) => strlen($b) <=> strlen($a));
 
@@ -76,6 +74,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -3,7 +3,6 @@
 use App\Models\ModuleTemplate;
 use Illuminate\Database\Migrations\Migration;
 
-/** Прибирає підпис «Ціна залежить від кількості акаунтів…» під заголовком тарифів. */
 return new class extends Migration
 {
     public function up(): void
@@ -23,6 +22,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

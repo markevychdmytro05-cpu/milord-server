@@ -3,9 +3,6 @@
 use App\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 
-/**
- * Відповідь про те, що вважається акаунтом у тарифі, теж не привʼязуємо до одного антидетект-браузера.
- */
 return new class extends Migration
 {
     private const OLD = 'Акаунтом вважається кожен профіль AdsPower у налаштуваннях і активних завданнях.';
@@ -31,6 +28,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };

@@ -3,11 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Домен сайту – numis.in.ua: замість тимчасових контактів лишається пошта help@numis.in.ua.
- * Другий email і телефон прибираємо, а Telegram додається в адмінці (Налаштування сайту → Контакти).
- * Значення, які вже змінили вручну, не чіпаємо.
- */
 return new class extends Migration
 {
     public function up(): void
@@ -21,6 +16,5 @@ return new class extends Migration
 
     public function down(): void
     {
-        //
     }
 };
