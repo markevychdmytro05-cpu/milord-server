@@ -6,6 +6,7 @@
     <title>@yield('title', config('app.name'))</title>
     <meta name="description" content="@yield('description', __('site.seo.default_description'))">
     <meta name="robots" content="@yield('robots', 'index, follow, max-image-preview:large, max-snippet:-1')">
+    <meta name="msvalidate.01" content="7B4780F12FFE6E9D29B2C83347BA85DB">
     <link rel="canonical" href="@yield('canonical', url()->current())">
     <link rel="alternate" hreflang="uk" href="@yield('canonical', url()->current())">
     <link rel="alternate" hreflang="x-default" href="@yield('canonical', url()->current())">
@@ -155,6 +156,9 @@
                         @if ($site->contact_address)
                             <div><span>{{ __('site.footer.address') }}</span><b>{{ $site->contact_address }}</b></div>
                         @endif
+                        @foreach ($messengers as $name => $url)
+                            <div><span>{{ $name }}</span><a href="{{ $url }}" target="_blank" rel="noopener">{{ $url }}</a></div>
+                        @endforeach
                     </div>
                 </div>
             @endif
