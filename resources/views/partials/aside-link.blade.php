@@ -5,7 +5,7 @@
     @if ($asideCover)
         <span class="ra-cover">
             @if ($asideWebp)<picture><source type="image/webp" srcset="{{ $asideBase }}-640.webp" sizes="88px">@endif
-            <img src="{{ $asideCover }}" alt="" width="1200" height="750" loading="lazy" decoding="async">
+            <img src="{{ $asideCover }}" alt="{{ $item->title }}" width="1200" height="750" loading="lazy" decoding="async">
             @if ($asideWebp)</picture>@endif
         </span>
     @endif

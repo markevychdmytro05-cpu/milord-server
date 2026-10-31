@@ -40,7 +40,7 @@
             <meta property="og:image:width" content="{{ $ogSize[0] }}">
             <meta property="og:image:height" content="{{ $ogSize[1] }}">
         @endif
-        <meta property="og:image:alt" content="@yield('og_image_alt', trim($__env->yieldContent('title')))">
+        <meta property="og:image:alt" content="{!! trim($__env->yieldContent($__env->hasSection('og_image_alt') ? 'og_image_alt' : 'title')) !!}">
     @endif
     @stack('head')
     @foreach (['inter-cyrillic', 'inter-latin', 'geist-cyrillic', 'geist-latin'] as $font)
@@ -122,11 +122,14 @@
             <div class="foot-brand-col">
                 <a class="logo foot-logo" href="{{ route('home') }}" aria-label="{{ $site->header_logo }}">@include('partials.logo-mark')<span>{{ $site->header_logo }}</span></a>
                 @if ($site->footer_text)<p class="foot-copy">{{ $site->footer_text }}</p>@endif
-                @if ($messengers)
+                @if ($messengers || $site->contact_email)
                     <div class="foot-social">
                         @foreach ($messengers as $name => $url)
                             <a href="{{ $url }}" target="_blank" rel="noopener" aria-label="{{ $name }}" title="{{ $name }}">@include('partials.messenger-icon', ['name' => $name])</a>
                         @endforeach
+                        @if ($site->contact_email)
+                            <a href="mailto:{{ $site->contact_email }}" aria-label="Email" title="{{ $site->contact_email }}">@include('partials.messenger-icon', ['name' => 'Email'])</a>
+                        @endif
                     </div>
                 @endif
             </div>

@@ -47,7 +47,7 @@
             'image' => $page->ogImageUrl(),
             'articleSection' => $page->category,
             'wordCount' => str_word_count(strip_tags((string) $page->content), 0, 'абвгґдеєжзиіїйклмнопрстуфхцчшщьюяАБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯ’'),
-            'author' => ['@id' => url('/').'#org'],
+            'author' => ['@id' => url('/').'#author'],
             'publisher' => ['@id' => url('/').'#org'],
             'isPartOf' => ['@id' => url('/').'#site'],
         ]
@@ -69,6 +69,7 @@
                 ])->all(),
             ],
             \App\Models\SiteSetting::current()->organizationSchema(),
+            ...($page->isArticle() ? [\App\Models\SiteSetting::current()->authorSchema()] : []),
             ['@type' => 'WebSite', '@id' => url('/').'#site', 'url' => url('/'), 'name' => \App\Models\SiteSetting::current()->header_logo, 'alternateName' => parse_url(url('/'), PHP_URL_HOST), 'inLanguage' => 'uk-UA', 'publisher' => ['@id' => url('/').'#org']],
             array_filter($main, fn ($value) => $value !== null && $value !== ''),
             ...(count($faqItems) >= 2 ? [['@type' => 'FAQPage', 'mainEntity' => $faqItems]] : []),
@@ -115,6 +116,7 @@
                 @if ($page->isArticle())
                     <div class="article-meta">
                         <span class="kb-tag kb-c-{{ \App\Models\Page::categoryColor($page->category) }}">{{ $page->category }}</span>
+                        <span class="kb-author">{{ __('site.author_label') }} <a href="{{ route('pages.show', 'pro-nas') }}" rel="author">{{ config('site.author_name') }}</a></span>
                         <time class="kb-date" datetime="{{ $page->articleDate()->toDateString() }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ __('site.date_with_year', ['date' => $page->articleDate()->locale(app()->getLocale())->translatedFormat('j F Y')]) }}</time>
                         @if ($page->articleDate()->diffInDays($page->updated_at) >= 1)
 

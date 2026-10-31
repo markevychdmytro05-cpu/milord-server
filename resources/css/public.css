@@ -475,6 +475,9 @@ h1.display, .kb-top h1.display { font-size: clamp(32px, 1.3rem + 2.4vw, 48px); l
 .kb-cover--coin { position: relative; isolation: isolate; background: var(--canvas-soft); }
 .kb-cover--coin::before { content: ''; position: absolute; inset: 12% 22%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--orb-peach) 70%, transparent), transparent); }
 .kb-cover--coin img { object-fit: contain; padding: 8%; }
+.kb-author { color: var(--muted); font-size: 13px; }
+.kb-author a { color: var(--ink); font-weight: 500; }
+.kb-author a:hover { text-decoration: underline; }
 .kb-date { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; }
 .kb-date svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 .kb-tags { display: flex; flex-wrap: wrap; gap: 6px; }

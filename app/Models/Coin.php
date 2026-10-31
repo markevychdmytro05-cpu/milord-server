@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\PageRobotsType;
 use Backpack\CRUD\app\Models\Traits\CrudTrait;
-use Database\Factories\CoinFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -199,7 +198,15 @@ class Coin extends Model
     {
         $title = $this->title.': '.__('coins.seo.title_suffix');
 
-        return mb_strlen($title) <= 60 ? $title : $this->title;
+        if (mb_strlen($title) <= 60) {
+            return $title;
+        }
+
+        if (mb_strlen($this->title) <= 70) {
+            return $this->title;
+        }
+
+        return trim(preg_replace('/^'.preg_quote(__('coins.seo.title_strip'), '/').'\s*/u', '', $this->title));
     }
 
     private function generatedDescription(): string

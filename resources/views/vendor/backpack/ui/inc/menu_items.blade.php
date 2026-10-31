@@ -33,6 +33,11 @@
 @if (backpack_user()->canany(['site_manage', 'pages_view', 'pages_create', 'coins_view', 'coins_create', 'translations_view', 'releases_view', 'modules_view', 'modules_create']))
     <x-backpack::menu-dropdown title="Вміст сайту" icon="la la-globe">
         @if (backpack_user()->can('pages_view'))
+            <x-backpack::menu-dropdown-item title="Статті блогу" icon="la la-newspaper" :link="backpack_url('article')" />
+        @elseif (backpack_user()->can('pages_create'))
+            <x-backpack::menu-dropdown-item title="Створити статтю" icon="la la-newspaper" :link="backpack_url('article/create')" />
+        @endif
+        @if (backpack_user()->can('pages_view'))
             <x-backpack::menu-dropdown-item title="Сторінки" icon="la la-file-alt" :link="backpack_url('page')" />
         @elseif (backpack_user()->can('pages_create'))
             <x-backpack::menu-dropdown-item title="Створити сторінку" icon="la la-file-alt" :link="backpack_url('page/create')" />

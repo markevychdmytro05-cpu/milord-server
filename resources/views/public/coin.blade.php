@@ -5,6 +5,7 @@
 @section('canonical', $coin->url())
 @section('robots', $coin->robotsDirective())
 @section('og_image', $coin->ogImageUrl())
+@section('og_image_alt', __('coins.card.alt', ['name' => $coin->shortTitle()]))
 
 @php
     $planArticle = \App\Models\Page::published()->where('slug', 'plan-vypusku-monet-nbu-na-2026-rik-shcho-vyyde-do-kintsia-roku')->first();

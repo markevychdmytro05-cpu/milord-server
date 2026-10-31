@@ -24,6 +24,8 @@ Route::group([
     Route::crud('package', 'PackageCrudController');
     Route::crud('page', 'PageCrudController');
     Route::post('page/{id}/toggle', 'PageCrudController@togglePublished')->whereNumber('id');
+    Route::crud('article', 'ArticleCrudController');
+    Route::post('article/{id}/toggle', 'ArticleCrudController@togglePublished')->whereNumber('id');
     Route::crud('coin', 'CoinCrudController');
     Route::post('coin/{id}/toggle', 'CoinCrudController@togglePublished')->whereNumber('id');
     Route::post('coin/{id}/toggle-home', 'CoinCrudController@toggleShowOnHome')->whereNumber('id');

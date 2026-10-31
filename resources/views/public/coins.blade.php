@@ -48,7 +48,7 @@
                     @foreach ($coins as $coin)
                         <a class="kb-card" href="{{ $coin->url() }}">
                             @if ($coin->image)
-                                <span class="kb-cover kb-cover--coin"><img src="{{ $coin->image }}" alt="" @if ($loop->first) fetchpriority="high" @elseif ($loop->index > 2) loading="lazy" @endif></span>
+                                <span class="kb-cover kb-cover--coin"><img src="{{ $coin->image }}" alt="{{ __('coins.card.alt', ['name' => $coin->shortTitle()]) }}" @if ($loop->first) fetchpriority="high" @elseif ($loop->index > 2) loading="lazy" @endif></span>
                             @endif
                             <span class="kb-date"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ $coin->releaseLabel() ?? __('coins.card.date_pending') }}</span>
                             @if ($coin->series)

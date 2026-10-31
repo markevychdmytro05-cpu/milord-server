@@ -36,7 +36,7 @@
                             @php($coverWebp = str_starts_with($cover, '/') && $coverBase !== $cover && is_file(public_path(ltrim($coverBase, '/').'-640.webp')))
                             <span class="kb-cover">
                                 @if ($coverWebp)<picture><source type="image/webp" srcset="{{ $coverBase }}-640.webp 640w, {{ $coverBase }}-960.webp 960w" sizes="(min-width: 1280px) 371px, (min-width: 1024px) calc((100vw - 112px) / 3 - 18px), (min-width: 640px) calc((100vw - 80px) / 2 - 18px), calc(100vw - 50px)">@endif
-                                <img src="{{ $cover }}" alt="" width="1200" height="750" @if ($loop->first) fetchpriority="high" @elseif ($loop->index > 2) loading="lazy" @endif decoding="async">
+                                <img src="{{ $cover }}" alt="{{ $article->title }}" width="1200" height="750" @if ($loop->first) fetchpriority="high" @elseif ($loop->index > 2) loading="lazy" @endif decoding="async">
                                 @if ($coverWebp)</picture>@endif
                             </span>
                         @endif

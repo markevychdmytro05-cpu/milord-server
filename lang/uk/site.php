@@ -66,6 +66,7 @@ return [
     'categories' => 'Категорії',
     'date_with_year' => ':date року',
     'updated_on' => 'Оновлено :date',
+    'author_label' => 'Автор:',
 
     'pricing' => [
         'prev' => 'Попередні тарифи',

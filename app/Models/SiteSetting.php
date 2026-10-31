@@ -125,6 +125,17 @@ class SiteSetting extends Model
         ]);
     }
 
+    public function authorSchema(): array
+    {
+        return array_filter([
+            '@type' => 'Person',
+            '@id' => url('/').'#author',
+            'name' => config('site.author_name'),
+            'url' => url('/pro-nas'),
+            'worksFor' => ['@id' => url('/').'#org'],
+        ]);
+    }
+
     public static function current(): self
     {
         return static::query()->first() ?? static::create([

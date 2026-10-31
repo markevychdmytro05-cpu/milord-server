@@ -18,9 +18,9 @@ Route::get('/', HomeController::class)->name('home');
 Route::post('contact', [ContactController::class, 'store'])->middleware([RequireSameOrigin::class, 'throttle:contact'])->name('contact.store');
 Route::get('robots.txt', function () {
     $aiCrawlers = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'CCBot'];
-    $lines = ['User-agent: *', 'Disallow: /admin', 'Disallow: /api', 'Disallow: /zavantazhyty/', ''];
+    $lines = ['User-agent: *', 'Disallow: /admin', 'Disallow: /api', 'Disallow: /cdn-cgi/', 'Disallow: /zavantazhyty/', ''];
     foreach ($aiCrawlers as $crawler) {
-        array_push($lines, 'User-agent: '.$crawler, 'Allow: /', 'Disallow: /admin', 'Disallow: /api', 'Disallow: /zavantazhyty/', '');
+        array_push($lines, 'User-agent: '.$crawler, 'Allow: /', 'Disallow: /admin', 'Disallow: /api', 'Disallow: /cdn-cgi/', 'Disallow: /zavantazhyty/', '');
     }
     $lines[] = 'Sitemap: '.route('sitemap');
 

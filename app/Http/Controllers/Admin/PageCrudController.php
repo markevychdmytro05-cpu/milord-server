@@ -37,6 +37,7 @@ class PageCrudController extends CrudController
     protected function setupListOperation()
     {
         CRUD::orderBy('id');
+        CRUD::addClause('where', fn ($query) => $query->whereNull('category')->orWhere('category', ''));
 
         CRUD::column('title')->label('Заголовок');
         CRUD::column('slug')->label('Адреса')->type('closure')->function(fn (Page $page) => parse_url($page->url(), PHP_URL_PATH) ?: '/');
